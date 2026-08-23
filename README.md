@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # XAI-Compress Platform Monorepo
 
 A modular MVP for a cross-platform lossless-compression ecosystem.
@@ -55,3 +56,6 @@ password: change-me-now
 - Never send sensitive user files to external LLM APIs without explicit consent.
 
 Read `docs/ARCHITECTURE.md`, `docs/ROADMAP.md`, and `docs/SECURITY.md`.
+=======
+# XAI
+>>>>>>> 98df44fda07d70df0ba51cb33530b5340df6db73
