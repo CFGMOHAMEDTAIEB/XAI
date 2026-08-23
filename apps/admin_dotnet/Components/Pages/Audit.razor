@@ -1,0 +1,8 @@
+@page "/audit"
+@inject PlatformApiClient Api
+<PageTitle>Audit logs</PageTitle>
+<div class="page-heading"><div><h1>Audit trail</h1><p>Trace administrative, authentication, sharing and file events.</p></div></div>
+<section class="panel"><table><thead><tr><th>Time</th><th>Actor</th><th>Action</th><th>Resource</th><th>Result</th><th>Source</th></tr></thead><tbody>
+@foreach(var item in _items){<tr><td>@item.CreatedAt.LocalDateTime</td><td>@item.Actor</td><td class="mono">@item.Action</td><td>@item.Resource</td><td><StatusBadge Value="@item.Result" /></td><td>@item.IpAddress</td></tr>}
+</tbody></table></section>
+@code {private IReadOnlyList<AuditEvent> _items=[];protected override async Task OnInitializedAsync()=>_items=await Api.GetAuditAsync();}

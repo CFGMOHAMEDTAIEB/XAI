@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: postgres:17
+    environment: {POSTGRES_USER: xai, POSTGRES_PASSWORD: change-me, POSTGRES_DB: xai}
+    ports: ["5432:5432"]
+    volumes: ["postgres_data:/var/lib/postgresql/data"]
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+  minio:
+    image: minio/minio
+    command: server /data --console-address :9001
+    environment: {MINIO_ROOT_USER: xaiadmin, MINIO_ROOT_PASSWORD: change-me-now}
+    ports: ["9000:9000", "9001:9001"]
+    volumes: ["minio_data:/data"]
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.3
+    command: start-dev --import-realm
+    environment: {KC_BOOTSTRAP_ADMIN_USERNAME: admin, KC_BOOTSTRAP_ADMIN_PASSWORD: change-me-now}
+    ports: ["8080:8080"]
+    volumes: ["./infrastructure/keycloak:/opt/keycloak/data/import"]
+  api:
+    build: ./services/api_fastapi
+    environment: {DATABASE_URL: postgresql+psycopg://xai:change-me@postgres:5432/xai, JWT_SECRET: replace-this-secret}
+    ports: ["8000:8000"]
+    depends_on: [postgres, redis]
+  clamav:
+    image: clamav/clamav:stable
+    ports: ["3310:3310"]
+volumes: {postgres_data: {}, minio_data: {}}

@@ -1,0 +1,5 @@
+syntax = "proto3";
+package xaicompress.v1;
+message CompressionRequest { string job_id=1; string input_uri=2; string mode=3; string checkpoint_id=4; }
+message CompressionResult { string job_id=1; bool success=2; uint64 original_size=3; uint64 compressed_size=4; double bits_per_byte=5; bool integrity_verified=6; string output_uri=7; string error=8; }
+message SecurityScanResult { string file_id=1; bool clean=2; repeated string yara_matches=3; string clamav_status=4; bool quarantined=5; }

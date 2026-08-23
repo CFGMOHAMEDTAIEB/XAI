@@ -1,0 +1,32 @@
+XAI-COMPRESS V3 QUICK START
+
+1) Create and activate environment:
+   py -3.14 -m venv .venv
+   .venv\Scripts\activate
+   python -m pip install --upgrade pip
+   pip install -r requirements.txt
+   pip install -e .
+
+2) Optional Rust core:
+   Install Rust with rustup, restart terminal, then:
+   build_rust_windows.bat
+
+3) Put your own data in:
+   data\train\   (training)
+   data\test\    (held-out benchmark only)
+
+4) Memory-bounded deep model training:
+   python -m xai_compress train data\train checkpoints\gru_v3.pt --epochs 10 --context-length 256 --batch-size 32 --stride 256 --max-samples 200000 --max-bytes-per-file 16777216 --embedding-dim 128 --hidden-dim 256 --num-layers 2 --dropout 0.1
+
+5) Neural lossless compression:
+   python -m xai_compress compress input.bin output.xaic --mode neural --checkpoint checkpoints\gru_v3.pt
+   python -m xai_compress decompress output.xaic restored.bin --checkpoint checkpoints\gru_v3.pt
+
+6) Static mode without training:
+   python -m xai_compress compress input.bin output.xaic --mode static
+   python -m xai_compress decompress output.xaic restored.bin
+
+Notes:
+- Archives and already-compressed formats are excluded from training by default.
+- The Rust core is optional. Python buffered I/O is the fallback.
+- Data is intentionally not bundled. Use your local corpus.

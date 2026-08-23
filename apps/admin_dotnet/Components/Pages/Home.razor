@@ -1,0 +1,79 @@
+@page "/"
+@inject PlatformApiClient Api
+
+<PageTitle>Dashboard</PageTitle>
+
+<div class="page-heading">
+    <div><h1>Security dashboard</h1><p>Operational overview of the XAI-Compress platform.</p></div>
+    <button class="button" @onclick="LoadAsync">Refresh</button>
+</div>
+
+@if (_stats is null)
+{
+    <div class="loading">Loading dashboard...</div>
+}
+else
+{
+    <div class="stat-grid">
+        <MetricCard Label="Active users" Value="@_stats.ActiveUsers.ToString()" Detail="Registered and enabled" Tone="blue" />
+        <MetricCard Label="Jobs today" Value="@_stats.JobsToday.ToString()" Detail="Static, neural and cloud" Tone="purple" />
+        <MetricCard Label="Data saved" Value="@FormatBytes(_stats.BytesSaved)" Detail="Cumulative sample metric" Tone="green" />
+        <MetricCard Label="Open incidents" Value="@_stats.OpenIncidents.ToString()" Detail="Requires security review" Tone="red" />
+        <MetricCard Label="Quarantined" Value="@_stats.QuarantinedFiles.ToString()" Detail="Files isolated from users" Tone="orange" />
+        <MetricCard Label="Lossless success" Value="@($"{_stats.LosslessSuccessRate:F1}%")" Detail="Verified reconstruction" Tone="teal" />
+    </div>
+
+    <div class="two-column">
+        <section class="panel">
+            <div class="panel-header"><h2>Recent compression jobs</h2><a href="/jobs">View all</a></div>
+            <table>
+                <thead><tr><th>File</th><th>Mode</th><th>Status</th><th>Saving</th></tr></thead>
+                <tbody>
+                    @foreach (var job in _jobs.Take(4))
+                    {
+                        <tr>
+                            <td><strong>@job.FileName</strong><small>@job.UserEmail</small></td>
+                            <td>@job.Mode</td>
+                            <td><StatusBadge Value="@job.Status" /></td>
+                            <td>@FormatSaving(job)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </section>
+        <section class="panel">
+            <div class="panel-header"><h2>Security incidents</h2><a href="/incidents">Review</a></div>
+            <div class="incident-list">
+                @foreach (var incident in _incidents)
+                {
+                    <div class="incident-item">
+                        <span class="severity @incident.Severity.ToLowerInvariant()">@incident.Severity</span>
+                        <div><strong>@incident.Type</strong><p>@incident.Summary</p><small>@incident.CreatedAt.LocalDateTime</small></div>
+                    </div>
+                }
+            </div>
+        </section>
+    </div>
+}
+
+@code {
+    private DashboardStats? _stats;
+    private IReadOnlyList<CompressionJob> _jobs = [];
+    private IReadOnlyList<SecurityIncident> _incidents = [];
+
+    protected override Task OnInitializedAsync() => LoadAsync();
+    private async Task LoadAsync()
+    {
+        _stats = await Api.GetDashboardAsync();
+        _jobs = await Api.GetJobsAsync();
+        _incidents = await Api.GetIncidentsAsync();
+    }
+
+    private static string FormatBytes(long bytes) => bytes >= 1_073_741_824
+        ? $"{bytes / 1_073_741_824d:F1} GiB"
+        : $"{bytes / 1_048_576d:F1} MiB";
+
+    private static string FormatSaving(CompressionJob job) => job.CompressedSize <= 0
+        ? "In progress"
+        : $"{100 * (1 - (double)job.CompressedSize / job.OriginalSize):F1}%";
+}

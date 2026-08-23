@@ -1,0 +1,6 @@
+@page "/incidents"
+@inject PlatformApiClient Api
+<PageTitle>Security incidents</PageTitle>
+<div class="page-heading"><div><h1>Security incidents</h1><p>Review detections, suspicious behavior and policy violations.</p></div></div>
+<div class="card-list">@foreach(var item in _items){<article class="incident-card"><span class="severity @item.Severity.ToLowerInvariant()">@item.Severity</span><div><h2>@item.Type</h2><p>@item.Summary</p><div class="metadata"><span>@item.Id</span><span>@item.Resource</span><span>@item.Status</span><span>@item.CreatedAt.LocalDateTime</span></div></div></article>}</div>
+@code {private IReadOnlyList<SecurityIncident> _items=[];protected override async Task OnInitializedAsync()=>_items=await Api.GetIncidentsAsync();}

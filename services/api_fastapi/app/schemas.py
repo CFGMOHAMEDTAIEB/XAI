@@ -1,0 +1,27 @@
+from pydantic import BaseModel, EmailStr, Field
+
+class RegisterRequest(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=10)
+    display_name: str = ''
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+    totp_code: str|None = None
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = 'bearer'
+class FileCreate(BaseModel):
+    name: str
+    sha256: str = Field(pattern=r'^[0-9a-fA-F]{64}$')
+    original_size: int = Field(ge=0)
+    compressed_size: int = Field(ge=0)
+    codec: str
+class ShareCreate(BaseModel):
+    file_id: int
+    recipient_email: EmailStr
+    expires_minutes: int = Field(default=60, ge=5, le=10080)
+    max_downloads: int = Field(default=1, ge=1, le=100)
+    anonymous_sender: bool = False
+class ShareRedeem(BaseModel):
+    code: str = Field(min_length=8, max_length=32)

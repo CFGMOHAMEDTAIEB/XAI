@@ -1,0 +1,36 @@
+@inherits LayoutComponentBase
+
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-mark">XC</div>
+            <div>
+                <strong>XAI-Compress</strong>
+                <span>Security Console</span>
+            </div>
+        </div>
+        <NavMenu />
+        <div class="sidebar-footer">
+            <div class="environment-dot"></div>
+            <div>
+                <strong>Development</strong>
+                <small>Local platform</small>
+            </div>
+        </div>
+    </aside>
+    <main class="main-content">
+        <header class="topbar">
+            <div>
+                <strong>Administration</strong>
+                <span>Monitor users, security, files and compression jobs</span>
+            </div>
+            <div class="admin-profile">
+                <div class="avatar">AD</div>
+                <div><strong>Administrator</strong><small>Security role</small></div>
+            </div>
+        </header>
+        <section class="page-content">
+            @Body
+        </section>
+    </main>
+</div>

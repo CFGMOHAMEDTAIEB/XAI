@@ -1,0 +1,6 @@
+<span class="status-badge @Css">@Value</span>
+
+@code {
+    [Parameter] public string Value { get; set; } = "Unknown";
+    private string Css => Value.ToLowerInvariant().Replace(" ", "-");
+}

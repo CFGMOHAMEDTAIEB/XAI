@@ -1,0 +1,6 @@
+@page "/system"
+@inject PlatformApiClient Api
+<PageTitle>System health</PageTitle>
+<div class="page-heading"><div><h1>System health</h1><p>Live view of platform dependencies and security services.</p></div><button class="button" @onclick="Load">Refresh</button></div>
+<div class="health-grid">@foreach(var service in _services){<article class="health-card"><div><strong>@service.Name</strong><small>Version @service.Version</small></div><StatusBadge Value="@service.Status" /><dl><dt>Latency</dt><dd>@service.LatencyMs.ToString("F1") ms</dd><dt>Checked</dt><dd>@service.CheckedAt.LocalDateTime.ToLongTimeString()</dd></dl></article>}</div>
+@code {private IReadOnlyList<ServiceHealth> _services=[];protected override Task OnInitializedAsync()=>Load();private async Task Load()=>_services=await Api.GetHealthAsync();}

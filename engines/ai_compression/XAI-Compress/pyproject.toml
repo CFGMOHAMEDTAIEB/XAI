@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xai-compress"
+version = "0.1.0"
+description = "Causal neural lossless compression with arithmetic coding"
+requires-python = ">=3.10"
+dependencies = ["torch>=2.2", "numpy>=1.26"]
+
+[project.scripts]
+xai-compress = "xai_compress.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["xai_compress*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
