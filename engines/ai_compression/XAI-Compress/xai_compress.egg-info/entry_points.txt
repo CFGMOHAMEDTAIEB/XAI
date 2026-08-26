@@ -1,0 +1,2 @@
+[console_scripts]
+xai-compress = xai_compress.cli:main
