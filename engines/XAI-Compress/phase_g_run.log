@@ -1,0 +1,95 @@
+{
+  "selected_files": [
+    "data\\test\\archive\\config.json"
+  ],
+  "summary": [
+    {
+      "codec": "brotli",
+      "files": 1,
+      "original_bytes": 788,
+      "compressed_bytes": 372,
+      "ratio": 0.4720812182741117,
+      "saving_percent": 52.79187817258884,
+      "compression_seconds": 0.009886600018944591,
+      "decompression_seconds": 0.00013990001752972603,
+      "sha256_all_match": true
+    },
+    {
+      "codec": "bz2",
+      "files": 1,
+      "original_bytes": 788,
+      "compressed_bytes": 471,
+      "ratio": 0.5977157360406091,
+      "saving_percent": 40.22842639593909,
+      "compression_seconds": 0.0008554999949410558,
+      "decompression_seconds": 0.0002629999944474548,
+      "sha256_all_match": true
+    },
+    {
+      "codec": "gzip",
+      "files": 1,
+      "original_bytes": 788,
+      "compressed_bytes": 432,
+      "ratio": 0.5482233502538071,
+      "saving_percent": 45.17766497461929,
+      "compression_seconds": 0.000311999989207834,
+      "decompression_seconds": 0.00019169997540302575,
+      "sha256_all_match": true
+    },
+    {
+      "codec": "lzma",
+      "files": 1,
+      "original_bytes": 788,
+      "compressed_bytes": 512,
+      "ratio": 0.649746192893401,
+      "saving_percent": 35.0253807106599,
+      "compression_seconds": 0.017938200006028637,
+      "decompression_seconds": 0.00034350002533756196,
+      "sha256_all_match": true
+    },
+    {
+      "codec": "neural_V1",
+      "files": 1,
+      "original_bytes": 788,
+      "compressed_bytes": 915,
+      "ratio": 1.1611675126903553,
+      "saving_percent": -16.116751269035532,
+      "compression_seconds": 2.262083999987226,
+      "decompression_seconds": 2.205955899989931,
+      "sha256_all_match": true
+    },
+    {
+      "codec": "neural_V2",
+      "files": 1,
+      "original_bytes": 788,
+      "compressed_bytes": 1256,
+      "ratio": 1.5939086294416243,
+      "saving_percent": -59.39086294416243,
+      "compression_seconds": 2.233505799988052,
+      "decompression_seconds": 2.3001699000014924,
+      "sha256_all_match": true
+    },
+    {
+      "codec": "static_xai",
+      "files": 1,
+      "original_bytes": 788,
+      "compressed_bytes": 880,
+      "ratio": 1.116751269035533,
+      "saving_percent": -11.675126903553302,
+      "compression_seconds": 0.26998850001837127,
+      "decompression_seconds": 0.2735421000106726,
+      "sha256_all_match": true
+    },
+    {
+      "codec": "zstd",
+      "files": 1,
+      "original_bytes": 788,
+      "compressed_bytes": 453,
+      "ratio": 0.5748730964467005,
+      "saving_percent": 42.51269035532995,
+      "compression_seconds": 0.00018160001491196454,
+      "decompression_seconds": 0.00010219999239780009,
+      "sha256_all_match": true
+    }
+  ]
+}

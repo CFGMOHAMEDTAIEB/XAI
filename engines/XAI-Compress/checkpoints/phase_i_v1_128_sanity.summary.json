@@ -1,0 +1,38 @@
+{
+  "checkpoint": "checkpoints\\phase_i_v1_128_sanity.pt",
+  "parameter_count": 123968,
+  "best_validation_cross_entropy": 5.540076499938965,
+  "best_validation_bpb": 7.99264089260743,
+  "epochs_completed": 5,
+  "train_files": 6367,
+  "validation_files": 707,
+  "train_dataset": {
+    "files_discovered": 6367,
+    "files_used": 6367,
+    "samples": 18000,
+    "bytes_considered": 16040094687,
+    "context_length": 128,
+    "stride": 128,
+    "max_bytes_per_file": 16777216,
+    "archives_included": false
+  },
+  "validation_dataset": {
+    "files_discovered": 707,
+    "files_used": 707,
+    "samples": 2000,
+    "bytes_considered": 1789820264,
+    "context_length": 128,
+    "stride": 128,
+    "max_bytes_per_file": 16777216,
+    "archives_included": false
+  },
+  "model_config": {
+    "embedding_dim": 64,
+    "hidden_dim": 128,
+    "num_layers": 1,
+    "context_length": 128,
+    "dropout": 0.0,
+    "architecture_id": "causal-byte-gru-v1"
+  },
+  "seed": 42
+}

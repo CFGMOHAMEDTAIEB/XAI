@@ -1,0 +1,38 @@
+{
+  "checkpoint": "checkpoints\\gru_v2_hq.pt",
+  "parameter_count": 789888,
+  "best_validation_cross_entropy": 5.533842430114746,
+  "best_validation_bpb": 7.983647030987475,
+  "epochs_completed": 2,
+  "train_files": 6367,
+  "validation_files": 707,
+  "train_dataset": {
+    "files_discovered": 6367,
+    "files_used": 6367,
+    "samples": 1800,
+    "bytes_considered": 16040094687,
+    "context_length": 256,
+    "stride": 256,
+    "max_bytes_per_file": 16777216,
+    "archives_included": false
+  },
+  "validation_dataset": {
+    "files_discovered": 707,
+    "files_used": 707,
+    "samples": 200,
+    "bytes_considered": 1789820264,
+    "context_length": 256,
+    "stride": 256,
+    "max_bytes_per_file": 16777216,
+    "archives_included": false
+  },
+  "model_config": {
+    "embedding_dim": 128,
+    "hidden_dim": 256,
+    "num_layers": 2,
+    "context_length": 256,
+    "dropout": 0.1,
+    "architecture_id": "causal-byte-gru-v1"
+  },
+  "seed": 42
+}

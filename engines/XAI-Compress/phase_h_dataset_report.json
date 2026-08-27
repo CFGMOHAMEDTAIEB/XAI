@@ -1,0 +1,448 @@
+{
+  "root": "data\\train",
+  "number_of_files": 7089,
+  "total_bytes": 35573516261,
+  "file_extensions": [
+    ".0",
+    ".1",
+    ".2",
+    ".3",
+    ".4",
+    ".bin",
+    ".csv",
+    ".json",
+    ".log",
+    ".model",
+    ".mp4",
+    ".pt",
+    ".pth",
+    ".safetensors",
+    ".txt",
+    ".wandb"
+  ],
+  "files_per_extension": {
+    ".0": 1,
+    ".1": 1,
+    ".2": 1,
+    ".3": 1,
+    ".4": 1,
+    ".bin": 6,
+    ".csv": 10,
+    ".json": 36,
+    ".log": 3,
+    ".model": 6,
+    ".mp4": 7000,
+    ".pt": 10,
+    ".pth": 5,
+    ".safetensors": 6,
+    ".txt": 1,
+    ".wandb": 1
+  },
+  "bytes_per_extension": {
+    ".0": 7456,
+    ".1": 10506,
+    ".2": 6014,
+    ".3": 8158,
+    ".4": 7446,
+    ".bin": 32208,
+    ".csv": 1263521,
+    ".json": 38538528,
+    ".log": 86722,
+    ".model": 6613242,
+    ".mp4": 17918543152,
+    ".pt": 11005312170,
+    ".pth": 71220,
+    ".safetensors": 6602673264,
+    ".txt": 14974,
+    ".wandb": 327680
+  },
+  "extension_statistics": {
+    ".0": {
+      "files": 1,
+      "bytes": 7456,
+      "percentage_of_corpus": 2.095941246093283e-05
+    },
+    ".1": {
+      "files": 1,
+      "bytes": 10506,
+      "percentage_of_corpus": 2.9533206453133086e-05
+    },
+    ".2": {
+      "files": 1,
+      "bytes": 6014,
+      "percentage_of_corpus": 1.6905835104620443e-05
+    },
+    ".3": {
+      "files": 1,
+      "bytes": 8158,
+      "percentage_of_corpus": 2.293279061913761e-05
+    },
+    ".4": {
+      "files": 1,
+      "bytes": 7446,
+      "percentage_of_corpus": 2.0931301660958403e-05
+    },
+    ".bin": {
+      "files": 6,
+      "bytes": 32208,
+      "percentage_of_corpus": 9.053926455763473e-05
+    },
+    ".csv": {
+      "files": 10,
+      "bytes": 1263521,
+      "percentage_of_corpus": 0.0035518586094488076
+    },
+    ".json": {
+      "files": 36,
+      "bytes": 38538528,
+      "percentage_of_corpus": 0.10833488519168571
+    },
+    ".log": {
+      "files": 3,
+      "bytes": 86722,
+      "percentage_of_corpus": 0.0002437824795382265
+    },
+    ".model": {
+      "files": 6,
+      "bytes": 6613242,
+      "percentage_of_corpus": 0.018590352304448006
+    },
+    ".mp4": {
+      "files": 7000,
+      "bytes": 17918543152,
+      "percentage_of_corpus": 50.370458237901204
+    },
+    ".pt": {
+      "files": 10,
+      "bytes": 11005312170,
+      "percentage_of_corpus": 30.9368129066998
+    },
+    ".pth": {
+      "files": 5,
+      "bytes": 71220,
+      "percentage_of_corpus": 0.00020020511741786963
+    },
+    ".safetensors": {
+      "files": 6,
+      "bytes": 6602673264,
+      "percentage_of_corpus": 18.560642742080155
+    },
+    ".txt": {
+      "files": 1,
+      "bytes": 14974,
+      "percentage_of_corpus": 4.2093111881707104e-05
+    },
+    ".wandb": {
+      "files": 1,
+      "bytes": 327680,
+      "percentage_of_corpus": 0.0009211346935620265
+    }
+  },
+  "category_statistics": {
+    "already_compressed_or_media": {
+      "files": 7000,
+      "bytes": 17918543152,
+      "percentage_of_corpus": 50.370458237901204
+    },
+    "binary_model": {
+      "files": 33,
+      "bytes": 17614702104,
+      "percentage_of_corpus": 49.516336745466376
+    },
+    "other": {
+      "files": 6,
+      "bytes": 367260,
+      "percentage_of_corpus": 0.0010323972398608087
+    },
+    "source_text_configuration": {
+      "files": 50,
+      "bytes": 39903745,
+      "percentage_of_corpus": 0.11217261939255446
+    }
+  },
+  "average_file_size": 5018128.9689660035,
+  "median_file_size": 1543172,
+  "min_file_size": 112,
+  "max_file_size": 2201061370,
+  "largest_files": [
+    {
+      "file": "data\\train\\archive\\results\\checkpoint-1000\\optimizer.pt",
+      "extension": ".pt",
+      "bytes": 2201061370,
+      "category": "binary_model"
+    },
+    {
+      "file": "data\\train\\archive\\results\\checkpoint-1290\\optimizer.pt",
+      "extension": ".pt",
+      "bytes": 2201061370,
+      "category": "binary_model"
+    },
+    {
+      "file": "data\\train\\archive\\results\\checkpoint-140\\optimizer.pt",
+      "extension": ".pt",
+      "bytes": 2201061370,
+      "category": "binary_model"
+    },
+    {
+      "file": "data\\train\\archive\\results\\checkpoint-2000\\optimizer.pt",
+      "extension": ".pt",
+      "bytes": 2201061370,
+      "category": "binary_model"
+    },
+    {
+      "file": "data\\train\\archive\\results\\checkpoint-2709\\optimizer.pt",
+      "extension": ".pt",
+      "bytes": 2201061370,
+      "category": "binary_model"
+    },
+    {
+      "file": "data\\train\\archive\\model.safetensors",
+      "extension": ".safetensors",
+      "bytes": 1100445544,
+      "category": "binary_model"
+    },
+    {
+      "file": "data\\train\\archive\\results\\checkpoint-1000\\model.safetensors",
+      "extension": ".safetensors",
+      "bytes": 1100445544,
+      "category": "binary_model"
+    },
+    {
+      "file": "data\\train\\archive\\results\\checkpoint-1290\\model.safetensors",
+      "extension": ".safetensors",
+      "bytes": 1100445544,
+      "category": "binary_model"
+    },
+    {
+      "file": "data\\train\\archive\\results\\checkpoint-140\\model.safetensors",
+      "extension": ".safetensors",
+      "bytes": 1100445544,
+      "category": "binary_model"
+    },
+    {
+      "file": "data\\train\\archive\\results\\checkpoint-2000\\model.safetensors",
+      "extension": ".safetensors",
+      "bytes": 1100445544,
+      "category": "binary_model"
+    },
+    {
+      "file": "data\\train\\archive\\results\\checkpoint-2709\\model.safetensors",
+      "extension": ".safetensors",
+      "bytes": 1100445544,
+      "category": "binary_model"
+    },
+    {
+      "file": "data\\train\\archive (1)\\FaceForensics++_C23\\DeepFakeDetection\\02_15__walking_and_outside_surprised__HTG660F8.mp4",
+      "extension": ".mp4",
+      "bytes": 26943143,
+      "category": "already_compressed_or_media"
+    },
+    {
+      "file": "data\\train\\archive (1)\\FaceForensics++_C23\\DeepFakeDetection\\27_01__walking_and_outside_surprised__S2YCUY48.mp4",
+      "extension": ".mp4",
+      "bytes": 26903752,
+      "category": "already_compressed_or_media"
+    },
+    {
+      "file": "data\\train\\archive (1)\\FaceForensics++_C23\\DeepFakeDetection\\27_03__walking_and_outside_surprised__KWGI1LSZ.mp4",
+      "extension": ".mp4",
+      "bytes": 26869471,
+      "category": "already_compressed_or_media"
+    },
+    {
+      "file": "data\\train\\archive (1)\\FaceForensics++_C23\\DeepFakeDetection\\02_07__walking_and_outside_surprised__1VMZUH1W.mp4",
+      "extension": ".mp4",
+      "bytes": 26712461,
+      "category": "already_compressed_or_media"
+    },
+    {
+      "file": "data\\train\\archive (1)\\FaceForensics++_C23\\DeepFakeDetection\\02_15__walking_and_outside_surprised__I8G2LWD1.mp4",
+      "extension": ".mp4",
+      "bytes": 26689020,
+      "category": "already_compressed_or_media"
+    },
+    {
+      "file": "data\\train\\archive (1)\\FaceForensics++_C23\\DeepFakeDetection\\03_27__walking_and_outside_surprised__KWGI1LSZ.mp4",
+      "extension": ".mp4",
+      "bytes": 26303104,
+      "category": "already_compressed_or_media"
+    },
+    {
+      "file": "data\\train\\archive (1)\\FaceForensics++_C23\\DeepFakeDetection\\03_01__walking_and_outside_surprised__JZUXXFRB.mp4",
+      "extension": ".mp4",
+      "bytes": 25829532,
+      "category": "already_compressed_or_media"
+    },
+    {
+      "file": "data\\train\\archive (1)\\FaceForensics++_C23\\DeepFakeDetection\\02_12__walking_and_outside_surprised__9D2ZHEKW.mp4",
+      "extension": ".mp4",
+      "bytes": 25325557,
+      "category": "already_compressed_or_media"
+    },
+    {
+      "file": "data\\train\\archive (1)\\FaceForensics++_C23\\DeepFakeDetection\\03_27__walking_down_indoor_hall_disgust__IL675GCI.mp4",
+      "extension": ".mp4",
+      "bytes": 25158522,
+      "category": "already_compressed_or_media"
+    }
+  ],
+  "smallest_files": [
+    {
+      "file": "data\\train\\archive\\generation_config.json",
+      "extension": ".json",
+      "bytes": 112,
+      "category": "source_text_configuration"
+    },
+    {
+      "file": "data\\train\\archive\\results\\checkpoint-1000\\generation_config.json",
+      "extension": ".json",
+      "bytes": 112,
+      "category": "source_text_configuration"
+    },
+    {
+      "file": "data\\train\\archive\\results\\checkpoint-1290\\generation_config.json",
+      "extension": ".json",
+      "bytes": 112,
+      "category": "source_text_configuration"
+    },
+    {
+      "file": "data\\train\\archive\\results\\checkpoint-140\\generation_config.json",
+      "extension": ".json",
+      "bytes": 112,
+      "category": "source_text_configuration"
+    },
+    {
+      "file": "data\\train\\archive\\results\\checkpoint-2000\\generation_config.json",
+      "extension": ".json",
+      "bytes": 112,
+      "category": "source_text_configuration"
+    },
+    {
+      "file": "data\\train\\archive\\results\\checkpoint-2709\\generation_config.json",
+      "extension": ".json",
+      "bytes": 112,
+      "category": "source_text_configuration"
+    },
+    {
+      "file": "data\\train\\archive (1)\\FaceForensics++_C23\\csv\\Mean_Data.csv",
+      "extension": ".csv",
+      "bytes": 392,
+      "category": "source_text_configuration"
+    },
+    {
+      "file": "data\\train\\archive\\wandb\\run-20241217_020210-f69emzpa\\files\\wandb-metadata.json",
+      "extension": ".json",
+      "bytes": 786,
+      "category": "source_text_configuration"
+    },
+    {
+      "file": "data\\train\\archive\\config.json",
+      "extension": ".json",
+      "bytes": 788,
+      "category": "source_text_configuration"
+    },
+    {
+      "file": "data\\train\\archive\\results\\checkpoint-1000\\config.json",
+      "extension": ".json",
+      "bytes": 788,
+      "category": "source_text_configuration"
+    },
+    {
+      "file": "data\\train\\archive\\results\\checkpoint-1290\\config.json",
+      "extension": ".json",
+      "bytes": 788,
+      "category": "source_text_configuration"
+    },
+    {
+      "file": "data\\train\\archive\\results\\checkpoint-140\\config.json",
+      "extension": ".json",
+      "bytes": 788,
+      "category": "source_text_configuration"
+    },
+    {
+      "file": "data\\train\\archive\\results\\checkpoint-2000\\config.json",
+      "extension": ".json",
+      "bytes": 788,
+      "category": "source_text_configuration"
+    },
+    {
+      "file": "data\\train\\archive\\results\\checkpoint-2709\\config.json",
+      "extension": ".json",
+      "bytes": 788,
+      "category": "source_text_configuration"
+    },
+    {
+      "file": "data\\train\\archive\\results\\checkpoint-1000\\scheduler.pt",
+      "extension": ".pt",
+      "bytes": 1064,
+      "category": "binary_model"
+    },
+    {
+      "file": "data\\train\\archive\\results\\checkpoint-1290\\scheduler.pt",
+      "extension": ".pt",
+      "bytes": 1064,
+      "category": "binary_model"
+    },
+    {
+      "file": "data\\train\\archive\\results\\checkpoint-140\\scheduler.pt",
+      "extension": ".pt",
+      "bytes": 1064,
+      "category": "binary_model"
+    },
+    {
+      "file": "data\\train\\archive\\results\\checkpoint-2000\\scheduler.pt",
+      "extension": ".pt",
+      "bytes": 1064,
+      "category": "binary_model"
+    },
+    {
+      "file": "data\\train\\archive\\results\\checkpoint-2709\\scheduler.pt",
+      "extension": ".pt",
+      "bytes": 1064,
+      "category": "binary_model"
+    },
+    {
+      "file": "data\\train\\archive\\results\\checkpoint-1000\\trainer_state.json",
+      "extension": ".json",
+      "bytes": 1384,
+      "category": "source_text_configuration"
+    }
+  ],
+  "domain_focused_extensions": [
+    "",
+    ".bat",
+    ".c",
+    ".cfg",
+    ".conf",
+    ".cpp",
+    ".cs",
+    ".css",
+    ".csv",
+    ".go",
+    ".h",
+    ".hpp",
+    ".html",
+    ".ini",
+    ".java",
+    ".js",
+    ".json",
+    ".jsx",
+    ".log",
+    ".md",
+    ".ps1",
+    ".py",
+    ".rs",
+    ".rst",
+    ".scss",
+    ".sh",
+    ".sql",
+    ".toml",
+    ".ts",
+    ".tsx",
+    ".txt",
+    ".xml",
+    ".yaml",
+    ".yml"
+  ],
+  "resembles_real_source_compression_benchmark": false
+}

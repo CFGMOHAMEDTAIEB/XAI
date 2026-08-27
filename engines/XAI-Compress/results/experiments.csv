@@ -1,0 +1,1 @@
+experiment_id,timestamp_utc,status,model,model_version,dataset,dataset_version,parameters,epochs,batch_size,context_length,learning_rate,loss,bpb,compression_ratio,compression_mbs,decompression_mbs,peak_vram_bytes,peak_ram_bytes,configuration_json,notes

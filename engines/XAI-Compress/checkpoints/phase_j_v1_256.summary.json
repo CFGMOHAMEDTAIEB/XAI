@@ -1,0 +1,38 @@
+{
+  "checkpoint": "checkpoints\\phase_j_v1_256.pt",
+  "parameter_count": 123968,
+  "best_validation_cross_entropy": 0.6017099299430847,
+  "best_validation_bpb": 0.8680839319825339,
+  "epochs_completed": 30,
+  "train_files": 45,
+  "validation_files": 5,
+  "train_dataset": {
+    "files_discovered": 45,
+    "files_used": 45,
+    "samples": 18000,
+    "bytes_considered": 27081430,
+    "context_length": 128,
+    "stride": 256,
+    "max_bytes_per_file": 16777216,
+    "archives_included": false
+  },
+  "validation_dataset": {
+    "files_discovered": 5,
+    "files_used": 5,
+    "samples": 2000,
+    "bytes_considered": 12822315,
+    "context_length": 128,
+    "stride": 256,
+    "max_bytes_per_file": 16777216,
+    "archives_included": false
+  },
+  "model_config": {
+    "embedding_dim": 64,
+    "hidden_dim": 128,
+    "num_layers": 1,
+    "context_length": 128,
+    "dropout": 0.0,
+    "architecture_id": "causal-byte-gru-v1"
+  },
+  "seed": 42
+}
