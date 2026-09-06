@@ -1,0 +1,16 @@
+{
+  "candidate_id": "protected_gru",
+  "path": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\checkpoints\\kaggle\\best.pt",
+  "size": 20423284,
+  "sha256": "083cda706612c3fd9ce62699741932b07e83fdf98eb6c5430d51bd29e1820429",
+  "validated": true,
+  "application_default_changed": false,
+  "baseline_integrity": {
+    "expected_sha256": "083cda706612c3fd9ce62699741932b07e83fdf98eb6c5430d51bd29e1820429",
+    "measured_sha256": "083cda706612c3fd9ce62699741932b07e83fdf98eb6c5430d51bd29e1820429",
+    "expected_sha256_valid_format": true,
+    "match": true,
+    "verification_status": "VERIFIED",
+    "verified_at": "2026-08-31T21:56:34.306877+00:00"
+  }
+}

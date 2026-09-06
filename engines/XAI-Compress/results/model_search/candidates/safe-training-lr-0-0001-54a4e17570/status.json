@@ -1,0 +1,49 @@
+{
+  "candidate_id": "safe-training-lr-0-0001-54a4e17570",
+  "candidate_key": "safe_training_lr_0_0001",
+  "fingerprint": "54a4e1757083b507ddfc658773a62335f0e66357569bd463d98e3e4336b27101",
+  "parent": "residual_scale_conservative",
+  "change": {
+    "lr": 0.0001
+  },
+  "change_label": "Safe training LR 0.0001 with residual scale 0.25",
+  "activation_rule": "final_safe_training_fallback",
+  "resolved_config": {
+    "architecture": "causal-byte-transformer-v2",
+    "lr": 0.0001,
+    "context_length": 256,
+    "embedding_dim": 192,
+    "hidden_dim": 192,
+    "num_layers": 4,
+    "n_heads": 6,
+    "ff_dim": 768,
+    "dropout": 0.1,
+    "batch_size": 16,
+    "gradient_clip": 1.0,
+    "amp": true,
+    "amp_initial_scale": 1024,
+    "amp_growth_interval": 10000,
+    "stride": 128,
+    "max_bytes_per_file": 33554432,
+    "residual_scale": 0.25
+  },
+  "status": "MULTI_EPOCH_RUNNING",
+  "phase": 2,
+  "created_at": "2026-08-31T22:00:34.810273+00:00",
+  "updated_at": "2026-08-31T22:07:09.715604+00:00",
+  "checkpoint_dir": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\checkpoints\\model_search\\safe-training-lr-0-0001-54a4e17570",
+  "candidate_dir": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\model_search\\candidates\\safe-training-lr-0-0001-54a4e17570",
+  "source_hashes": {
+    "xai_compress/models/transformer_v2.py": "c62ce7f35919de33f80546f0646f7ebfeb4bd8e00a31623ae7ed53b5e4ad1368",
+    "xai_compress/train.py": "fc08272318105e495bdf2c7c7ddadf8c3689dabf1aad57c809492c39b8d52e43",
+    "xai_compress/checkpoint.py": "937ded4da47d478aead69ba6fdc077fdb52f85fecb7ef9327fd060e1508a66af",
+    "xai_compress/compression.py": "c4565d3d8b2dd98b923894cb9f3d13aec97bdb1928f57a219b9db6abb4bfa934",
+    "scripts/run_v2_multi_epoch_gate.py": "5f830da97c4b4e20b580b8d1ac4688081782c04e618b666b00569575af0e5caa"
+  },
+  "metrics": {},
+  "decision": "REJECT",
+  "infrastructure_retries": 0,
+  "kernel_code_sha256": "773f9b45a13f8f6006d5df424271804c2c4bd2c2f3a35a72e38b484372cafbe8",
+  "kaggle_kernel": "mohameddtaieb/xai-compress-auto-safe-training-lr-0-00-54a4e17570",
+  "kaggle_version": 1
+}

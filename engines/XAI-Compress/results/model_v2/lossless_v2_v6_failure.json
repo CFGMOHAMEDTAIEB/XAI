@@ -1,0 +1,38 @@
+{
+  "evidence_source": "user-confirmed Kaggle Version 6 output",
+  "status": "FAILED",
+  "classification": "MULTI_EPOCH_ACTIVATION_GRADIENT_GROWTH",
+  "learning_rate": 0.0005,
+  "architecture": "causal-byte-transformer-v2",
+  "failure": {
+    "epoch": 4,
+    "step": 24024,
+    "first_non_finite_stage": "gradient:output.weight",
+    "failed_optimizer_step_executed": false
+  },
+  "completed_epochs": [
+    {
+      "epoch": 1,
+      "train_cross_entropy": 5.5278756579,
+      "validation_cross_entropy": 5.5254685097,
+      "validation_bpb": 7.9715660175,
+      "layer_activation_maxima": [230.15, 260.57, 394.04, 2371.74]
+    },
+    {
+      "epoch": 2,
+      "train_cross_entropy": 5.5246731141,
+      "validation_cross_entropy": 5.5245542484,
+      "validation_bpb": 7.9702470172,
+      "layer_activation_maxima": [324.27, 337.50, 541.03, 3596.60]
+    },
+    {
+      "epoch": 3,
+      "train_cross_entropy": 5.5239208685,
+      "validation_cross_entropy": 5.5239324425,
+      "validation_bpb": 7.9693499410,
+      "layer_activation_maxima": [303.62, 321.34, 462.88, 6558.25]
+    }
+  ],
+  "production_candidate": "REJECTED",
+  "next_gate": "five complete epochs at LR 0.0003"
+}

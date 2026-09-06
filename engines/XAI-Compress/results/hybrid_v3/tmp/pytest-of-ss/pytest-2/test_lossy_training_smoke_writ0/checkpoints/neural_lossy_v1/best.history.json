@@ -1,0 +1,13 @@
+[
+  {
+    "epoch": 1,
+    "train_objective": 0.058221740648150444,
+    "val_objective": 0.04855551943182945,
+    "val_rate_proxy": 0.04785431548953056,
+    "val_mse": 0.07012053579092026,
+    "learning_rate": 0.001,
+    "elapsed_seconds": 0.3216911999916192,
+    "quality": "medium",
+    "lambda": 0.01
+  }
+]

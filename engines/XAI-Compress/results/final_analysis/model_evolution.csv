@@ -1,0 +1,9 @@
+Experiment,Architecture,Parameters,Context,Dataset,Samples,Epochs,Best validation loss,Best BPB,Checkpoint size,Compression ratio,Compression speed,Decompression speed,Peak RSS,Round-trip status
+gru_hq_v1.pt,causal-byte-gru-v1,789888,256,N/A,N/A,1,4.8710025199890135,7.027371179745794,9492611,N/A,N/A,N/A,N/A,N/A
+gru_smoke.pt,causal-byte-gru-v1,123968,128,N/A,N/A,1,4.585439128875732,6.615390291527228,1497171,N/A,N/A,N/A,N/A,N/A
+gru_v2_hq.pt,causal-byte-gru-v1,789888,256,N/A,N/A,2,5.533842430114746,7.983647030987475,9492803,N/A,N/A,N/A,N/A,N/A
+phase_i_v1_128_domain.pt,causal-byte-gru-v1,123968,128,N/A,N/A,15,0.5950721592903138,0.858507653179223,1497771,N/A,N/A,N/A,N/A,N/A
+phase_i_v1_128_sanity.pt,causal-byte-gru-v1,123968,128,N/A,N/A,5,5.540076499938965,7.99264089260743,1497771,N/A,N/A,N/A,N/A,N/A
+phase_j_v1_128.pt,causal-byte-gru-v1,123968,128,N/A,N/A,30,0.5611447291374206,0.8095607179475374,1497533,N/A,N/A,N/A,N/A,N/A
+phase_j_v1_256.pt,causal-byte-gru-v1,123968,128,N/A,N/A,30,0.6017099299430847,0.8680839319825339,1497533,N/A,N/A,N/A,N/A,N/A
+phase_j_v1_512.pt,causal-byte-gru-v1,123968,128,N/A,N/A,5,0.7068273115158081,1.019736257088735,1497533,N/A,N/A,N/A,N/A,N/A

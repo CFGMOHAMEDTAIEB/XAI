@@ -1,0 +1,8 @@
+{
+  "kernel": "owner/lr-0-0003-427431d37c",
+  "source_hashes": {
+    "xai_compress/train.py": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "stage": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_autonomous_controller_res0\\project\\fake-stage\\lr-0-0003-427431d37c",
+  "created_at": "2026-09-02T10:46:42.562790+00:00"
+}

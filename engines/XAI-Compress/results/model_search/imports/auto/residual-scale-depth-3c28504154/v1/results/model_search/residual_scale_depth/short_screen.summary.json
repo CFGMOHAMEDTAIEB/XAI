@@ -1,0 +1,42 @@
+{
+  "checkpoint": "/kaggle/working/results/model_search/residual_scale_depth/short_screen.pt",
+  "parameter_count": 2468160,
+  "best_validation_cross_entropy": 5.529381551209986,
+  "best_validation_bpb": 7.977211343113571,
+  "epochs_completed": 1,
+  "train_files": 6471,
+  "validation_files": 719,
+  "train_dataset": {
+    "files_discovered": 6471,
+    "files_used": 6471,
+    "samples": 29491,
+    "bytes_considered": 16162047310,
+    "context_length": 256,
+    "stride": 128,
+    "max_bytes_per_file": 33554432,
+    "archives_included": false
+  },
+  "validation_dataset": {
+    "files_discovered": 719,
+    "files_used": 719,
+    "samples": 3277,
+    "bytes_considered": 1759726738,
+    "context_length": 256,
+    "stride": 128,
+    "max_bytes_per_file": 33554432,
+    "archives_included": false
+  },
+  "model_config": {
+    "embedding_dim": 192,
+    "hidden_dim": 192,
+    "num_layers": 4,
+    "context_length": 256,
+    "dropout": 0.1,
+    "architecture_id": "causal-byte-transformer-v2",
+    "n_heads": 6,
+    "ff_dim": 768,
+    "residual_scale": 0.3535533905932738
+  },
+  "seed": 42,
+  "device": "cuda"
+}

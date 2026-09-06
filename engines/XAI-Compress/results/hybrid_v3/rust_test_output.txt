@@ -1,0 +1,41 @@
+
+running 2 tests
+test tests::byte_entropy_matches_uniform_alphabet ... ok
+test tests::uniform_quantization_is_valid_and_deterministic ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+warn: could not canonicalize path C:\Users\ss
+warning: use of deprecated constant `__pyfunction_quantize_probabilities_batch::SIGNATURE`: this function has implicit defaults for the trailing `Option<T>` arguments 
+         = note: these implicit defaults are being phased out 
+         = help: add `#[pyo3(signature = (probabilities, total=None))]` to this function to silence this warning and keep the current behavior
+   --> src\lib.rs:130:4
+    |
+130 | fn quantize_probabilities_batch(probabilities: PyReadonlyArray2<'_, f64>, total: Option<u32>) -> PyResult<Vec<Vec<u32>>> {
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated constant `__pyfunction_sha256_file::SIGNATURE`: this function has implicit defaults for the trailing `Option<T>` arguments 
+         = note: these implicit defaults are being phased out 
+         = help: add `#[pyo3(signature = (path, chunk_size=None))]` to this function to silence this warning and keep the current behavior
+   --> src\lib.rs:183:4
+    |
+183 | fn sha256_file(path: &str, chunk_size: Option<usize>) -> PyResult<String> {
+    |    ^^^^^^^^^^^
+
+warning: linker stdout: CrÃ©ation de la bibliothÃ¨que C:\Users\ss\Desktop\XAI\XAI\engines\XAI-Compress\rust-core\target\debug\deps\xai_compress_core.dll.lib et de l'objet C:\Users\ss\Desktop\XAI\XAI\engines\XAI-Compress\rust-core\target\debug\deps\xai_compress_core.dll.exp
+  |
+  = note: `#[warn(linker_messages)]` on by default
+
+warning: `xai_compress_core` (lib) generated 3 warnings
+warning: `xai_compress_core` (lib test) generated 2 warnings (2 duplicates)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.28s
+     Running unittests src\lib.rs (rust-core\target\debug\deps\xai_compress_core-fa61c414aa9f1a75.exe)
+   Doc-tests xai_compress_core

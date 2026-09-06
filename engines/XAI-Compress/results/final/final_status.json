@@ -1,0 +1,59 @@
+{
+  "LIMITATIONS": [
+    "The paired codec benchmark is a measured 4 KiB deterministic corpus, not a broad generalization benchmark.",
+    "Neural CPU timings include checkpoint loading and are single-invocation measurements.",
+    "Transformer XAIC-v3 streaming was measured to 2,048 bytes; larger Transformer streaming is NOT MEASURED.",
+    "Peak RSS is the process-level Windows peak and is not isolated per codec.",
+    "The lossy checkpoint was trained only on a deterministic validation corpus; MS-SSIM is NOT MEASURED."
+  ],
+  "LOSSLESS": {
+    "Best_XAI_lossless_model": "XAI static",
+    "Best_classical_codec": "Brotli-6",
+    "GRU_actual_BPB": 11.677734375,
+    "Transformer_5_epoch_gate": "PASS",
+    "Transformer_SHA_roundtrip": "PASS",
+    "Transformer_actual_BPB": 12.162109375,
+    "Transformer_checkpoint": "checkpoints\\neural_lossless_v2\\best.pt",
+    "Transformer_checkpoint_SHA": "584d8dfee979c6719a7602d00d81ef72443ee804878b13a1d651b5ea42129fb9",
+    "Transformer_deterministic_inference": "PASS",
+    "Transformer_improvement_relative_to_GRU_percent": -4.147850811172437,
+    "Transformer_status": "VALIDATED_EXPERIMENTAL",
+    "XAI_beats_classical_codec": "NO",
+    "benchmark_scope": "MEASURED deterministic paired 4 KiB corpus",
+    "overhead_decomposition": {
+      "corpus_original_bytes": 4096,
+      "identity_check_bpb": 12.162109375,
+      "model_entropy_bpb": 7.267445970517028,
+      "probability_quantization_contribution_bpb": -0.034925519650886194,
+      "rans_entropy_coder_overhead_bpb": 0.027245174133858185,
+      "status": "MEASURED",
+      "total_actual_bpb": 12.162109375,
+      "xaic_container_overhead_bpb": 4.90234375
+    },
+    "promotion_eligible_at_0_5_percent": false
+  },
+  "LOSSY": {
+    "Checkpoint": "checkpoints\\neural_lossy_v1\\validation.pt",
+    "Decode_validation": "PASS",
+    "MS_SSIM": "NOT MEASURED",
+    "PSNR": [
+      "10.759693124323535"
+    ],
+    "SSIM": [
+      "0.024958053968823574"
+    ],
+    "Status": "EXPERIMENTAL"
+  },
+  "PRODUCTION": {
+    "Recommended_lossless_model": "Protected GRU",
+    "Recommended_lossy_model": "validation.pt (EXPERIMENTAL)",
+    "protected_GRU_overwritten": false
+  },
+  "SYSTEM": {
+    "Protected_GRU_integrity": "PASS",
+    "Python_tests": "156 passed, 3 skipped in 24.84s",
+    "Rust_parity": "PASS",
+    "Rust_tests": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+    "Streaming": "PASS"
+  }
+}

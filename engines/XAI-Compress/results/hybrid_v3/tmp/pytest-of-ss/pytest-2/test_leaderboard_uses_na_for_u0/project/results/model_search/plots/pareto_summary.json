@@ -1,0 +1,10 @@
+{
+  "measured_candidates": 0,
+  "pareto_candidates": [],
+  "current_best_bpb": null,
+  "best_compression_speed": null,
+  "best_decompression_speed": null,
+  "best_peak_rss": null,
+  "best_vram": null,
+  "smallest_checkpoint": null
+}

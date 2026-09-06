@@ -1,0 +1,6 @@
+{
+  "status": "FAILED",
+  "exception_type": "FloatingPointError",
+  "exception": "FIRST NON-FINITE STAGE = gradient:blocks.2.attn.qkv.weight; epoch=1; step=10169",
+  "last_update_timestamp": "2026-08-28T21:18:05.552338+00:00"
+}

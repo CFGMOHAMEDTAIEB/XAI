@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "search_name": "test-search",
+  "config_path": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_candidate_a_telemetry_fai0\\project\\configs\\search.json",
+  "created_at": "2026-09-02T10:46:37.084397+00:00",
+  "updated_at": "2026-09-02T10:46:37.272646+00:00",
+  "status": "ACTIVE",
+  "protected_baseline": {
+    "path": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_candidate_a_telemetry_fai0\\project\\checkpoints\\kaggle\\best.pt",
+    "size": 13,
+    "sha256": "d2f07d3f09bf6662f8bdba6214efa8e83de36e78087eecbed6c26d8b3f61eba9"
+  },
+  "pending_candidates": [
+    "lr_0_0002"
+  ],
+  "running_candidate": null,
+  "completed_candidates": [
+    "lr-0-0003-427431d37c"
+  ],
+  "failed_candidates": [
+    "lr-0-0003-427431d37c"
+  ],
+  "validated_candidates": [],
+  "promoted_candidate": null,
+  "best_stable_candidate": null,
+  "candidates": {
+    "lr-0-0003-427431d37c": {
+      "candidate_id": "lr-0-0003-427431d37c",
+      "candidate_key": "lr_0_0003",
+      "fingerprint": "427431d37ced66a2f92edfcc27c49e471a3e204162ec25c602fc67ae604a0e00",
+      "parent": "base",
+      "change": {
+        "lr": 0.0003
+      },
+      "change_label": "LR 0.0003",
+      "activation_rule": "always",
+      "resolved_config": {
+        "architecture": "causal-byte-transformer-v2",
+        "lr": 0.0003,
+        "context_length": 256,
+        "embedding_dim": 12,
+        "hidden_dim": 12,
+        "num_layers": 1,
+        "n_heads": 3,
+        "ff_dim": 24,
+        "dropout": 0.0
+      },
+      "status": "INFRASTRUCTURE_FAILED_RETRY_ELIGIBLE",
+      "phase": 0,
+      "created_at": "2026-09-02T10:46:37.129847+00:00",
+      "updated_at": "2026-09-02T10:46:37.232245+00:00",
+      "checkpoint_dir": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_candidate_a_telemetry_fai0\\project\\checkpoints\\model_search\\lr-0-0003-427431d37c",
+      "candidate_dir": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_candidate_a_telemetry_fai0\\project\\results\\model_search\\candidates\\lr-0-0003-427431d37c",
+      "source_hashes": {},
+      "metrics": {},
+      "decision": "INCONCLUSIVE",
+      "infrastructure_retries": 0,
+      "failure_history": [],
+      "failure_classification": "TELEMETRY_INFRASTRUCTURE_ERROR",
+      "failure": {
+        "candidate_id": "lr-0-0003-427431d37c",
+        "candidate_key": "lr_0_0003",
+        "parent_candidate": "base",
+        "timestamp": "2026-09-02T10:46:37.156208+00:00",
+        "stage": "MULTI_EPOCH_STABILITY",
+        "classification": "CUDA_ERROR",
+        "exception": "Expected all tensors to be on the same device, cuda:0 and cpu",
+        "epoch": 1,
+        "step": 28125,
+        "tensor_name": null,
+        "dtype": null,
+        "shape": null,
+        "min": null,
+        "max": null,
+        "mean": null,
+        "std": null,
+        "activation_maxima": null,
+        "grad_scaler_scale": null,
+        "grad_norm": null,
+        "learning_rate": 0.0003,
+        "source_hashes": {},
+        "traceback": null,
+        "status": "MULTI_EPOCH_STABILITY_FAILED",
+        "evidence": {
+          "epoch": 1,
+          "step": 28125,
+          "last_known_stage": "VALIDATING"
+        },
+        "attempt": 1,
+        "evidence_path": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_candidate_a_telemetry_fai0\\project\\results\\model_search\\failures\\lr-0-0003-427431d37c.json"
+      },
+      "failure_class": "TELEMETRY_INFRASTRUCTURE_ERROR",
+      "scientific_status": "UNRESOLVED",
+      "retry_eligible": true,
+      "retry_count": 0,
+      "max_retries": 1,
+      "model_evidence_valid": false,
+      "infrastructure_evidence_valid": true,
+      "superseding_classification": {
+        "classification_id": "03fa46554e08c7d3118ac2d7401a540e3ac1f5ae1b3b23d2fcbb01013d6e807c",
+        "candidate_id": "lr-0-0003-427431d37c",
+        "timestamp": "2026-09-02T10:46:37.231860+00:00",
+        "status": "INFRASTRUCTURE_FAILED_RETRY_ELIGIBLE",
+        "failure_class": "TELEMETRY_INFRASTRUCTURE_ERROR",
+        "reason": "POST_VALIDATION_TELEMETRY_DEVICE_MISMATCH",
+        "retry_eligible": true,
+        "retry_count": 0,
+        "max_retries": 1,
+        "supersedes_failure_id": "4a3254d5348f2a2d6b117bef5b6b9c09daf685a39eba28ea64c4f51010af22d6",
+        "model_evidence_valid": false,
+        "infrastructure_evidence_valid": true,
+        "scientific_status": "UNRESOLVED",
+        "numerical_instability_established": false,
+        "original_failure_preserved_at": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_candidate_a_telemetry_fai0\\project\\results\\model_search\\failures\\lr-0-0003-427431d37c.json"
+      }
+    }
+  },
+  "seen_fingerprints": {
+    "427431d37ced66a2f92edfcc27c49e471a3e204162ec25c602fc67ae604a0e00": "lr-0-0003-427431d37c"
+  },
+  "budget": {
+    "max_candidates": 5,
+    "max_gpu_hours": 10,
+    "max_kaggle_submissions": 3,
+    "max_failures": 3,
+    "no_improvement_patience": 2,
+    "candidates_consumed": 1,
+    "gpu_hours_consumed": 0.0,
+    "kaggle_submissions_consumed": 0,
+    "failures_consumed": 1,
+    "eligible_without_improvement": 0,
+    "infrastructure_retries_consumed": 0,
+    "numerical_failures_consumed": 0
+  },
+  "infrastructure_retries": {},
+  "stop_reason": null,
+  "protected_baseline_integrity": {
+    "expected_sha256": "d2f07d3f09bf6662f8bdba6214efa8e83de36e78087eecbed6c26d8b3f61eba9",
+    "measured_sha256": "d2f07d3f09bf6662f8bdba6214efa8e83de36e78087eecbed6c26d8b3f61eba9",
+    "expected_sha256_valid_format": true,
+    "match": true,
+    "verification_status": "VERIFIED",
+    "verified_at": "2026-09-02T10:46:37.084583+00:00"
+  },
+  "promotion_blocked": false,
+  "promotion_block_reason": null,
+  "unresolved_candidates": [
+    "lr-0-0003-427431d37c"
+  ]
+}

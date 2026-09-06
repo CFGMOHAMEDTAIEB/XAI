@@ -1,0 +1,41 @@
+{
+  "checkpoint": "/kaggle/working/checkpoints/lossless_v2.pt",
+  "parameter_count": 2468160,
+  "best_validation_cross_entropy": Infinity,
+  "best_validation_bpb": Infinity,
+  "epochs_completed": 8,
+  "train_files": 6444,
+  "validation_files": 716,
+  "train_dataset": {
+    "files_discovered": 6444,
+    "files_used": 6444,
+    "samples": 450000,
+    "bytes_considered": 16131325811,
+    "context_length": 256,
+    "stride": 128,
+    "max_bytes_per_file": 33554432,
+    "archives_included": false
+  },
+  "validation_dataset": {
+    "files_discovered": 716,
+    "files_used": 716,
+    "samples": 50000,
+    "bytes_considered": 1790175178,
+    "context_length": 256,
+    "stride": 128,
+    "max_bytes_per_file": 33554432,
+    "archives_included": false
+  },
+  "model_config": {
+    "embedding_dim": 192,
+    "hidden_dim": 192,
+    "num_layers": 4,
+    "context_length": 256,
+    "dropout": 0.1,
+    "architecture_id": "causal-byte-transformer-v2",
+    "n_heads": 6,
+    "ff_dim": 768
+  },
+  "seed": 42,
+  "device": "cuda"
+}

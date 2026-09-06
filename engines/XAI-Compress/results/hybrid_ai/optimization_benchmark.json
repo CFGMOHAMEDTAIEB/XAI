@@ -1,0 +1,14 @@
+{
+  "benchmark": "exact consecutive 64 KiB selection cache",
+  "selector_mode": "rules",
+  "profile": "balanced",
+  "iterations": 20,
+  "uncached_ms": 2342.42090000771,
+  "cached_ms": 93.89799999189563,
+  "measured_speedup": 24.946440820996028,
+  "same_strategy": true,
+  "cache_zero_timing_hits": 19,
+  "scope": "consecutive byte-for-byte identical chunks no larger than 1 MiB",
+  "method": "uncached creates a fresh selector per iteration; cached reuses one selector",
+  "claim_limit": "No speedup is claimed for non-identical or larger chunks."
+}

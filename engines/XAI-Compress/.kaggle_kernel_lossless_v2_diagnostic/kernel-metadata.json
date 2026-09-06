@@ -1,0 +1,21 @@
+{
+    "competition_sources":  [
+
+                            ],
+    "id":  "mohameddtaieb/xai-compress-lossless-v2-cuda-diagnostic",
+    "enable_gpu":  true,
+    "kernel_type":  "script",
+    "kernel_sources":  [
+
+                       ],
+    "enable_internet":  false,
+    "dataset_sources":  [
+                            "mohameddtaieb/xai-compress-source",
+                            "xdxd003/ff-c23"
+                        ],
+    "is_private":  true,
+    "machine_shape":  "NvidiaTeslaT4",
+    "language":  "python",
+    "title":  "XAI Compress Lossless V2 CUDA Diagnostic",
+    "code_file":  "run.py"
+}

@@ -1,0 +1,3 @@
+applies_to,cleared,frozen_v2,mechanism,notes
+hybrid_v3_*,,disabled,CompressionContext selector preload,V3 reuses one preloaded Selector V2 artifact; V2 frozen reloads without context.
+hybrid_v3_*,after each source,,feature cache,Prevents cross-file contamination while allowing intra-file reuse.

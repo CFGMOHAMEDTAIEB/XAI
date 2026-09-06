@@ -1,0 +1,18 @@
+{
+  "sample_bytes": 256,
+  "device": "cpu",
+  "xai-gru": {
+    "cold_compress_ms": 260.418000005302,
+    "warm_compress_ms": 228.67300000507385,
+    "cold_decompress_ms": 230.81370000727475,
+    "warm_decompress_ms": 225.2275000064401,
+    "sha_pass": true
+  },
+  "xai-transformer": {
+    "cold_compress_ms": 1342.6288999908138,
+    "warm_compress_ms": 1244.7532000078354,
+    "cold_decompress_ms": 1239.1425000096206,
+    "warm_decompress_ms": 1211.8776999996044,
+    "sha_pass": true
+  }
+}

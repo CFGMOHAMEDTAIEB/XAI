@@ -1,9 +1,10 @@
 @page "/users"
 @inject PlatformApiClient Api
+@inject AdminSession Session
 <PageTitle>Users</PageTitle>
 <div class="page-heading"><div><h1>Users and access</h1><p>Review roles, MFA state and account status.</p></div><input class="search" @bind="_search" placeholder="Search users" /></div>
-<section class="panel">
+@if(_requiresLogin){<a class="button primary" href="/login">Sign in to view users</a>}else{<section class="panel">
 <table><thead><tr><th>User</th><th>Role</th><th>Status</th><th>MFA</th><th>Last login</th></tr></thead><tbody>
 @foreach(var user in Filtered){<tr><td><strong>@user.DisplayName</strong><small>@user.Email</small></td><td>@user.Role</td><td><StatusBadge Value="@user.Status" /></td><td>@(user.MfaEnabled ? "Enabled" : "Disabled")</td><td>@(user.LastLogin?.LocalDateTime.ToString() ?? "Never")</td></tr>}
-</tbody></table></section>
-@code { private IReadOnlyList<UserSummary> _users=[];private string _search="";protected override async Task OnInitializedAsync()=>_users=await Api.GetUsersAsync();private IEnumerable<UserSummary> Filtered=>_users.Where(x=>string.IsNullOrWhiteSpace(_search)||x.Email.Contains(_search,StringComparison.OrdinalIgnoreCase)||x.DisplayName.Contains(_search,StringComparison.OrdinalIgnoreCase));}
+</tbody></table></section>}
+@code { private IReadOnlyList<UserSummary> _users=[];private string _search="";private bool _requiresLogin;protected override async Task OnInitializedAsync(){_requiresLogin=!Session.IsAuthenticated;if(_requiresLogin)return;try{_users=await Api.GetUsersAsync();}catch(AdminApiAuthorizationException){_requiresLogin=true;}}private IEnumerable<UserSummary> Filtered=>_users.Where(x=>string.IsNullOrWhiteSpace(_search)||x.Email.Contains(_search,StringComparison.OrdinalIgnoreCase)||x.DisplayName.Contains(_search,StringComparison.OrdinalIgnoreCase));}

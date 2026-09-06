@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="620">
+<rect width="100%" height="100%" fill="white"/>
+<text x="550.0" y="32" text-anchor="middle" font-size="22" font-family="sans-serif">Actual artifact BPB</text>
+<text x="20" y="55" font-size="13" font-family="sans-serif" fill="#276749">MEASURED — deterministic paired 4 KiB corpus</text>
+<line x1="90" y1="465" x2="1060" y2="465" stroke="black"/>
+<text transform="translate(22 275.0) rotate(-90)" text-anchor="middle" font-size="15" font-family="sans-serif">Bits per byte</text>
+<rect x="112.17" y="85.00" width="94.23" height="380.00" fill="#2563eb"/>
+<text x="159.29" y="78.00" text-anchor="middle" font-size="12" font-family="sans-serif">12.16</text>
+<text transform="translate(159.29 477) rotate(45)" text-anchor="start" font-size="12" font-family="sans-serif">XAI Transformer V2 + rANS</text>
+<rect x="250.74" y="100.13" width="94.23" height="364.87" fill="#7c3aed"/>
+<text x="297.86" y="93.13" text-anchor="middle" font-size="12" font-family="sans-serif">11.68</text>
+<text transform="translate(297.86 477) rotate(45)" text-anchor="start" font-size="12" font-family="sans-serif">XAI GRU V1 + rANS</text>
+<rect x="389.31" y="190.94" width="94.23" height="274.06" fill="#059669"/>
+<text x="436.43" y="183.94" text-anchor="middle" font-size="12" font-family="sans-serif">8.771</text>
+<text transform="translate(436.43 477) rotate(45)" text-anchor="start" font-size="12" font-family="sans-serif">XAI static</text>
+<rect x="527.89" y="338.92" width="94.23" height="126.08" fill="#dc2626"/>
+<text x="575.00" y="331.92" text-anchor="middle" font-size="12" font-family="sans-serif">4.035</text>
+<text transform="translate(575.00 477) rotate(45)" text-anchor="start" font-size="12" font-family="sans-serif">Brotli-6</text>
+<rect x="666.46" y="331.72" width="94.23" height="133.28" fill="#d97706"/>
+<text x="713.57" y="324.72" text-anchor="middle" font-size="12" font-family="sans-serif">4.266</text>
+<text transform="translate(713.57 477) rotate(45)" text-anchor="start" font-size="12" font-family="sans-serif">Zstd-3</text>
+<rect x="805.03" y="331.60" width="94.23" height="133.40" fill="#0891b2"/>
+<text x="852.14" y="324.60" text-anchor="middle" font-size="12" font-family="sans-serif">4.27</text>
+<text transform="translate(852.14 477) rotate(45)" text-anchor="start" font-size="12" font-family="sans-serif">gzip-9</text>
+<rect x="943.60" y="317.56" width="94.23" height="147.44" fill="#475569"/>
+<text x="990.71" y="310.56" text-anchor="middle" font-size="12" font-family="sans-serif">4.719</text>
+<text transform="translate(990.71 477) rotate(45)" text-anchor="start" font-size="12" font-family="sans-serif">LZMA-6</text>
+</svg>

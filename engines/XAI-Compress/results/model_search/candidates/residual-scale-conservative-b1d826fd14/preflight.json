@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "finite_parameters": true,
+  "finite_optimizer_state": true,
+  "parameter_abs_max": 4.623622417449951,
+  "optimizer_abs_max": 43.0,
+  "gradient_norm": 0.2180123735230292,
+  "deterministic_inference": true,
+  "checkpoint_sha256": "60a84cd8927d4cb41a766fed9ed5503c5077ba4f5d74131b6866002919f330c2"
+}

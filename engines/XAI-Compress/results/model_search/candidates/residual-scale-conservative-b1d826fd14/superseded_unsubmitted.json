@@ -1,0 +1,9 @@
+{
+  "candidate_id": "residual-scale-conservative-b1d826fd14",
+  "candidate_key": "residual_scale_conservative",
+  "status": "SUPERSEDED_UNSUBMITTED",
+  "reason": "Replaced before submission by requested safe mode: LR 1e-4, residual scale 0.25, AMP scale 512",
+  "timestamp": "2026-08-31T21:56:34.355035+00:00",
+  "scientific_result": "NOT_RUN",
+  "submission_budget_consumed": false
+}

@@ -1,0 +1,20 @@
+{
+  "status": "FAIL",
+  "selected": null,
+  "assessments": [
+    {
+      "learning_rate": 0.0002,
+      "returncode": 1,
+      "summary": {
+        "status": "FAIL",
+        "learning_rate": 0.0002,
+        "exception_type": "RuntimeError",
+        "exception": "Expected all tensors to be on the same device, but got tensors is on cuda:0, different from other tensors on cpu (when checking argument in method wrapper_CUDA_cat)",
+        "traceback": "Traceback (most recent call last):\n  File \"/kaggle/working/XAI-Compress/scripts/run_v2_multi_epoch_gate.py\", line 59, in main\n    train(\n  File \"/kaggle/working/XAI-Compress/xai_compress/train.py\", line 607, in train\n    optimizer_state_abs_max = _collection_abs_max(optimizer_tensors, device)\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/kaggle/working/XAI-Compress/xai_compress/train.py\", line 52, in _collection_abs_max\n    return torch.stack(maxima).max() if maxima else torch.zeros((), device=device)\n           ^^^^^^^^^^^^^^^^^^^\nRuntimeError: Expected all tensors to be on the same device, but got tensors is on cuda:0, different from other tensors on cpu (when checking argument in method wrapper_CUDA_cat)\n",
+        "duration_seconds": 2825.543973891
+      }
+    }
+  ],
+  "production_submitted": false,
+  "candidate_a_retrained": false
+}

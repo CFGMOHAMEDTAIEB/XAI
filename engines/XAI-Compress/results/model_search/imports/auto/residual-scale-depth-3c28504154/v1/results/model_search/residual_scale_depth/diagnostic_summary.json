@@ -1,0 +1,8 @@
+{
+  "status": "FAIL",
+  "learning_rate": 0.0002,
+  "exception_type": "FloatingPointError",
+  "exception": "FIRST NON-FINITE STAGE = gradient:output.weight; epoch=5; step=8522",
+  "traceback": "Traceback (most recent call last):\n  File \"/kaggle/working/XAI-Compress/scripts/run_v2_multi_epoch_gate.py\", line 114, in main\n    train(\n  File \"/kaggle/working/XAI-Compress/xai_compress/train.py\", line 528, in train\n    require_finite_gradients(trainable, epoch, step)\n  File \"/kaggle/working/XAI-Compress/xai_compress/train.py\", line 45, in require_finite_gradients\n    require_finite(parameter.grad, f\"{prefix}:{name}\", epoch, step)\n  File \"/kaggle/working/XAI-Compress/xai_compress/train.py\", line 38, in require_finite\n    raise FloatingPointError(f\"FIRST NON-FINITE STAGE = {stage}; epoch={epoch}; step={step}\")\nFloatingPointError: FIRST NON-FINITE STAGE = gradient:output.weight; epoch=5; step=8522\n",
+  "duration_seconds": 12446.371424174
+}

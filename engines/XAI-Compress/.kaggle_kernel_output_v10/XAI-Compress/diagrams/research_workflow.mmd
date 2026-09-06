@@ -1,0 +1,11 @@
+flowchart LR
+    A[Versioned dataset] --> B[Deduplicate and split]
+    B --> C[Train]
+    C --> D[Validate BPB]
+    D --> E[Checkpoint fingerprint]
+    E --> F[Held-out benchmark]
+    F --> G[Raw CSV / JSON]
+    G --> H[Figures and reports]
+    H --> I{Measured improvement?}
+    I -->|yes| J[Retain change]
+    I -->|no| K[Record failure]

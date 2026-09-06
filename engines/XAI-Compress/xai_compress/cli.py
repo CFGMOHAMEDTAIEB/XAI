@@ -11,6 +11,7 @@ from .compression import compress_file, decompress_file
 from .format import unpack_container
 from .utils.device import detect_device
 from .utils.metrics import bits_per_byte, compression_ratio, throughput_mbs
+from .modes import CLI_MODES
 
 
 def _print_stats(title: str, original: int, compressed: int, ctime: float, dtime: float | None = None) -> None:
@@ -31,13 +32,27 @@ def main(argv=None):
     compress = sub.add_parser("compress")
     compress.add_argument("input")
     compress.add_argument("output")
-    compress.add_argument("--mode", choices=["static", "neural", "hybrid", "auto", "zlib"], default="static")
+    compress.add_argument("--mode", choices=CLI_MODES, default="static")
+    compress.add_argument("--quality", choices=["low", "medium", "high"], default="medium")
     compress.add_argument("--checkpoint")
     compress.add_argument("--model", help="unused unless training; for compress, use --checkpoint")
     compress.add_argument("--chunk-size", type=int, default=65536)
+    compress.add_argument("--adaptive-chunking", action=argparse.BooleanOptionalAction, default=True)
     compress.add_argument("--coder", choices=["arithmetic", "rans"], default="arithmetic")
     compress.add_argument("--device")
     compress.add_argument("--overwrite", action="store_true")
+    compress.add_argument("--profile", choices=["fastest", "balanced", "smallest"], default="balanced")
+    compress.add_argument(
+        "--selector",
+        choices=["ai", "ai-benchmark", "benchmark-only", "rules"],
+        default="ai-benchmark",
+    )
+    compress.add_argument("--top-k", type=int, default=3)
+    compress.add_argument("--microbench-bytes", type=int, default=65536)
+    compress.add_argument("--selector-model")
+    compress.add_argument("--gru-checkpoint")
+    compress.add_argument("--transformer-checkpoint")
+    compress.add_argument("--collect-selector-metrics", action="store_true")
 
     decompress = sub.add_parser("decompress")
     decompress.add_argument("input")
@@ -46,6 +61,8 @@ def main(argv=None):
     decompress.add_argument("--device")
     decompress.add_argument("--overwrite", action="store_true")
     decompress.add_argument("--max-output-size", type=int, default=8 << 30)
+    decompress.add_argument("--gru-checkpoint")
+    decompress.add_argument("--transformer-checkpoint")
 
     inspect = sub.add_parser("inspect")
     inspect.add_argument("input")
@@ -80,6 +97,15 @@ def main(argv=None):
     train.add_argument("--compile-model", action="store_true")
     train.add_argument("--multi-gpu", action="store_true")
     train.add_argument("--gradient-checkpointing", action="store_true")
+    train.add_argument("--early-stopping-patience", type=int, default=5)
+    train.add_argument("--checkpoint-every", type=int, default=5)
+
+    train_lossy = sub.add_parser("train-lossy")
+    train_lossy.add_argument("data_dir")
+    train_lossy.add_argument("--output", default="checkpoints/neural_lossy_v1/best.pt")
+    train_lossy.add_argument("--epochs", type=int, default=20)
+    train_lossy.add_argument("--quality", choices=["low", "medium", "high"], default="medium")
+    train_lossy.add_argument("--resume")
 
     bench = sub.add_parser("benchmark")
     bench.add_argument("data_dir", nargs="?")
@@ -107,13 +133,36 @@ def main(argv=None):
             chunk_size=args.chunk_size,
             device=args.device,
             coder=args.coder,
+            quality=args.quality,
+            profile=args.profile if args.mode in {"hybrid", "hybrid-v2"} else None,
+            selector_mode=args.selector if args.mode == "hybrid" else None,
+            top_k=args.top_k,
+            microbench_bytes=args.microbench_bytes,
+            selector_model=args.selector_model,
+            gru_checkpoint=args.gru_checkpoint,
+            transformer_checkpoint=args.transformer_checkpoint,
+            collect_selector_metrics=(
+                Path("results/hybrid_ai/runtime_observations.jsonl")
+                if args.collect_selector_metrics
+                else None
+            ),
+            adaptive_chunking=args.adaptive_chunking,
         )
         ct = time.perf_counter() - t0
         _print_stats("Compression complete", info["original_size"], info["artifact_size"], ct)
         print(json.dumps(info, indent=2))
     elif args.command == "decompress":
         t0 = time.perf_counter()
-        info = decompress_file(args.input, args.output, args.checkpoint, args.overwrite, args.max_output_size, args.device)
+        info = decompress_file(
+            args.input,
+            args.output,
+            args.checkpoint,
+            args.overwrite,
+            args.max_output_size,
+            args.device,
+            args.gru_checkpoint,
+            args.transformer_checkpoint,
+        )
         dt = time.perf_counter() - t0
         src_size = Path(args.input).stat().st_size
         _print_stats("Decompression complete", info["restored_size"], src_size, 1.0, dt)
@@ -145,6 +194,14 @@ def main(argv=None):
                     from .streaming import read_header
 
                     md = read_header(handle)
+                elif len(prefix) == 5 and prefix[:4] == b"XAIC" and prefix[4] == 5:
+                    from .hybrid.container import inspect_hybrid
+
+                    md = inspect_hybrid(path)
+                elif len(prefix) == 5 and prefix[:4] == b"XAIC" and prefix[4] == 6:
+                    from .hybrid.container_v2 import inspect_hybrid_v2
+
+                    md = inspect_hybrid_v2(path)
                 else:
                     md, _ = unpack_container(handle.read())
             print(json.dumps(md, indent=2, sort_keys=True))
@@ -171,3 +228,6 @@ def main(argv=None):
         print(json.dumps({"files": len({r.file for r in rows}), "all_lossless": lossless}, indent=2))
     elif args.command == "device":
         print("\n".join(detect_device().report_lines()))
+    elif args.command == "train-lossy":
+        from .train_lossy import train_lossy
+        train_lossy(args.data_dir, args.output, epochs=args.epochs, quality=args.quality, resume=args.resume)

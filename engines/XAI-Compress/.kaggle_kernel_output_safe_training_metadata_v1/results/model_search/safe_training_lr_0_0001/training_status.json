@@ -1,0 +1,18 @@
+{
+  "status": "COMPLETED",
+  "last_update_timestamp": 1788229141.9410229,
+  "epoch": 5,
+  "step": 0,
+  "train_loss": 5.523195107283114,
+  "validation_loss": 5.521571889343262,
+  "BPB": 7.965944382667429,
+  "elapsed_seconds": 14705.401412927,
+  "ETA": 0,
+  "GPU": "cuda",
+  "VRAM": {
+    "allocated_bytes": 64811008.0,
+    "reserved_bytes": 597688320.0,
+    "max_allocated_bytes": 557243904.0
+  },
+  "last_checkpoint": "/kaggle/working/results/model_search/safe_training_lr_0_0001/best.latest.pt"
+}

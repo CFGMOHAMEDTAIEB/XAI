@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "search_name": "test-search",
+  "config_path": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_protected_baseline_change0\\project\\configs\\search.json",
+  "created_at": "2026-09-02T10:46:32.839592+00:00",
+  "updated_at": "2026-09-02T10:46:32.853796+00:00",
+  "status": "ACTIVE",
+  "protected_baseline": {
+    "path": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_protected_baseline_change0\\project\\checkpoints\\kaggle\\best.pt",
+    "size": 13,
+    "sha256": "d2f07d3f09bf6662f8bdba6214efa8e83de36e78087eecbed6c26d8b3f61eba9"
+  },
+  "pending_candidates": [
+    "lr_0_0003",
+    "lr_0_0002"
+  ],
+  "running_candidate": null,
+  "completed_candidates": [],
+  "failed_candidates": [],
+  "validated_candidates": [],
+  "promoted_candidate": null,
+  "best_stable_candidate": null,
+  "candidates": {},
+  "seen_fingerprints": {},
+  "budget": {
+    "max_candidates": 5,
+    "max_gpu_hours": 10,
+    "max_kaggle_submissions": 3,
+    "max_failures": 3,
+    "no_improvement_patience": 2,
+    "candidates_consumed": 0,
+    "gpu_hours_consumed": 0.0,
+    "kaggle_submissions_consumed": 0,
+    "failures_consumed": 0,
+    "eligible_without_improvement": 0,
+    "infrastructure_retries_consumed": 0,
+    "numerical_failures_consumed": 0
+  },
+  "infrastructure_retries": {},
+  "stop_reason": null,
+  "protected_baseline_integrity": {
+    "expected_sha256": "d2f07d3f09bf6662f8bdba6214efa8e83de36e78087eecbed6c26d8b3f61eba9",
+    "measured_sha256": "d2f07d3f09bf6662f8bdba6214efa8e83de36e78087eecbed6c26d8b3f61eba9",
+    "expected_sha256_valid_format": true,
+    "match": true,
+    "verification_status": "VERIFIED",
+    "verified_at": "2026-09-02T10:46:32.839759+00:00"
+  },
+  "promotion_blocked": false,
+  "promotion_block_reason": null
+}

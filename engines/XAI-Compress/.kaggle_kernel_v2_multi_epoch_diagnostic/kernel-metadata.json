@@ -1,0 +1,21 @@
+{
+    "competition_sources":  [
+
+                            ],
+    "id":  "mohameddtaieb/xai-compress-v2-multi-epoch-stability",
+    "enable_gpu":  true,
+    "kernel_type":  "script",
+    "kernel_sources":  [
+
+                       ],
+    "enable_internet":  false,
+    "dataset_sources":  [
+                            "mohameddtaieb/xai-compress-source",
+                            "xdxd003/ff-c23"
+                        ],
+    "is_private":  true,
+    "machine_shape":  "NvidiaTeslaT4",
+    "language":  "python",
+    "title":  "XAI Compress V2 Multi Epoch Stability",
+    "code_file":  "run.py"
+}

@@ -1,0 +1,32 @@
+{
+  "status": "COMPLETE",
+  "classification": "AMP_GRADIENT_OVERFLOW",
+  "reproduction": {
+    "step": 7205,
+    "samples": 115280,
+    "tensor": "embedding.weight",
+    "loss": 5.539900302886963,
+    "grad_scaler_scale": 524288.0,
+    "total_gradient_norm": "NaN",
+    "token_min": 0,
+    "token_max": 256
+  },
+  "fp32_replay": {
+    "samples": 180000,
+    "steps": 11250,
+    "status": "PASS",
+    "checkpoint_sha256": "623c8e695334951f598cca987429500efee350b8dc89aa408dd70a67158d712c"
+  },
+  "proven_amp_fix": {
+    "learning_rate": 0.001,
+    "gradient_clip": 1.0,
+    "grad_scaler_initial_scale": 1024.0,
+    "grad_scaler_growth_interval": 10000,
+    "samples": 180000,
+    "steps": 11250,
+    "status": "PASS",
+    "checkpoint_sha256": "58872c464c953fa5d4f9afa48d1a85eab082409da4c86e6690373de815ce7d26",
+    "lossless_sha256": true
+  },
+  "version_5_production": "READY_NOT_SUBMITTED"
+}

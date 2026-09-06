@@ -1,0 +1,68 @@
+{
+  "candidate_id": "lr-0-0002-f316e33308",
+  "candidate_key": "lr_0_0002",
+  "parent_candidate": "base",
+  "timestamp": "2026-08-30T17:18:07.205790+00:00",
+  "stage": "MULTI_EPOCH_STABILITY",
+  "classification": "CUDA_ERROR",
+  "exception": "Expected all tensors to be on the same device, but got tensors is on cuda:0, different from other tensors on cpu (when checking argument in method wrapper_CUDA_cat)",
+  "epoch": 1,
+  "step": 28125,
+  "tensor_name": null,
+  "dtype": null,
+  "shape": null,
+  "min": null,
+  "max": null,
+  "mean": null,
+  "std": null,
+  "activation_maxima": null,
+  "grad_scaler_scale": null,
+  "grad_norm": null,
+  "learning_rate": 0.0002,
+  "source_hashes": {
+    "xai_compress/models/transformer_v2.py": "da3dfb52740b02287be3811abd95a3419485fe1fdee86f254ea0ccf7a70de39c",
+    "xai_compress/train.py": "69b3132e3ca2f1d0485ac0feb9dae798b172517de2dc196cfaddc81ca4bc8ea0",
+    "xai_compress/checkpoint.py": "d0890b80f5d1529409313da3d1c815dd597d2abdb3e7fd1cf41d50b4497423f1",
+    "xai_compress/compression.py": "c4565d3d8b2dd98b923894cb9f3d13aec97bdb1928f57a219b9db6abb4bfa934",
+    "scripts/run_v2_multi_epoch_gate.py": "a5dcb345c904fc68af5c01c431993fb44c5c3889295a52fc9a52861d61c18e37"
+  },
+  "traceback": null,
+  "status": "MULTI_EPOCH_STABILITY_FAILED",
+  "evidence": {
+    "status": "FAIL",
+    "learning_rate": 0.0002,
+    "exception_type": "RuntimeError",
+    "exception": "Expected all tensors to be on the same device, but got tensors is on cuda:0, different from other tensors on cpu (when checking argument in method wrapper_CUDA_cat)",
+    "traceback": "Traceback (most recent call last):\n  File \"/kaggle/working/XAI-Compress/scripts/run_v2_multi_epoch_gate.py\", line 59, in main\n    train(\n  File \"/kaggle/working/XAI-Compress/xai_compress/train.py\", line 607, in train\n    optimizer_state_abs_max = _collection_abs_max(optimizer_tensors, device)\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/kaggle/working/XAI-Compress/xai_compress/train.py\", line 52, in _collection_abs_max\n    return torch.stack(maxima).max() if maxima else torch.zeros((), device=device)\n           ^^^^^^^^^^^^^^^^^^^\nRuntimeError: Expected all tensors to be on the same device, but got tensors is on cuda:0, different from other tensors on cpu (when checking argument in method wrapper_CUDA_cat)\n",
+    "duration_seconds": 2825.543973891,
+    "training_status": {
+      "status": "VALIDATING",
+      "last_update_timestamp": 1788109952.6275814,
+      "epoch": 1,
+      "step": 28125,
+      "train_loss": 5.52863487636322,
+      "validation_loss": null,
+      "BPB": null,
+      "elapsed_seconds": 2486.372018079,
+      "ETA": null,
+      "GPU": "cuda",
+      "VRAM": {
+        "allocated_bytes": 88274944.0,
+        "reserved_bytes": 616562688.0,
+        "max_allocated_bytes": 582532608.0
+      },
+      "last_checkpoint": "/kaggle/working/results/model_search/lr_0_0002/best.latest.pt"
+    },
+    "epoch": 1,
+    "step": 28125,
+    "loss": 5.52863487636322,
+    "gpu": "cuda",
+    "vram": {
+      "allocated_bytes": 88274944.0,
+      "reserved_bytes": 616562688.0,
+      "max_allocated_bytes": 582532608.0
+    },
+    "last_checkpoint": "/kaggle/working/results/model_search/lr_0_0002/best.latest.pt",
+    "last_known_stage": "VALIDATING"
+  }
+}

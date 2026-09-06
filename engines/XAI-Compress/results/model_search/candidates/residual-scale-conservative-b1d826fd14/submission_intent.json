@@ -1,0 +1,12 @@
+{
+  "kernel": "mohameddtaieb/xai-compress-auto-residual-scale-conservative-b1d826fd14",
+  "source_hashes": {
+    "xai_compress/models/transformer_v2.py": "cd6eff4da48111e1d57e1ed3ee09108c5b3c7d8c9ee3a80ce04401d6c1c42559",
+    "xai_compress/train.py": "e3284562e6f9a58dd52bdda670f704b3fbd9f1e88569b72edbe9b0f92aec270f",
+    "xai_compress/checkpoint.py": "6cf361e87ab3602acd59a69713607a620a8c0d368ee5d930c69f3d225be23c4d",
+    "xai_compress/compression.py": "c4565d3d8b2dd98b923894cb9f3d13aec97bdb1928f57a219b9db6abb4bfa934",
+    "scripts/run_v2_multi_epoch_gate.py": "1492c4e6c221829de368ad156829a7cc48a4d3c2ab49487129bd545944cbd398"
+  },
+  "stage": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\.kaggle_autonomous\\residual-scale-conservative-b1d826fd14",
+  "created_at": "2026-08-31T20:53:00.148778+00:00"
+}

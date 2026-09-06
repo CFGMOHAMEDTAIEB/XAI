@@ -7,7 +7,7 @@ import '../models/authenticator_account.dart';
 class SecureAccountStore {
   static const _accountsKey = 'xai_authenticator_accounts_v1';
   static const _storage = FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    aOptions: AndroidOptions(),
   );
 
   Future<List<AuthenticatorAccount>> loadAccounts() async {

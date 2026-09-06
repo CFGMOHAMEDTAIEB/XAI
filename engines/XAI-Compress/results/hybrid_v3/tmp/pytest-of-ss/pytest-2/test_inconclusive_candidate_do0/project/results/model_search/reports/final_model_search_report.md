@@ -1,0 +1,44 @@
+# Final model search report
+
+# Search Summary
+
+Status: ACTIVE
+Stop reason: N/A
+
+# Candidate Table
+
+| Candidate | Change | Status | Best Val BPB | Actual BPB | Ratio | SHA256 | Max Activation | Comp MB/s | Decomp MB/s | VRAM | Decision |
+|---|---|---|---:|---:|---:|---|---:|---:|---:|---:|---|
+| lr-0-0003-427431d37c | LR 0.0003 | VALIDATED | N/A | 7.99 | 1.0012515644555695 | True | N/A | 1.0 | 2.0 | 20 | INCONCLUSIVE |
+
+# Failed Candidates
+
+None recorded.
+
+# Stability Analysis
+
+See each candidate's history and status artifacts; failed candidates are retained.
+
+# Compression Comparison
+
+Only measured `actual_bpb` values in the table are eligible for selection.
+
+# Classical Codec Comparison
+
+See candidate benchmark artifacts; unavailable codecs are N/A.
+
+# Pareto Analysis
+
+Pareto candidates: lr-0-0003-427431d37c
+
+# Best Validated Candidate
+
+Protected GRU baseline
+
+# Remaining Limitations
+
+Unmeasured fields remain N/A. Validation BPB is not treated as artifact BPB.
+
+# Final Recommendation
+
+Search remains active; no automatic application-default replacement.

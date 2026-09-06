@@ -1,0 +1,18 @@
+Kaggle kernel: mohameddtaieb/xai-compress-gpu-training
+Kernel version: 7
+Status: KernelWorkerStatus.ERROR
+
+[stdout 24.810343076] Obtaining file:///kaggle/working/XAI-Compress
+[stdout 24.814113422] Installing build dependencies: started
+[stderr 225.32748715] error: subprocess-exited-with-error
+[stderr 225.327586029] pip subprocess to install build dependencies did not run successfully.
+[stderr 225.327590954] exit code: 1
+[stdout 225.328142307] Installing build dependencies: finished with status 'error'
+[stderr 225.451823978] Traceback (most recent call last):
+[stderr 225.45186735]   File "/kaggle/src/script.py", line 44, in <module>
+[stderr 225.45193241]     subprocess.run([sys.executable, "-m", "pip", "install", "-e", str(project), "--no-deps"], check=True)
+[stderr 225.452117781]   File "/usr/lib/python3.12/subprocess.py", line 571, in run
+[stderr 225.454097272]     raise CalledProcessError(retcode, process.args,
+[stderr 225.454123779] subprocess.CalledProcessError: Command '['/usr/bin/python3', '-m', 'pip', 'install', '-e', '/kaggle/working/XAI-Compress', '--no-deps']' returned non-zero exit status 1.
+
+Retrieved with the authenticated Kaggle dedicated kernels logs endpoint.

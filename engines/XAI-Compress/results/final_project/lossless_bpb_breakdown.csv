@@ -1,0 +1,2 @@
+checkpoint,sample,model_entropy_bpb,quantized_ideal_bpb,quantization_delta_bpb,entropy_coder_overhead_bpb,container_overhead_bpb,actual_bpb,identity_error
+checkpoints\kaggle\best.pt,README.md[:2048],5.874804597562056,5.7411019225491975,-0.13370267501285849,0.01280432745080251,2.41796875,8.171875,0.0

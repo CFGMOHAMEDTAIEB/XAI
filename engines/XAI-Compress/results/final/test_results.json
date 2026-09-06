@@ -1,0 +1,42 @@
+{
+  "python": {
+    "command": [
+      "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-q"
+    ],
+    "duration_seconds": 26.345378099998925,
+    "returncode": 0,
+    "status": "PASS",
+    "stderr": "",
+    "stdout": ".....................................................................ss. [ 45%]\n........................................................................ [ 90%]\n............s..                                                          [100%]\n156 passed, 3 skipped in 24.84s\n"
+  },
+  "rust": {
+    "command": [
+      "cargo",
+      "test",
+      "--manifest-path",
+      "rust-core/Cargo.toml"
+    ],
+    "duration_seconds": 37.65733899999759,
+    "returncode": 0,
+    "status": "PASS",
+    "stderr": "warn: could not canonicalize path C:\\Users\\ss\n   Compiling pyo3-build-config v0.22.6\n   Compiling pyo3-ffi v0.22.6\n   Compiling pyo3-macros-backend v0.22.6\n   Compiling pyo3 v0.22.6\n   Compiling pyo3-macros v0.22.6\n   Compiling numpy v0.22.1\n   Compiling xai_compress_core v0.1.0 (C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\rust-core)\nwarning: use of deprecated constant `__pyfunction_quantize_probabilities_batch::SIGNATURE`: this function has implicit defaults for the trailing `Option<T>` arguments \n         = note: these implicit defaults are being phased out \n         = help: add `#[pyo3(signature = (probabilities, total=None))]` to this function to silence this warning and keep the current behavior\n  --> src\\lib.rs:36:4\n   |\n36 | fn quantize_probabilities_batch(probabilities: PyReadonlyArray2<'_, f64>, total: Option<u32>) -> PyResult<Vec<Vec<u32>>> {\n   |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   |\n   = note: `#[warn(deprecated)]` on by default\n\nwarning: use of deprecated constant `__pyfunction_sha256_file::SIGNATURE`: this function has implicit defaults for the trailing `Option<T>` arguments \n         = note: these implicit defaults are being phased out \n         = help: add `#[pyo3(signature = (path, chunk_size=None))]` to this function to silence this warning and keep the current behavior\n  --> src\\lib.rs:82:4\n   |\n82 | fn sha256_file(path: &str, chunk_size: Option<usize>) -> PyResult<String> {\n   |    ^^^^^^^^^^^\n\nwarning: linker stdout: Cr\u00c3\u00a9ation de la biblioth\u00c3\u00a8que C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\rust-core\\target\\debug\\deps\\xai_compress_core.dll.lib et de l'objet C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\rust-core\\target\\debug\\deps\\xai_compress_core.dll.exp\n  |\n  = note: `#[warn(linker_messages)]` on by default\n\nwarning: `xai_compress_core` (lib test) generated 2 warnings (2 duplicates)\nwarning: `xai_compress_core` (lib) generated 3 warnings\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 36.94s\n     Running unittests src\\lib.rs (rust-core\\target\\debug\\deps\\xai_compress_core-fa61c414aa9f1a75.exe)\n   Doc-tests xai_compress_core\n",
+    "stdout": "\nrunning 1 test\ntest tests::uniform_quantization_is_valid_and_deterministic ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n"
+  },
+  "rust_parity": {
+    "command": [
+      "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_rust_parity.py"
+    ],
+    "duration_seconds": 7.906893299994408,
+    "returncode": 0,
+    "status": "PASS",
+    "stderr": "",
+    "stdout": ".                                                                        [100%]\n1 passed in 5.79s\n"
+  }
+}

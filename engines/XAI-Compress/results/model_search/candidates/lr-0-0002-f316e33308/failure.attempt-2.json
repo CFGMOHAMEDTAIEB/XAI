@@ -1,0 +1,36 @@
+{
+  "candidate_id": "lr-0-0002-f316e33308",
+  "candidate_key": "lr_0_0002",
+  "parent_candidate": "base",
+  "timestamp": "2026-08-31T11:13:11.364186+00:00",
+  "stage": "INFRASTRUCTURE",
+  "classification": "INFRASTRUCTURE_ERROR",
+  "exception": "terminal output missing selection.json",
+  "epoch": null,
+  "step": null,
+  "tensor_name": null,
+  "dtype": null,
+  "shape": null,
+  "min": null,
+  "max": null,
+  "mean": null,
+  "std": null,
+  "activation_maxima": null,
+  "grad_scaler_scale": null,
+  "grad_norm": null,
+  "learning_rate": 0.0002,
+  "source_hashes": {
+    "xai_compress/models/transformer_v2.py": "cd6eff4da48111e1d57e1ed3ee09108c5b3c7d8c9ee3a80ce04401d6c1c42559",
+    "xai_compress/train.py": "e3284562e6f9a58dd52bdda670f704b3fbd9f1e88569b72edbe9b0f92aec270f",
+    "xai_compress/checkpoint.py": "6cf361e87ab3602acd59a69713607a620a8c0d368ee5d930c69f3d225be23c4d",
+    "xai_compress/compression.py": "c4565d3d8b2dd98b923894cb9f3d13aec97bdb1928f57a219b9db6abb4bfa934",
+    "scripts/run_v2_multi_epoch_gate.py": "ec8990158afd7ef2dba90abdf1d4ee2e3c1e4a0cdd72b9a2f1a50a13b6f676b8"
+  },
+  "traceback": null,
+  "status": "INFRASTRUCTURE_FAILED",
+  "evidence": {
+    "retry_count": 3
+  },
+  "attempt": 2,
+  "evidence_path": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\model_search\\failures\\lr-0-0002-f316e33308.attempt-2.json"
+}

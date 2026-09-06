@@ -1,0 +1,32 @@
+{
+  "path": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_protected_gru_verificatio0\\project\\checkpoints\\kaggle\\best.pt",
+  "measured_sha256": "8bcb96f95ff6b7f28be9724ebbd81ce0cfde7eec7cbc1c460c169e1247b0313a",
+  "expected_sha256": "8bcb96f95ff6b7f28be9724ebbd81ce0cfde7eec7cbc1c460c169e1247b0313a",
+  "match": true,
+  "size_bytes": 37261,
+  "modification_timestamp_utc": "2026-09-02T10:46:40.998179+00:00",
+  "architecture": "causal-byte-gru-v1",
+  "config": {
+    "embedding_dim": 8,
+    "hidden_dim": 12,
+    "num_layers": 1,
+    "context_length": 16,
+    "dropout": 0.0,
+    "architecture_id": "causal-byte-gru-v1",
+    "n_heads": 4,
+    "ff_dim": 256,
+    "residual_scale": 1.0
+  },
+  "checkpoint_format": "xai-compress-checkpoint-v1",
+  "checkpoint_epoch": 3,
+  "checkpoint_fingerprint": "dea835209a893cc2defa85786526f2f9d565dfd89e2ef520337b09d3dab98d20",
+  "parameter_count": 6176,
+  "expected_sha256_valid_format": true,
+  "referencing_manifests": [
+    "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_protected_gru_verificatio0\\project\\checkpoints\\model_search\\current_best.json",
+    "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_protected_gru_verificatio0\\project\\results\\model_search\\search_state.json"
+  ],
+  "verification_status": "VERIFIED",
+  "promotion_blocked": false,
+  "verified_at": "2026-09-02T10:46:41.362724+00:00"
+}

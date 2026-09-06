@@ -1,0 +1,4 @@
+flowchart LR
+ A[Disk I/O] --> B[CPU loader/analyzer] --> C[PCIe transfer] --> D[GPU model] --> E[CPU entropy coder] --> F[Disk output]
+ B -. telemetry .-> G[RAM/CPU]
+ D -. telemetry .-> H[VRAM/GPU]

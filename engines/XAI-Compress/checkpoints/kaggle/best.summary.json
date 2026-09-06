@@ -1,0 +1,41 @@
+{
+  "checkpoint": "/kaggle/working/checkpoints/best.pt",
+  "parameter_count": 1700800,
+  "best_validation_cross_entropy": 5.523487623098652,
+  "best_validation_bpb": 7.968708202255994,
+  "epochs_completed": 16,
+  "train_files": 6432,
+  "validation_files": 714,
+  "train_dataset": {
+    "files_discovered": 6432,
+    "files_used": 6432,
+    "samples": 450000,
+    "bytes_considered": 16168781523,
+    "context_length": 256,
+    "stride": 128,
+    "max_bytes_per_file": 33554432,
+    "archives_included": false
+  },
+  "validation_dataset": {
+    "files_discovered": 714,
+    "files_used": 714,
+    "samples": 50000,
+    "bytes_considered": 1752680936,
+    "context_length": 256,
+    "stride": 128,
+    "max_bytes_per_file": 33554432,
+    "archives_included": false
+  },
+  "model_config": {
+    "embedding_dim": 192,
+    "hidden_dim": 384,
+    "num_layers": 2,
+    "context_length": 256,
+    "dropout": 0.1,
+    "architecture_id": "causal-byte-gru-v1",
+    "n_heads": 4,
+    "ff_dim": 256
+  },
+  "seed": 42,
+  "device": "cuda"
+}

@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "investigated_at": "2026-08-30T17:00:00Z",
+  "measured_sha256": "083cda706612c3fd9ce62699741932b07e83fdf98eb6c5430d51bd29e1820429",
+  "malformed_historical_sha256": "083cda706612c3fd9ce62699741932b07e83f98eb6c5430d51bd29e1820429",
+  "historical_value_length": 62,
+  "protected_checkpoint": {
+    "path": "checkpoints/kaggle/best.pt",
+    "size_bytes": 20423284,
+    "creation_timestamp_utc": "2026-08-28T08:26:42.6809970Z",
+    "modification_timestamp_utc": "2026-08-28T08:25:47.3923574Z",
+    "architecture": "causal-byte-gru-v1",
+    "epoch": 8,
+    "parameter_count": 1700800,
+    "checkpoint_format": "xai-compress-checkpoint-v1",
+    "checkpoint_fingerprint": "65db5985137b2a12a0f399f637a2753900452fc43e7d8211867c40b2f5014239",
+    "config": {
+      "embedding_dim": 192,
+      "hidden_dim": 384,
+      "num_layers": 2,
+      "context_length": 256,
+      "dropout": 0.1,
+      "architecture_id": "causal-byte-gru-v1",
+      "n_heads": 4,
+      "ff_dim": 256
+    }
+  },
+  "evidence": [
+    {
+      "evidence_timestamp": "2026-08-28T08:25:29.8683318Z",
+      "evidence_path": ".kaggle_kernel_output_v10/checkpoints/best.pt",
+      "evidence_hash": "083cda706612c3fd9ce62699741932b07e83fdf98eb6c5430d51bd29e1820429",
+      "metadata_match": true,
+      "independent_historical_artifact": true,
+      "chronology": "Archived Kaggle output existed before the local protected copy was created at 2026-08-28T08:26:42.6809970Z.",
+      "size_bytes": 20423284,
+      "architecture": "causal-byte-gru-v1",
+      "epoch": 8,
+      "parameter_count": 1700800,
+      "checkpoint_fingerprint": "65db5985137b2a12a0f399f637a2753900452fc43e7d8211867c40b2f5014239",
+      "config_match": true
+    },
+    {
+      "evidence_timestamp": "2026-08-28T08:25:47.8077945Z",
+      "evidence_path": ".kaggle_kernel_output_v10/checkpoints/best.summary.json",
+      "evidence_hash": null,
+      "metadata_match": true,
+      "independent_historical_artifact": true,
+      "chronology": "Original Kaggle training summary, created before the local protected copy.",
+      "architecture": "causal-byte-gru-v1",
+      "best_epoch_from_companion_history": 8,
+      "parameter_count": 1700800,
+      "config_match": true
+    },
+    {
+      "evidence_timestamp": "2026-08-28T08:25:07.6902658Z",
+      "evidence_path": ".kaggle_kernel_output_v10/checkpoints/best.history.json",
+      "evidence_hash": null,
+      "metadata_match": true,
+      "independent_historical_artifact": true,
+      "chronology": "Original 16-epoch Kaggle history; epoch 8 has the minimum validation CE/BPB recorded by the summary.",
+      "best_epoch": 8,
+      "best_validation_cross_entropy": 5.523487623098652,
+      "best_validation_bpb": 7.968708202255994
+    },
+    {
+      "evidence_timestamp": "2026-08-28T09:00:55.3996644Z",
+      "evidence_path": "results/model_v2/three_model_comparison.csv",
+      "evidence_hash": null,
+      "metadata_match": true,
+      "independent_historical_artifact": true,
+      "chronology": "Pre-investigation comparison report identifies the protected path, architecture, parameter count, byte size, and matching validation metrics.",
+      "size_bytes": 20423284,
+      "architecture": "causal-byte-gru-v1",
+      "parameter_count": 1700800
+    },
+    {
+      "evidence_timestamp": "2026-08-28T08:26:42.6809970Z",
+      "evidence_path": "checkpoints/kaggle/best.pt",
+      "evidence_hash": "083cda706612c3fd9ce62699741932b07e83fdf98eb6c5430d51bd29e1820429",
+      "metadata_match": true,
+      "independent_historical_artifact": false,
+      "chronology": "Current protected checkpoint; recorded for comparison only and not used as independent corroboration."
+    },
+    {
+      "evidence_timestamp": "2026-08-28T08:25:08.2048438Z",
+      "evidence_path": ".kaggle_kernel_output_v10/checkpoints/best.latest.pt",
+      "evidence_hash": "a761ba259c3dd43ec90c34dd3df9b2931029d967f621e9ed2e090880b709df17",
+      "metadata_match": false,
+      "independent_historical_artifact": true,
+      "chronology": "Distinct latest checkpoint (20,423,156 bytes), not a competing hash claim for best.pt."
+    }
+  ],
+  "textual_digest_search": {
+    "full_measured_hash_preinvestigation_matches": 0,
+    "malformed_historical_hash_preinvestigation_matches": 0,
+    "other_hashes_claimed_for_protected_best_pt": [],
+    "note": "No pre-investigation textual checksum record was found. Corroboration comes from the independently archived original Kaggle checkpoint bytes plus matching companion metadata."
+  },
+  "provenance_status": "HISTORICAL_HASH_RECORD_TYPO_CONFIRMED",
+  "promotion_blocked": false,
+  "conclusion": "The 62-character value omitted two hexadecimal characters. The original archived Kaggle best.pt predates the protected local copy, independently hashes to the complete measured digest, and matches size, architecture, epoch, parameter count, configuration, format, fingerprint, and companion training records. Correcting protection metadata is authorized; historical evidence and the malformed value must remain preserved."
+}

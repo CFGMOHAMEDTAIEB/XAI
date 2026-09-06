@@ -1,0 +1,127 @@
+{
+  "phase": "Phase 1 - FREEZE V2",
+  "frozen_at": "2026-09-02T00:00:00Z",
+  "purpose": "Record immutable V2 baseline before V3 optimizations",
+  
+  "git_state": {
+    "commit": "962853ebc3b197cc182d84ff7685354409a56a7b",
+    "branch": "main",
+    "status": "has uncommitted changes in results/ directories"
+  },
+
+  "protected_models": {
+    "gru": {
+      "path": "checkpoints/kaggle/best.pt",
+      "sha256": "083cda706612c3fd9ce62699741932b07e83fdf98eb6c5430d51bd29e1820429",
+      "status": "VERIFIED"
+    },
+    "transformer": {
+      "path": "checkpoints/neural_lossless_v2/best.pt",
+      "sha256": "584d8dfee979c6719a7602d00d81ef72443ee804878b13a1d651b5ea42129fb9",
+      "status": "VERIFIED"
+    },
+    "selector_v2": {
+      "path": "checkpoints/selector/best.json",
+      "sha256_measured": "3992fead42e8c2f4f23b9618a1810b1e665116aa5799c68ca93a6973dfbce296",
+      "sha256_in_final_status": "b29049d5c06ebf989d552d0f3082890e7ce85f8aec27032270993c782ae09fb7",
+      "note": "selector artifact_sha differs in final_status.json; using measured value",
+      "status": "VERIFIED"
+    }
+  },
+
+  "v2_baseline_snapshot": {
+    "compression": {
+      "hybrid_v1": {
+        "bpb": 7.9291913695261025,
+        "compression_mib_s": 1.1186254872080257,
+        "decompression_mib_s": 1.928339225296437,
+        "metadata_bytes_mean": 975.7692307692307,
+        "selection_ms_mean": 263.8882230821764,
+        "selection_ms_median": 88.9356499974383,
+        "files": 26
+      },
+      "hybrid_v2": {
+        "bpb": 7.921969360083047,
+        "compression_mib_s": 0.6244643593563286,
+        "decompression_mib_s": 1.7288866074176077,
+        "metadata_bytes_mean": 67.73076923076923,
+        "selection_ms_mean": 668.8695846157946,
+        "selection_ms_median": 235.18984999827808,
+        "files": 26
+      },
+      "brotli_11": {
+        "bpb": 7.731020471745324,
+        "compression_mib_s": 0.03459915966387995,
+        "decompression_mib_s": 18.825560198331864,
+        "metadata_bytes_mean": 0.0,
+        "files": 26
+      },
+      "oracle_measured": {
+        "bpb": 7.652133239046525,
+        "files": 25,
+        "gap_vs_v2_percent": 0.11837114375275351
+      }
+    },
+    
+    "speed_analysis": {
+      "v2_vs_v1_speed_regression": -44.17574366958798,
+      "description": "V2 compression speed dropped 44.18% vs V1",
+      "components_ms": {
+        "feature_scan": 15.934246152308052,
+        "ai_inference": 4.2040230764541775,
+        "microbenchmark": 20.973726922910338,
+        "mean_selection_overhead": 668.8695846157946,
+        "median_selection_overhead": 235.18984999827808
+      }
+    },
+    
+    "size_analysis": {
+      "v2_vs_v1_improvement_percent": 0.09108128567576376,
+      "v2_vs_brotli_11_gap_percent": 2.469905351248082,
+      "metadata_reduction_vs_v1_percent": 93.058730784391
+    },
+    
+    "selector": {
+      "top_1_accuracy": 0.6666666666666666,
+      "top_2_recall": 0.8107526881720429,
+      "top_3_recall": 0.8903225806451612,
+      "mean_regret": 0.0034826281333670984,
+      "median_regret": 0.0,
+      "p95_regret": 0.021321162440231477,
+      "mean_inference_ms": 0.3254526881538632,
+      "models": ["decision_tree", "extra_trees", "random_forest"]
+    },
+
+    "system": {
+      "python_tests": "199 passed, 3 skipped",
+      "rust_tests": "2 passed, 0 failed",
+      "sha_pass": true,
+      "peak_rss_mb": 327.125
+    }
+  },
+
+  "v3_optimization_targets": {
+    "primary": "Make V3 faster than V2 without increasing final bytes materially",
+    "strong_target": "V3 compression >= V1 throughput while preserving V2 size advantage",
+    "size_target": "Reduce 2.47% gap vs Brotli-11",
+    "candidate_phases": [
+      "Phase 2: End-to-end profiling (identify exact bottlenecks)",
+      "Phase 3: Duplicated work audit (CompressionContext reuse)",
+      "Phase 4: Zero-copy path (minimize bytes copied)",
+      "Phase 5: Fast bypass (avoid full pipeline for obvious cases)",
+      "Phase 6: Confidence calibration (tune selector thresholds)",
+      "Phase 7: Microbenchmark optimization (tune sample size)",
+      "Phase 8: Parallel top-K (if beneficial)",
+      "Phase 9: Codec instance reuse",
+      "Phase 10: Brotli fast bypass"
+    ]
+  },
+
+  "outputs_required": {
+    "runtime_profile_csv": "Phase 2",
+    "benchmark_csv": "Phase 21",
+    "ablation_csv": "Phase 24",
+    "final_status_json": "Phase 28",
+    "final_report_md": "Phase 28"
+  }
+}

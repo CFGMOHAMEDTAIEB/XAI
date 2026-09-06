@@ -1,0 +1,6 @@
+best_fixed_codec,best_fixed_compressed_bytes,category,hybrid_compressed_bytes,hybrid_gap_percent,hybrid_wins,sample_id,selected_strategy
+brotli-6,60,text,822,1270.0,False,text_4KiB,"{""brotli"": 1}"
+raw-default,65536,random,66307,1.17645263671875,False,random_64KiB,"{""raw"": 1}"
+brotli-6,269,scientific,1821,576.9516728624535,False,numeric_1MiB,"{""deflate"": 1}"
+brotli-6,161,json,5795,3499.3788819875776,False,structured_10MiB,"{""brotli"": 10}"
+brotli-6,777,repetitive,53744,6816.859716859717,False,repetitive_100MiB,"{""brotli"": 100}"

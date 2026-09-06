@@ -1,0 +1,9 @@
+{
+  "candidate_id": "lr-0-0003-427431d37c",
+  "path": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_actual_bpb_promotion_sele0\\project\\checkpoints\\model_search\\lr-0-0003-427431d37c\\best.pt",
+  "sha256": "abc",
+  "actual_bpb": 7.0,
+  "validated": true,
+  "application_default_changed": false,
+  "updated_at": "2026-09-02T10:46:35.075791+00:00"
+}

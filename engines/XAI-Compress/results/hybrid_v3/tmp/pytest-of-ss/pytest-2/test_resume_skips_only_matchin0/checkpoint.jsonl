@@ -1,0 +1,1 @@
+{"benchmark_version": "hybrid-v3-final-140-v1", "compressed_bytes": 80, "compression_ms": 12.5, "decompression_ms": 3.0, "method": "hybrid_v3_top3", "original_bytes": 100, "repetition": 0, "roundtrip_sha_pass": true, "routing_mode": "top3", "source_id": "src", "source_sha256": "deadbeef", "status": "PASS"}

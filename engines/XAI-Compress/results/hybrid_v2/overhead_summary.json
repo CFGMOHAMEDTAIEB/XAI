@@ -1,0 +1,9 @@
+{
+  "rows": 5,
+  "sha_pass": true,
+  "total_original_bytes": 116461568,
+  "total_artifact_bytes": 1176992,
+  "total_codec_payload_bytes": 1125072,
+  "total_metadata_bytes": 51920,
+  "weighted_metadata_percent": 4.411244936244256
+}

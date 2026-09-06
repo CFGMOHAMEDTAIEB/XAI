@@ -1,0 +1,1 @@
+{"status": "FAIL", "learning_rate": 0.0003, "exception": "FIRST NON-FINITE STAGE = gradient:output.weight; epoch=5; step=15", "traceback": "FIRST NON-FINITE STAGE = gradient:output.weight; epoch=5; step=15", "duration_seconds": 10.0}

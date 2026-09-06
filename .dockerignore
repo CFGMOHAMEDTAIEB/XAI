@@ -1,0 +1,11 @@
+.git
+**/node_modules
+**/dist
+**/build
+**/bin
+**/obj
+**/.pytest_cache
+engines/XAI-Compress/results
+engines/XAI-Compress/.kaggle_kernel_output*
+engines/XAI-Compress/.venv
+engines/XAI-Compress/data

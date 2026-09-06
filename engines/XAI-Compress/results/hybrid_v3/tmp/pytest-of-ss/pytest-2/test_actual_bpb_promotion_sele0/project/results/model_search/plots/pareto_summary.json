@@ -1,0 +1,12 @@
+{
+  "measured_candidates": 1,
+  "pareto_candidates": [
+    "lr-0-0003-427431d37c"
+  ],
+  "current_best_bpb": "lr-0-0003-427431d37c",
+  "best_compression_speed": "lr-0-0003-427431d37c",
+  "best_decompression_speed": "lr-0-0003-427431d37c",
+  "best_peak_rss": "lr-0-0003-427431d37c",
+  "best_vram": "lr-0-0003-427431d37c",
+  "smallest_checkpoint": "lr-0-0003-427431d37c"
+}

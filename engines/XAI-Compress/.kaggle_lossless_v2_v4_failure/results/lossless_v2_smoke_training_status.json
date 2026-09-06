@@ -1,0 +1,18 @@
+{
+  "status": "COMPLETED",
+  "last_update_timestamp": 1787951228.5204072,
+  "epoch": 1,
+  "step": 0,
+  "train_loss": 5.597291023283388,
+  "validation_loss": 5.554742604783438,
+  "BPB": 8.01379960933571,
+  "elapsed_seconds": 7.149984567000047,
+  "ETA": 0,
+  "GPU": "cuda",
+  "VRAM": {
+    "allocated_bytes": 59976192.0,
+    "reserved_bytes": 387973120.0,
+    "max_allocated_bytes": 319257088.0
+  },
+  "last_checkpoint": "/kaggle/working/checkpoints/lossless_v2_smoke.latest.pt"
+}

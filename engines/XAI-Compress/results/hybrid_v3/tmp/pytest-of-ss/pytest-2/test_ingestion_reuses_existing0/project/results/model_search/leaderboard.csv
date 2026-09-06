@@ -1,0 +1,2 @@
+candidate_id,candidate_key,change,status,best_val_bpb,actual_bpb,ratio,sha256,max_activation,compression_MB_s,decompression_MB_s,peak_RSS_MB,vram_bytes,checkpoint_size,decision,pareto
+lr-0-0003-427431d37c,lr_0_0003,LR 0.0003,STABILITY_VALIDATED,7.8500000000000005,N/A,N/A,N/A,1200.0,N/A,N/A,N/A,1000.0,19,INCONCLUSIVE,N/A

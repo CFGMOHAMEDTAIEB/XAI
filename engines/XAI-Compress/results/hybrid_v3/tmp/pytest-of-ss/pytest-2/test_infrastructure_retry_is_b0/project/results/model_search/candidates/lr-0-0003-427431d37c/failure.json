@@ -1,0 +1,30 @@
+{
+  "candidate_id": "lr-0-0003-427431d37c",
+  "candidate_key": "lr_0_0003",
+  "parent_candidate": "base",
+  "timestamp": "2026-09-02T10:46:36.698219+00:00",
+  "stage": "INFRASTRUCTURE",
+  "classification": "INFRASTRUCTURE_ERROR",
+  "exception": "network",
+  "epoch": null,
+  "step": null,
+  "tensor_name": null,
+  "dtype": null,
+  "shape": null,
+  "min": null,
+  "max": null,
+  "mean": null,
+  "std": null,
+  "activation_maxima": null,
+  "grad_scaler_scale": null,
+  "grad_norm": null,
+  "learning_rate": 0.0003,
+  "source_hashes": {},
+  "traceback": "NoneType: None\n",
+  "status": "INFRASTRUCTURE_FAILED",
+  "evidence": {
+    "retry_count": 3
+  },
+  "attempt": 1,
+  "evidence_path": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_infrastructure_retry_is_b0\\project\\results\\model_search\\failures\\lr-0-0003-427431d37c.json"
+}

@@ -64,7 +64,7 @@ http://192.168.1.20:8000
 2. Call `POST /auth/totp/enroll` with the Bearer token.
 3. Display the returned QR image or `otpauth_uri`.
 4. Scan the QR with this application.
-5. Enter the generated 6-digit code into `POST /auth/totp/confirm?code=...`.
+5. Enter the generated 6-digit code into `POST /auth/totp/confirm` with JSON body `{"code":"..."}`.
 6. Future logins require password plus the current TOTP code.
 
 ## Android permissions

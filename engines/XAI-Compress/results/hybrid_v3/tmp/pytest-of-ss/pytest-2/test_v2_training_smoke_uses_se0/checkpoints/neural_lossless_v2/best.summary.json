@@ -1,0 +1,46 @@
+{
+  "checkpoint": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_v2_training_smoke_uses_se0\\checkpoints\\neural_lossless_v2\\best.pt",
+  "parameter_count": 10944,
+  "best_validation_cross_entropy": 5.702951908111572,
+  "best_validation_bpb": 8.227620436260818,
+  "epochs_completed": 1,
+  "train_files": 1,
+  "validation_files": 1,
+  "train_dataset": {
+    "files_discovered": 1,
+    "files_used": 1,
+    "samples": 8,
+    "bytes_considered": 128,
+    "context_length": 16,
+    "stride": 16,
+    "max_bytes_per_file": 1024,
+    "archives_included": false
+  },
+  "validation_dataset": {
+    "files_discovered": 1,
+    "files_used": 1,
+    "samples": 2,
+    "bytes_considered": 220,
+    "context_length": 16,
+    "stride": 16,
+    "max_bytes_per_file": 1024,
+    "archives_included": false
+  },
+  "model_config": {
+    "embedding_dim": 16,
+    "hidden_dim": 16,
+    "num_layers": 1,
+    "context_length": 16,
+    "dropout": 0,
+    "architecture_id": "causal-byte-transformer-v2",
+    "n_heads": 4,
+    "ff_dim": 32,
+    "residual_scale": 1.0
+  },
+  "seed": 42,
+  "device": "cpu",
+  "safe_training_mode": false,
+  "amp_recoveries": 0,
+  "checkpoint_rollbacks": 0,
+  "last_stable_checkpoint": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_v2_training_smoke_uses_se0\\checkpoints\\neural_lossless_v2\\last_stable.pt"
+}

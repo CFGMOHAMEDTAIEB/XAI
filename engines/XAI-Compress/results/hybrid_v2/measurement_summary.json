@@ -1,0 +1,13 @@
+{
+  "source_groups": 1046,
+  "measurements": 19087,
+  "labels": 3138,
+  "failures": 0,
+  "splits": {
+    "validation": 156,
+    "train": 735,
+    "test": 155
+  },
+  "measurement_policy": "real files are measured on bounded beginning/middle/end regions up to max_real_bytes; controlled synthetic multi-size files are measured at full size",
+  "max_real_bytes": 65536
+}

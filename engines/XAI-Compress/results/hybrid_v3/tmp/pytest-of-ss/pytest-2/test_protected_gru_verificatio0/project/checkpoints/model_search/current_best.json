@@ -1,0 +1,16 @@
+{
+  "candidate_id": "protected_gru",
+  "path": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_protected_gru_verificatio0\\project\\checkpoints\\kaggle\\best.pt",
+  "size": 37261,
+  "sha256": "8bcb96f95ff6b7f28be9724ebbd81ce0cfde7eec7cbc1c460c169e1247b0313a",
+  "validated": true,
+  "baseline_integrity": {
+    "expected_sha256": "8bcb96f95ff6b7f28be9724ebbd81ce0cfde7eec7cbc1c460c169e1247b0313a",
+    "measured_sha256": "8bcb96f95ff6b7f28be9724ebbd81ce0cfde7eec7cbc1c460c169e1247b0313a",
+    "expected_sha256_valid_format": true,
+    "match": true,
+    "verification_status": "VERIFIED",
+    "verified_at": "2026-09-02T10:46:41.313408+00:00"
+  },
+  "application_default_changed": false
+}

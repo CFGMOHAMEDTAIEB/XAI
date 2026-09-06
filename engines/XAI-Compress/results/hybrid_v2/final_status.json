@@ -1,0 +1,578 @@
+{
+  "generated_at": "2026-09-01T21:52:21.259252+00:00",
+  "dataset": {
+    "source_groups": 1046,
+    "real_files": 1025,
+    "controlled_files": 21,
+    "categories": 19,
+    "train_validation_test": "735/156/155",
+    "held_out_real_files": 26,
+    "available_categories": [
+      "archive",
+      "binary",
+      "csv",
+      "executable",
+      "image",
+      "json",
+      "logs",
+      "markdown",
+      "model",
+      "source_code",
+      "text",
+      "video"
+    ],
+    "size_buckets": {
+      "lt_16KiB": 18,
+      "gt_10MiB": 1,
+      "16_64KiB": 4,
+      "64KiB_1MiB": 1,
+      "1_10MiB": 2
+    },
+    "unavailable_required_categories": [
+      "audio",
+      "pdf",
+      "high_entropy",
+      "repetitive"
+    ],
+    "real_audio_coverage": "NOT MEASURED"
+  },
+  "selector_v2": {
+    "format": "xai-codec-selector-v2",
+    "training_groups": 735,
+    "validation_groups": 156,
+    "test_groups": 155,
+    "features": 111,
+    "selected_models": {
+      "smallest": "decision_tree",
+      "fastest": "extra_trees",
+      "balanced": "random_forest"
+    },
+    "confidence_thresholds": {
+      "smallest": {
+        "low": 0.6,
+        "high": 0.95,
+        "validation_objective": 0.00041461030926391915,
+        "mean_extra_candidates": 0.8717948717948718
+      },
+      "fastest": {
+        "low": 0.7,
+        "high": 0.8,
+        "validation_objective": 0.00010102381171224176,
+        "mean_extra_candidates": 1.6987179487179487
+      },
+      "balanced": {
+        "low": 0.7,
+        "high": 0.8,
+        "validation_objective": 7.644709322878188e-05,
+        "mean_extra_candidates": 1.3076923076923077
+      }
+    },
+    "top_1_accuracy": 0.6666666666666666,
+    "top_2_recall": 0.8107526881720429,
+    "top_3_recall": 0.8903225806451612,
+    "mean_regret": 0.0034826281333670984,
+    "median_regret": 0.0,
+    "p95_regret": 0.021321162440231477,
+    "mean_inference_ms": 0.3254526881538632,
+    "model_families_benchmarked": [
+      "decision_tree",
+      "random_forest",
+      "extra_trees",
+      "gradient_boosting",
+      "histogram_gradient_boosting"
+    ],
+    "cost_sensitive_training": "measured profile-score-spread oversampling",
+    "artifact_metadata_listed_families": [
+      "rule_based",
+      "decision_tree",
+      "random_forest",
+      "extra_trees",
+      "gradient_boosting",
+      "histogram_gradient_boosting"
+    ],
+    "model_families_benchmarked_actual": [
+      "decision_tree",
+      "random_forest",
+      "extra_trees",
+      "gradient_boosting",
+      "histogram_gradient_boosting"
+    ],
+    "rule_baseline_evaluated_separately": {
+      "status": "MEASURED",
+      "metrics": [
+        {
+          "model": "rule_based",
+          "profile": "balanced",
+          "split": "test",
+          "samples": 155,
+          "top_1_accuracy": 0.07096774193548387,
+          "top_2_recall": 0.09032258064516129,
+          "top_3_recall": 0.09032258064516129,
+          "mean_regret": 0.15559056573832117,
+          "median_regret": 0.06861328029425637,
+          "p95_regret": 0.43170057997525496
+        },
+        {
+          "model": "rule_based",
+          "profile": "fastest",
+          "split": "test",
+          "samples": 155,
+          "top_1_accuracy": 0.12903225806451613,
+          "top_2_recall": 0.23870967741935484,
+          "top_3_recall": 0.25806451612903225,
+          "mean_regret": 0.013927293044606033,
+          "median_regret": 0.005363513090818776,
+          "p95_regret": 0.038573338376883044
+        },
+        {
+          "model": "rule_based",
+          "profile": "smallest",
+          "split": "test",
+          "samples": 155,
+          "top_1_accuracy": 0.09032258064516129,
+          "top_2_recall": 0.1032258064516129,
+          "top_3_recall": 0.1032258064516129,
+          "mean_regret": 0.3122428626167207,
+          "median_regret": 0.06267610296534473,
+          "p95_regret": 0.9516328679486633
+        }
+      ]
+    },
+    "artifact_sha256": "b29049d5c06ebf989d552d0f3082890e7ce85f8aec27032270993c782ae09fb7",
+    "artifact_size_bytes": 3302676
+  },
+  "compression": {
+    "hybrid_v1": {
+      "method": "hybrid_v1",
+      "files": 26,
+      "original_bytes": 14135678,
+      "compressed_bytes": 14010562,
+      "actual_bpb": 7.9291913695261025,
+      "compression_MiB_s": 1.1186254872080257,
+      "decompression_MiB_s": 1.928339225296437,
+      "mean_metadata_bytes": 975.7692307692307,
+      "mean_selection_ms": 263.8882230821764,
+      "median_selection_ms": 88.9356499974383,
+      "mean_feature_scan_ms": 96.13989231058021,
+      "mean_inference_ms": 38.013965385639146,
+      "mean_microbenchmark_ms": 129.73436538595706,
+      "peak_RSS_MB": 327.125,
+      "SHA_PASS": true
+    },
+    "hybrid_v2": {
+      "method": "hybrid_v2",
+      "files": 26,
+      "original_bytes": 14135678,
+      "compressed_bytes": 13997801,
+      "actual_bpb": 7.921969360083047,
+      "compression_MiB_s": 0.6244643593563286,
+      "decompression_MiB_s": 1.7288866074176077,
+      "mean_metadata_bytes": 67.73076923076923,
+      "mean_selection_ms": 668.8695846157946,
+      "median_selection_ms": 235.18984999827808,
+      "mean_feature_scan_ms": 15.934246152308052,
+      "mean_inference_ms": 4.2040230764541775,
+      "mean_microbenchmark_ms": 20.973726922910338,
+      "peak_RSS_MB": 327.125,
+      "SHA_PASS": true
+    },
+    "best_fixed": {
+      "method": "best_fixed",
+      "files": 26,
+      "original_bytes": 14135678,
+      "compressed_bytes": 13660402,
+      "actual_bpb": 7.731020471745324,
+      "compression_MiB_s": 0.03459915966387995,
+      "decompression_MiB_s": 18.825560198331864,
+      "mean_metadata_bytes": 0.0,
+      "mean_selection_ms": 0.0,
+      "median_selection_ms": 0.0,
+      "mean_feature_scan_ms": 0.0,
+      "mean_inference_ms": 0.0,
+      "mean_microbenchmark_ms": 0.0,
+      "peak_RSS_MB": 327.125,
+      "SHA_PASS": true,
+      "source_method": "brotli-11"
+    },
+    "best_fixed_by_compression_speed": {
+      "method": "raw",
+      "files": 26,
+      "original_bytes": 14135678,
+      "compressed_bytes": 14135678,
+      "actual_bpb": 8.0,
+      "compression_MiB_s": 16166.007527313985,
+      "decompression_MiB_s": 116717.17757432532,
+      "mean_metadata_bytes": 0.0,
+      "mean_selection_ms": 0.0,
+      "median_selection_ms": 0.0,
+      "mean_feature_scan_ms": 0.0,
+      "mean_inference_ms": 0.0,
+      "mean_microbenchmark_ms": 0.0,
+      "peak_RSS_MB": 327.125,
+      "SHA_PASS": true
+    },
+    "best_fixed_by_decompression_speed": {
+      "method": "raw",
+      "files": 26,
+      "original_bytes": 14135678,
+      "compressed_bytes": 14135678,
+      "actual_bpb": 8.0,
+      "compression_MiB_s": 16166.007527313985,
+      "decompression_MiB_s": 116717.17757432532,
+      "mean_metadata_bytes": 0.0,
+      "mean_selection_ms": 0.0,
+      "median_selection_ms": 0.0,
+      "mean_feature_scan_ms": 0.0,
+      "mean_inference_ms": 0.0,
+      "mean_microbenchmark_ms": 0.0,
+      "peak_RSS_MB": 327.125,
+      "SHA_PASS": true
+    },
+    "oracle": {
+      "files": 25,
+      "original_bytes": 3258144,
+      "oracle_bytes": 3116469,
+      "v2_comparable_bytes": 3120158,
+      "oracle_bpb": 7.652133239046525,
+      "v2_comparable_bpb": 7.661191156683069,
+      "oracle_gap_percent": 0.11837114375275351
+    },
+    "v2_size_improvement_percent": 0.09108128567576376,
+    "v2_speed_improvement_percent": -44.17574366958798,
+    "v2_vs_best_fixed_percent": 2.469905351248082,
+    "selection_overhead_improvement_percent": -153.4670084187518,
+    "category_wins": [],
+    "category_losses": [
+      "archive",
+      "binary",
+      "csv",
+      "executable",
+      "image",
+      "json",
+      "logs",
+      "markdown",
+      "model",
+      "source_code",
+      "text",
+      "video"
+    ]
+  },
+  "speed": {
+    "feature_scan_ms": 15.934246152308052,
+    "ai_inference_ms": 4.2040230764541775,
+    "microbenchmark_ms": 20.973726922910338,
+    "mean_selection_overhead_ms": 668.8695846157946,
+    "median_selection_overhead_ms": 235.18984999827808,
+    "peak_RSS_MB": 327.125
+  },
+  "container": {
+    "v1_metadata": 975.7692307692307,
+    "v2_metadata": 67.73076923076923,
+    "metadata_reduction_percent": 93.058730784391,
+    "compact_homogeneous_mode": "MEASURED",
+    "overhead_profile": [
+      {
+        "sample_id": "text_4KiB",
+        "category": "text",
+        "original_bytes": 4096,
+        "artifact_bytes": 822,
+        "payload_bytes": 60,
+        "metadata_bytes": 762,
+        "metadata_percent": 92.7007299270073,
+        "header_bytes": 264,
+        "chunk_metadata_bytes": 354,
+        "checksum_bytes": 128,
+        "footer_bytes": 52,
+        "sha_pass": true
+      },
+      {
+        "sample_id": "random_64KiB",
+        "category": "random",
+        "original_bytes": 65536,
+        "artifact_bytes": 66307,
+        "payload_bytes": 65536,
+        "metadata_bytes": 771,
+        "metadata_percent": 1.1627731612046994,
+        "header_bytes": 267,
+        "chunk_metadata_bytes": 360,
+        "checksum_bytes": 128,
+        "footer_bytes": 52,
+        "sha_pass": true
+      },
+      {
+        "sample_id": "numeric_1MiB",
+        "category": "scientific",
+        "original_bytes": 1048576,
+        "artifact_bytes": 1820,
+        "payload_bytes": 1039,
+        "metadata_bytes": 781,
+        "metadata_percent": 42.91208791208791,
+        "header_bytes": 271,
+        "chunk_metadata_bytes": 366,
+        "checksum_bytes": 128,
+        "footer_bytes": 52,
+        "sha_pass": true
+      },
+      {
+        "sample_id": "structured_10MiB",
+        "category": "json",
+        "original_bytes": 10485760,
+        "artifact_bytes": 1054270,
+        "payload_bytes": 1049493,
+        "metadata_bytes": 4777,
+        "metadata_percent": 0.45310973469794263,
+        "header_bytes": 272,
+        "chunk_metadata_bytes": 3533,
+        "checksum_bytes": 704,
+        "footer_bytes": 52,
+        "sha_pass": true
+      },
+      {
+        "sample_id": "repetitive_100MiB",
+        "category": "repetitive",
+        "original_bytes": 104857600,
+        "artifact_bytes": 53773,
+        "payload_bytes": 8944,
+        "metadata_bytes": 44829,
+        "metadata_percent": 83.36711732653934,
+        "header_bytes": 273,
+        "chunk_metadata_bytes": 35304,
+        "checksum_bytes": 6464,
+        "footer_bytes": 52,
+        "sha_pass": true
+      }
+    ]
+  },
+  "correctness": {
+    "fixed_benchmark_sha": true,
+    "hybrid_sha": true,
+    "oracle_sha": true,
+    "ablation_sha": true,
+    "streaming": "PASS via full pytest",
+    "chunk_hybrid": "PASS via full pytest",
+    "compatibility": "PASS via full pytest, including XAIC v1-v6 regression coverage",
+    "summary_sha_pass": true
+  },
+  "models": {
+    "protected_gru": {
+      "path": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\checkpoints\\kaggle\\best.pt",
+      "sha256": "083cda706612c3fd9ce62699741932b07e83fdf98eb6c5430d51bd29e1820429",
+      "expected_sha256": "083cda706612c3fd9ce62699741932b07e83fdf98eb6c5430d51bd29e1820429",
+      "integrity": "PASS"
+    },
+    "transformer": {
+      "path": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\checkpoints\\neural_lossless_v2\\best.pt",
+      "sha256": "584d8dfee979c6719a7602d00d81ef72443ee804878b13a1d651b5ea42129fb9",
+      "expected_sha256": "584d8dfee979c6719a7602d00d81ef72443ee804878b13a1d651b5ea42129fb9",
+      "integrity": "PASS"
+    },
+    "selector_v2": {
+      "path": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\checkpoints\\selector_v2\\best.json",
+      "sha256": "b29049d5c06ebf989d552d0f3082890e7ce85f8aec27032270993c782ae09fb7",
+      "bytes": 3302676,
+      "integrity": "PASS"
+    }
+  },
+  "rust": {
+    "cargo_tests": "2 passed, 0 failed",
+    "native_build": "previously built; cargo gate pinned to project Python and passed",
+    "python_rust_parity": "PASS via focused parity tests and full pytest",
+    "feature_benchmark": {
+      "benchmark": "bounded_byte_feature_extraction",
+      "input_bytes": 65536,
+      "iterations": 50,
+      "python_total_ms": 5006.4911,
+      "rust_total_ms": 209.3811,
+      "measured_speedup": 23.9109,
+      "scope": "byte_stats native core only through extract_features; Windows local CPU",
+      "parity_tolerance": 1e-12,
+      "claim_limit": "This measurement does not imply an end-to-end compression speedup."
+    }
+  },
+  "system": {
+    "python_tests": "199 passed, 3 skipped",
+    "rust_tests": "2 passed, 0 failed",
+    "native_build": "PASS",
+    "python_rust_parity": "PASS",
+    "cli": "PASS via full pytest",
+    "backward_compatibility": "PASS via full pytest"
+  },
+  "ablation": {
+    "summary": [
+      {
+        "method": "A_fixed_best",
+        "files": 26,
+        "original_bytes": 14135678,
+        "compressed_bytes": 13660402,
+        "actual_bpb": 7.731020471745324,
+        "compression_MiB_s": 0.03459915966387995,
+        "decompression_MiB_s": 18.825560198331864,
+        "mean_metadata_bytes": 0.0,
+        "mean_selection_ms": 0.0,
+        "median_selection_ms": 0.0,
+        "mean_feature_scan_ms": 0.0,
+        "mean_inference_ms": 0.0,
+        "mean_microbenchmark_ms": 0.0,
+        "peak_RSS_MB": 327.125,
+        "SHA_PASS": true
+      },
+      {
+        "method": "B_hybrid_v1",
+        "files": 26,
+        "original_bytes": 14135678,
+        "compressed_bytes": 14010562,
+        "actual_bpb": 7.9291913695261025,
+        "compression_MiB_s": 1.1186254872080257,
+        "decompression_MiB_s": 1.928339225296437,
+        "mean_metadata_bytes": 975.7692307692307,
+        "mean_selection_ms": 263.8882230821764,
+        "median_selection_ms": 88.9356499974383,
+        "mean_feature_scan_ms": 96.13989231058021,
+        "mean_inference_ms": 38.013965385639146,
+        "mean_microbenchmark_ms": 129.73436538595706,
+        "peak_RSS_MB": 327.125,
+        "SHA_PASS": true
+      },
+      {
+        "method": "C_ai_only",
+        "files": 26,
+        "original_bytes": 14135678,
+        "compressed_bytes": 14079004,
+        "actual_bpb": 7.9679256983640965,
+        "compression_MiB_s": 0.15244043793699116,
+        "decompression_MiB_s": 0.5996736950704368,
+        "mean_metadata_bytes": 4265.846153846154,
+        "mean_selection_ms": 1430.594249999558,
+        "median_selection_ms": 62.84459999005776,
+        "mean_feature_scan_ms": 1299.0585999992059,
+        "mean_inference_ms": 131.53565000035226,
+        "mean_microbenchmark_ms": 0.0,
+        "peak_RSS_MB": 251.3125,
+        "SHA_PASS": true
+      },
+      {
+        "method": "D_ai_top2",
+        "files": 26,
+        "original_bytes": 14135678,
+        "compressed_bytes": 14099195,
+        "actual_bpb": 7.979352670597052,
+        "compression_MiB_s": 0.1398335271626016,
+        "decompression_MiB_s": 0.7315807810575035,
+        "mean_metadata_bytes": 4367.653846153846,
+        "mean_selection_ms": 1974.0328615376852,
+        "median_selection_ms": 69.45889999042265,
+        "mean_feature_scan_ms": 1237.1405961535997,
+        "mean_inference_ms": 135.26575769020172,
+        "mean_microbenchmark_ms": 601.6265076938837,
+        "peak_RSS_MB": 251.3125,
+        "SHA_PASS": true
+      },
+      {
+        "method": "E_confidence_adaptive",
+        "files": 26,
+        "original_bytes": 14135678,
+        "compressed_bytes": 14097107,
+        "actual_bpb": 7.978170979842637,
+        "compression_MiB_s": 0.1411246288988173,
+        "decompression_MiB_s": 0.793338842711162,
+        "mean_metadata_bytes": 4429.0,
+        "mean_selection_ms": 2098.9536307752132,
+        "median_selection_ms": 57.240349997300655,
+        "mean_feature_scan_ms": 1154.0035461534549,
+        "mean_inference_ms": 131.26806923649454,
+        "mean_microbenchmark_ms": 813.6820153852639,
+        "peak_RSS_MB": 251.3125,
+        "SHA_PASS": true
+      },
+      {
+        "method": "F_compact_xaic",
+        "files": 26,
+        "original_bytes": 14135678,
+        "compressed_bytes": 13986962,
+        "actual_bpb": 7.915835094715655,
+        "compression_MiB_s": 0.12723995139223646,
+        "decompression_MiB_s": 0.7489372250591303,
+        "mean_metadata_bytes": 181.80769230769232,
+        "mean_selection_ms": 3818.030846155195,
+        "median_selection_ms": 1737.8208500085748,
+        "mean_feature_scan_ms": 1301.615380770482,
+        "mean_inference_ms": 127.56375769654719,
+        "mean_microbenchmark_ms": 828.3840923031676,
+        "peak_RSS_MB": 251.3125,
+        "SHA_PASS": true
+      },
+      {
+        "method": "G_compact_adaptive",
+        "files": 26,
+        "original_bytes": 14135678,
+        "compressed_bytes": 13996811,
+        "actual_bpb": 7.921409075673625,
+        "compression_MiB_s": 0.2933116656474616,
+        "decompression_MiB_s": 1.2065258609906184,
+        "mean_metadata_bytes": 67.73076923076923,
+        "mean_selection_ms": 1429.1482961561996,
+        "median_selection_ms": 1148.3926999935647,
+        "mean_feature_scan_ms": 56.162842306478595,
+        "mean_inference_ms": 11.432861538196448,
+        "mean_microbenchmark_ms": 38.35069615328953,
+        "peak_RSS_MB": 251.3125,
+        "SHA_PASS": true
+      },
+      {
+        "method": "H_full_v2",
+        "files": 26,
+        "original_bytes": 14135678,
+        "compressed_bytes": 13997801,
+        "actual_bpb": 7.921969360083047,
+        "compression_MiB_s": 0.6244643593563286,
+        "decompression_MiB_s": 1.7288866074176077,
+        "mean_metadata_bytes": 67.73076923076923,
+        "mean_selection_ms": 668.8695846157946,
+        "median_selection_ms": 235.18984999827808,
+        "mean_feature_scan_ms": 15.934246152308052,
+        "mean_inference_ms": 4.2040230764541775,
+        "mean_microbenchmark_ms": 20.973726922910338,
+        "peak_RSS_MB": 327.125,
+        "SHA_PASS": true
+      }
+    ],
+    "largest_size_improvement": {
+      "from": "E_confidence_adaptive",
+      "to": "F_compact_xaic",
+      "bytes_saved": 110145
+    },
+    "largest_speed_improvement": {
+      "from": "A_fixed_best",
+      "to": "B_hybrid_v1",
+      "MiB_s_gain": 1.0840263275441457
+    },
+    "largest_overhead_improvement": {
+      "from": "F_compact_xaic",
+      "to": "G_compact_adaptive",
+      "ms_saved": 2388.8825499989953
+    }
+  },
+  "scientific_decision": {
+    "hybrid_v2_status": "IMPROVED_OVER_HYBRID_V1_SIZE_ONLY",
+    "category_specialist_advantage": false,
+    "beats_v1_final_bytes": true,
+    "beats_v1_speed": false,
+    "reduces_selector_overhead": false,
+    "reduces_metadata": true,
+    "beats_best_fixed_overall": false,
+    "conclusion": "Hybrid V2 reduces final bytes and metadata versus Hybrid V1, but it is slower on this held-out set and does not beat Brotli-11 for smallest overall artifact bytes."
+  },
+  "production": {
+    "recommended_mode": "--mode hybrid-v2",
+    "recommended_profile": "balanced for self-contained adaptive XAIC output; smallest only when size dominates",
+    "recommended_fixed_codec_fallback": "brotli-11",
+    "decompression_dependency": "Selector V2 is not required for decompression."
+  },
+  "limitations": [
+    "Held-out benchmark contains 26 real files; audio was not measured in the real corpus.",
+    "Bounded oracle excludes files above 10 MiB and excludes pure-Python xai-static above 4 KiB by measured cost policy.",
+    "V2 did not beat Brotli-11 in total artifact bytes on this held-out benchmark.",
+    "V2 compression throughput was lower than Hybrid V1 in the measured local run.",
+    "Peak RSS is process-level local measurement, not isolated per codec."
+  ]
+}

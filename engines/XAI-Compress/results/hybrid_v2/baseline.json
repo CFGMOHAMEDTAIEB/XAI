@@ -1,0 +1,49 @@
+{
+  "baseline": "Hybrid AI V1",
+  "captured_date": "2026-09-01",
+  "git_commit": "962853ebc3b197cc182d84ff7685354409a56a7b",
+  "python_tests": "177 passed, 3 skipped in 47.70s",
+  "rust_tests": "1 passed, 0 failed",
+  "xaic": {
+    "hybrid_version": 5,
+    "prefix": ">4sBI",
+    "chunk": ">4sQIII32sI32s",
+    "footer": ">4sQQ32s"
+  },
+  "protected_models": {
+    "gru": {
+      "path": "checkpoints/kaggle/best.pt",
+      "sha256": "083cda706612c3fd9ce62699741932b07e83fdf98eb6c5430d51bd29e1820429",
+      "integrity": "PASS"
+    },
+    "transformer": {
+      "path": "checkpoints/neural_lossless_v2/best.pt",
+      "sha256": "584d8dfee979c6719a7602d00d81ef72443ee804878b13a1d651b5ea42129fb9",
+      "integrity": "PASS"
+    }
+  },
+  "selector": {
+    "path": "checkpoints/selector/best.json",
+    "sha256": "3992fead42e8c2f4f23b9618a1810b1e665116aa5799c68ca93a6973dfbce296",
+    "bytes": 264866
+  },
+  "benchmarks": {
+    "hybrid_benchmark.csv": "7634610a9c0015a2a62dd75eb7b9aa7a87bf32cacb172b6354e0af538fae5fe8",
+    "codec_benchmark.csv": "77003e2699a54ca9b692133a736f562e40639d6e6d63eeaed2ba2eb8f6c91bf5",
+    "oracle_benchmark.csv": "ffaabfcbd1eea78f96bbfbfb57551ba8960a76f7b4f1d8d83fa658e1bdc72403",
+    "final_status.json": "f4f1912b0710f490b2192f9fbc4169565862e5f963f23210d820a3f4c38e1175"
+  },
+  "measured_v1": {
+    "balanced_hybrid_bpb": 0.008826190627967502,
+    "best_fixed_codec": "brotli-6",
+    "best_fixed_bpb": 0.0045891190474097,
+    "hybrid_vs_best_fixed_percent": 92.32864819554837,
+    "balanced_oracle_gap_percent": 1.0682171590832263,
+    "compression_mib_s": 8.465241483272042,
+    "decompression_mib_s": 75.42018643386412,
+    "median_selection_overhead_ms": 184.94400000781752,
+    "peak_rss_mib": 220.78515625,
+    "sha_pass_rows": 65,
+    "sha_fail_rows": 0
+  }
+}

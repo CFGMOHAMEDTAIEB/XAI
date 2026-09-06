@@ -1,0 +1,8 @@
+XAI-Compress ready package
+Static lossless mode: implemented and verified.
+Neural mode: causal GRU architecture and training pipeline included; requires PyTorch and a trained checkpoint.
+Test result: [32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m                                                            [100%][0m
+[32m[32m[1m13 passed[0m[32m in 3.15s[0m[0m
+Randomized round trips: 10/10.
+CLI SHA-256 verification: b58182d3be6399ed83856adabe59f2f8fcc7dec18a33ce688070c1d11f9ad082.
+Read README.md before running.

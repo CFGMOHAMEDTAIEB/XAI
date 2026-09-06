@@ -1,0 +1,51 @@
+{
+  "models": [
+    {
+      "model": "gradient_boosted_stumps",
+      "profile": "smallest",
+      "samples": 9,
+      "top_1_accuracy": 0.7777777777777778,
+      "top_3_recall": 0.8888888888888888,
+      "mean_regret": 0.015086222656320054,
+      "median_regret": 0.0,
+      "p95_regret": 0.08019434970928127,
+      "mean_size_regret_percent": 176.73165658646602,
+      "p95_size_regret_percent": 954.0561052720756,
+      "mean_inference_ms": 1.7106888925708417,
+      "selected_for_profile": true
+    },
+    {
+      "model": "random_forest",
+      "profile": "fastest",
+      "samples": 9,
+      "top_1_accuracy": 0.6666666666666666,
+      "top_3_recall": 0.7777777777777778,
+      "mean_regret": 0.00027312486903011303,
+      "median_regret": 0.0,
+      "p95_regret": 0.001320674505140614,
+      "mean_size_regret_percent": 3.484287415617427,
+      "p95_size_regret_percent": 18.12070282658517,
+      "mean_inference_ms": 0.3012666646908555,
+      "selected_for_profile": true
+    },
+    {
+      "model": "gradient_boosted_stumps",
+      "profile": "balanced",
+      "samples": 9,
+      "top_1_accuracy": 0.6666666666666666,
+      "top_3_recall": 0.7777777777777778,
+      "mean_regret": 0.0013163655002298167,
+      "median_regret": 0.0,
+      "p95_regret": 0.0069044229544868215,
+      "mean_size_regret_percent": 176.60377083467873,
+      "p95_size_regret_percent": 953.3779307217212,
+      "mean_inference_ms": 1.6994777785536523,
+      "selected_for_profile": true
+    }
+  ],
+  "selected": {
+    "smallest": "gradient_boosted_stumps",
+    "fastest": "random_forest",
+    "balanced": "gradient_boosted_stumps"
+  }
+}

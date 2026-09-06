@@ -1,0 +1,6 @@
+flowchart TD
+ A[Entropy, ASCII, runs, zlib probe] --> B{Selector}
+ B -->|near 8 BPB| C[Store]
+ B -->|LZ matches| D[zlib]
+ B -->|order-0 bias| E[Static arithmetic]
+ B -->|learned domain| F[Neural entropy coding]

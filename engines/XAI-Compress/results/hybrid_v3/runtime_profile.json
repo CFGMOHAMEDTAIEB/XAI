@@ -1,0 +1,78 @@
+{
+  "phase": "Phase 2: Runtime Profile Analysis",
+  "data_source": "V2 hybrid benchmark results",
+  "records_analyzed": 26,
+  "timing_statistics": {
+    "feature_scan_ms": {
+      "mean_ms": 15.934246152308052,
+      "median_ms": 6.764349993318319,
+      "std_ms": 24.319278453339376,
+      "min_ms": 0.03189999551977962,
+      "max_ms": 76.79819999611937,
+      "p95_ms": 67.96545000179322,
+      "count": 26
+    },
+    "inference_ms": {
+      "mean_ms": 4.2040230764541775,
+      "median_ms": 0.690950000716839,
+      "std_ms": 6.669770897369652,
+      "min_ms": 0.0,
+      "max_ms": 23.548299999674782,
+      "p95_ms": 21.017549999669427,
+      "count": 26
+    },
+    "candidate_generation_ms": {
+      "mean_ms": 610.6736615385252,
+      "median_ms": 172.48610000387998,
+      "std_ms": 848.5320351141661,
+      "min_ms": 0.0,
+      "max_ms": 3203.9994000078877,
+      "p95_ms": 2226.2317250024353,
+      "count": 26
+    },
+    "microbenchmark_ms": {
+      "mean_ms": 20.973726922910338,
+      "median_ms": 0.0,
+      "std_ms": 44.350565234729636,
+      "min_ms": 0.0,
+      "max_ms": 191.05280000076164,
+      "p95_ms": 96.17304999846965,
+      "count": 26
+    },
+    "selection_ms": {
+      "mean_ms": 668.8695846157946,
+      "median_ms": 235.18984999827808,
+      "std_ms": 927.1043159418681,
+      "min_ms": 1.0577999928500503,
+      "max_ms": 3536.6134000068996,
+      "p95_ms": 2446.7114500002936,
+      "count": 26
+    },
+    "compression_ms": {
+      "mean_ms": 830.3013153843215,
+      "median_ms": 399.2461999951047,
+      "std_ms": 1017.3650497534767,
+      "min_ms": 6.961999999475665,
+      "max_ms": 3853.8626999943517,
+      "p95_ms": 2646.712275003665,
+      "count": 26
+    }
+  },
+  "top_3_bottlenecks": [
+    {
+      "rank": 1,
+      "component": "compression_ms",
+      "mean_ms": 830.3013153843215
+    },
+    {
+      "rank": 2,
+      "component": "selection_ms",
+      "mean_ms": 668.8695846157946
+    },
+    {
+      "rank": 3,
+      "component": "candidate_generation_ms",
+      "mean_ms": 610.6736615385252
+    }
+  ]
+}

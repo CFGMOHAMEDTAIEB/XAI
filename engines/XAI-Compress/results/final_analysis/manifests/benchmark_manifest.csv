@@ -1,0 +1,6 @@
+file,category,size,sha256,source,training_overlap_status
+data\test\archive\config.json,structured,788,5572bb0a564feb070c550268570856f39196fedab4f95968adb39ba8718defc1,held-out data/test,NO
+data\test\archive\generation_config.json,structured,112,b81b4e5414e7256e14eaca4597234f4d09829251784bbf0e0eb013f115f32aa3,held-out data/test,NO
+data\test\archive\logs\events.out.tfevents.1734400848.adb5537c5a76.23.0,binary,7456,05959a148a0a458085a2a271263ebc9e163c1ccd92e34504f863eabf25e99670,held-out data/test,NO
+data\test\archive\logs\events.out.tfevents.1734402410.adb5537c5a76.23.1,binary,10506,e37d8833c78f69efd80595e6661055cd990b62e0eafdb7116c549d882241c3ee,held-out data/test,NO
+data\test\archive\wandb\run-20241217_020210-f69emzpa\files\requirements.txt,text,14974,36d2b1446f8484d9b3af94961a1df38ae0c8a4b33a51e8413e8b3262b6d823c6,held-out data/test,NO

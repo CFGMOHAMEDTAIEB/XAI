@@ -1,0 +1,42 @@
+{
+  "checkpoint_bytes_modified_by_validation": false,
+  "protected_gru": {
+    "expected_sha256": "083cda706612c3fd9ce62699741932b07e83fdf98eb6c5430d51bd29e1820429",
+    "immutable": true,
+    "path": "checkpoints\\kaggle\\best.pt",
+    "sha256": "083cda706612c3fd9ce62699741932b07e83fdf98eb6c5430d51bd29e1820429",
+    "sha256_after_all_work": "083cda706612c3fd9ce62699741932b07e83fdf98eb6c5430d51bd29e1820429",
+    "sha256_match": true,
+    "size_bytes": 20423284
+  },
+  "status": "PASS",
+  "transformer": {
+    "architecture_id": "causal-byte-transformer-v2",
+    "config": {
+      "architecture_id": "causal-byte-transformer-v2",
+      "context_length": 256,
+      "dropout": 0.1,
+      "embedding_dim": 192,
+      "ff_dim": 768,
+      "hidden_dim": 192,
+      "n_heads": 6,
+      "num_layers": 4,
+      "residual_scale": 0.25
+    },
+    "deterministic_inference": true,
+    "epoch": 5,
+    "expected_sha256": "584d8dfee979c6719a7602d00d81ef72443ee804878b13a1d651b5ea42129fb9",
+    "fingerprint": "f563a3935182cc92e38fb99cde230465dc53b8f90f09ad39218ea3372699f9a8",
+    "finite_optimizer_state": true,
+    "finite_parameters": true,
+    "format": "xai-compress-checkpoint-v1",
+    "optimizer_state_present": true,
+    "parameters": 2468160,
+    "path": "checkpoints\\neural_lossless_v2\\best.pt",
+    "sha256": "584d8dfee979c6719a7602d00d81ef72443ee804878b13a1d651b5ea42129fb9",
+    "sha256_match": true,
+    "size_bytes": 29688665,
+    "state_dict_keys": 44,
+    "strict_checkpoint_load": true
+  }
+}

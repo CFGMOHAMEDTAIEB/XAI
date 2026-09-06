@@ -1,0 +1,1 @@
+candidate_id,candidate_key,change,status,best_val_bpb,actual_bpb,ratio,sha256,max_activation,compression_MB_s,decompression_MB_s,peak_RSS_MB,vram_bytes,checkpoint_size,decision,pareto

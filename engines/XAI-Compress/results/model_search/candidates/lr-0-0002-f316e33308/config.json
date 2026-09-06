@@ -1,0 +1,39 @@
+{
+  "candidate_id": "lr-0-0002-f316e33308",
+  "candidate_key": "lr_0_0002",
+  "fingerprint": "f316e33308e1fc4115f0127e62c9fe0321a8d1a1e61c21bdccf490dd64499807",
+  "parent": "base",
+  "change": {
+    "lr": 0.0002
+  },
+  "change_label": "LR 0.0005 -> 0.0002",
+  "activation_rule": "lr_0_0003_numerical_or_growth_failure",
+  "resolved_config": {
+    "architecture": "causal-byte-transformer-v2",
+    "lr": 0.0002,
+    "context_length": 256,
+    "embedding_dim": 192,
+    "hidden_dim": 192,
+    "num_layers": 4,
+    "n_heads": 6,
+    "ff_dim": 768,
+    "dropout": 0.1,
+    "batch_size": 16,
+    "gradient_clip": 1.0,
+    "amp": true,
+    "amp_initial_scale": 1024,
+    "amp_growth_interval": 10000,
+    "stride": 128,
+    "max_bytes_per_file": 33554432
+  },
+  "status": "PENDING",
+  "phase": 0,
+  "created_at": "2026-08-30T16:21:24.652831+00:00",
+  "updated_at": "2026-08-30T16:21:24.652878+00:00",
+  "checkpoint_dir": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\checkpoints\\model_search\\lr-0-0002-f316e33308",
+  "candidate_dir": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\model_search\\candidates\\lr-0-0002-f316e33308",
+  "source_hashes": {},
+  "metrics": {},
+  "decision": "REJECT",
+  "infrastructure_retries": 0
+}

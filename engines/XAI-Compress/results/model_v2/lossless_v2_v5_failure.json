@@ -1,0 +1,29 @@
+{
+  "kernel_version": 5,
+  "kernel_status": "ERROR",
+  "classification": "FORWARD_ACTIVATION_INSTABILITY",
+  "first_non_finite_stage": "residual_ffn",
+  "layer": 3,
+  "dtype": "torch.float32",
+  "shape": [16, 256, 192],
+  "finite_min": -63937.71484375,
+  "finite_max": 19240.51953125,
+  "finite_mean": -317.2616271972656,
+  "finite_std": 3690.716552734375,
+  "finite_abs_max": 63937.71484375,
+  "grad_scaler_initial_scale": 1024,
+  "grad_scaler_growth_interval": 10000,
+  "production_epoch_completed": false,
+  "production_checkpoint_created": false,
+  "version_6_submitted": false,
+  "smoke": {
+    "train_cross_entropy": 5.594452185428881,
+    "val_cross_entropy": 5.556447144850944,
+    "val_bpb_estimate": 8.016258740838097,
+    "grad_scaler_scale": 65536.0,
+    "gradient_norm": 0.29456454515457153,
+    "peak_vram_bytes": 319257600,
+    "samples_per_second": 186.50973061016919,
+    "epoch_seconds": 4.938080157999991
+  }
+}

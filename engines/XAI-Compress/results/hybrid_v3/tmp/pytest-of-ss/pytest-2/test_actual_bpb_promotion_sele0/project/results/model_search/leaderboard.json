@@ -1,0 +1,20 @@
+[
+  {
+    "candidate_id": "lr-0-0003-427431d37c",
+    "candidate_key": "lr_0_0003",
+    "change": "LR 0.0003",
+    "status": "VALIDATED",
+    "best_val_bpb": "N/A",
+    "actual_bpb": 7.0,
+    "ratio": 1.1428571428571428,
+    "sha256": true,
+    "max_activation": "N/A",
+    "compression_MB_s": 1.0,
+    "decompression_MB_s": 2.0,
+    "peak_RSS_MB": 100.0,
+    "vram_bytes": 20,
+    "checkpoint_size": 10,
+    "decision": "PROMOTE",
+    "pareto": "PARETO"
+  }
+]

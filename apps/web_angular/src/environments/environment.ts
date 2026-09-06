@@ -1,1 +1,1 @@
-export const environment={production:false,apiUrl:'http://localhost:8000',demoMode:true};
+export const environment={production:false,apiUrl:'http://localhost:8000',demoMode:false};

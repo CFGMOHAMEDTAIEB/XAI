@@ -1,0 +1,2 @@
+flowchart LR
+ A[Pinned DataLoader] --> B[GPU batch] --> C[Causal model] --> D[Cross entropy / BPB] --> E[Scaled gradients] --> F[Checkpoint + metrics]

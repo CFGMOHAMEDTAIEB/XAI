@@ -1,0 +1,17 @@
+{
+  "classification_id": "03fa46554e08c7d3118ac2d7401a540e3ac1f5ae1b3b23d2fcbb01013d6e807c",
+  "candidate_id": "lr-0-0003-427431d37c",
+  "timestamp": "2026-09-02T10:46:37.231860+00:00",
+  "status": "INFRASTRUCTURE_FAILED_RETRY_ELIGIBLE",
+  "failure_class": "TELEMETRY_INFRASTRUCTURE_ERROR",
+  "reason": "POST_VALIDATION_TELEMETRY_DEVICE_MISMATCH",
+  "retry_eligible": true,
+  "retry_count": 0,
+  "max_retries": 1,
+  "supersedes_failure_id": "4a3254d5348f2a2d6b117bef5b6b9c09daf685a39eba28ea64c4f51010af22d6",
+  "model_evidence_valid": false,
+  "infrastructure_evidence_valid": true,
+  "scientific_status": "UNRESOLVED",
+  "numerical_instability_established": false,
+  "original_failure_preserved_at": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_candidate_a_telemetry_fai0\\project\\results\\model_search\\failures\\lr-0-0003-427431d37c.json"
+}

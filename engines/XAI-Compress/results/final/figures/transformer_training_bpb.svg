@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="950" height="560">
+<rect width="100%" height="100%" fill="white"/>
+<text x="475.0" y="30" text-anchor="middle" font-size="22" font-family="sans-serif">Transformer validation BPB estimate by epoch</text>
+<text x="18" y="52" font-size="13" font-family="sans-serif" fill="#276749">MEASURED — completed Kaggle 5-epoch gate</text>
+<line x1="85" y1="490" x2="915" y2="490" stroke="black"/>
+<line x1="85" y1="75" x2="85" y2="490" stroke="black"/>
+<text transform="translate(20 282.5) rotate(-90)" text-anchor="middle" font-size="15" font-family="sans-serif">Validation BPB estimate (not artifact BPB)</text>
+<text x="85.00" y="514" text-anchor="middle" font-size="13" font-family="sans-serif">1</text>
+<text x="292.50" y="514" text-anchor="middle" font-size="13" font-family="sans-serif">2</text>
+<text x="500.00" y="514" text-anchor="middle" font-size="13" font-family="sans-serif">3</text>
+<text x="707.50" y="514" text-anchor="middle" font-size="13" font-family="sans-serif">4</text>
+<text x="915.00" y="514" text-anchor="middle" font-size="13" font-family="sans-serif">5</text>
+<circle cx="85.00" cy="75.00" r="4" fill="#2563eb"/>
+<circle cx="292.50" cy="302.59" r="4" fill="#2563eb"/>
+<circle cx="500.00" cy="388.02" r="4" fill="#2563eb"/>
+<circle cx="707.50" cy="454.83" r="4" fill="#2563eb"/>
+<circle cx="915.00" cy="490.00" r="4" fill="#2563eb"/>
+<polyline points="85.00,75.00 292.50,302.59 500.00,388.02 707.50,454.83 915.00,490.00" fill="none" stroke="#2563eb" stroke-width="3"/>
+<text x="97" y="93" font-size="13" font-family="sans-serif" fill="#2563eb">Validation BPB estimate</text>
+<text x="500.0" y="545" text-anchor="middle" font-size="15" font-family="sans-serif">Epoch</text>
+</svg>

@@ -1,0 +1,9 @@
+{
+  "expected_valid_files": 140,
+  "valid_files": 140,
+  "unique_source_ids": 140,
+  "rejected": 10,
+  "reject_reasons": {
+    "transient_test_artifact": 10
+  }
+}

@@ -1,0 +1,17 @@
+[
+  {
+    "epoch": 1,
+    "train_cross_entropy": 5.596832869754422,
+    "val_cross_entropy": 5.543966645175971,
+    "val_bpb_estimate": 7.9982531858491965,
+    "learning_rate": 0.001,
+    "vram_max_bytes": 275216896.0,
+    "vram_allocated_bytes": 62466560.0,
+    "vram_reserved_bytes": 348127232.0,
+    "gpu_utilization_percent": 13.0,
+    "samples_per_second": 158.8509591038538,
+    "epoch_seconds": 5.797887561999971,
+    "elapsed_seconds": 5.798095552999996,
+    "eta_seconds": 0.0
+  }
+]

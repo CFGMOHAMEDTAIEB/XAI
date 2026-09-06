@@ -1,0 +1,2 @@
+candidate,checkpoint,new_selector_v3_trained,reason,used_by
+selector_v2,C:\Users\ss\Desktop\XAI\XAI\engines\XAI-Compress\checkpoints\selector_v2\best.json,False,"V3 held-out evidence uses the frozen Selector V2 artifact; improvements are runtime/routing/container, not a newly trained model.",hybrid_v2 and hybrid_v3

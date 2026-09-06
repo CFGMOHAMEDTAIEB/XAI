@@ -1,0 +1,59 @@
+{
+  "generated_utc": "2026-08-31T22:11:36.930352+00:00",
+  "LOSSLESS": {
+    "GRU_checkpoint": "checkpoints\\kaggle\\best.pt",
+    "Transformer_checkpoint": "NOT AVAILABLE",
+    "Transformer_status": "EXPERIMENTAL / FAILED TO VALIDATE SO FAR",
+    "SHA_roundtrip": "PASS",
+    "best_measured_actual_BPB": 2.0703125,
+    "best_measured_method": "brotli-6"
+  },
+  "LOSSY": {
+    "checkpoint": "checkpoints\\neural_lossy_v1\\validation.pt",
+    "quality_modes": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "decode_validation": "PASS",
+    "measured_PSNR_SSIM": [
+      {
+        "quality": "low",
+        "psnr_db": 10.759693124323535,
+        "ssim": 0.024958053968823574
+      },
+      {
+        "quality": "medium",
+        "psnr_db": 10.759693124323535,
+        "ssim": 0.024958053968823574
+      },
+      {
+        "quality": "high",
+        "psnr_db": 10.759693124323535,
+        "ssim": 0.024958053968823574
+      }
+    ],
+    "MS_SSIM": "NOT MEASURED"
+  },
+  "SYSTEM": {
+    "Python_tests": "156 passed, 3 skipped",
+    "Rust_tests": "1 passed, 0 failed",
+    "Streaming": "PASS",
+    "Rust_parity": "PASS"
+  },
+  "BENCHMARK": {
+    "best_XAI_lossless_mode": "xai-gru-rans",
+    "best_classical_codec": "brotli-6",
+    "XAI_beats_classical_codec": "NO"
+  },
+  "PRODUCTION": {
+    "recommended_lossless_model": "Protected GRU",
+    "recommended_lossy_model": "validation.pt (EXPERIMENTAL; deterministic validation corpus only)"
+  },
+  "REMAINING_LIMITATIONS": [
+    "No Transformer has passed the complete five-epoch correctness gate.",
+    "Lossy checkpoint was trained only on a deterministic validation corpus.",
+    "MS-SSIM is NOT MEASURED.",
+    "Neural CPU throughput is measured on a bounded 2048-byte sample and is not a large-file throughput claim."
+  ]
+}

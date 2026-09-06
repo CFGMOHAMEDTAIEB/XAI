@@ -1,0 +1,8 @@
+{
+  "embedding_dim": 64,
+  "hidden_dim": 128,
+  "num_layers": 1,
+  "context_length": 128,
+  "dropout": 0.0,
+  "architecture_id": "causal-byte-gru-v1"
+}

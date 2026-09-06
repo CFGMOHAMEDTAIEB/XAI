@@ -1,0 +1,1 @@
+method,configuration,file,category,repetition,original_bytes,compressed_bytes,compression_ratio,bits_per_byte,compression_time_s,decompression_time_s,compression_MB_s,decompression_MB_s,peak_RSS_MB,SHA256_match

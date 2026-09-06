@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="230">
+<rect width="100%" height="100%" fill="white"/>
+<text x="525" y="30" text-anchor="middle" font-size="22" font-family="sans-serif">XAI neural lossless architecture</text>
+<text x="20" y="55" font-size="13" font-family="sans-serif" fill="#92400e">ILLUSTRATIVE — implementation architecture, not a performance measurement</text>
+<rect x="30" y="95" width="130" height="55" rx="8" fill="#dbeafe" stroke="#1d4ed8"/>
+<text x="95.0" y="128" text-anchor="middle" font-size="13" font-family="sans-serif">Input bytes</text>
+<line x1="160" y1="122" x2="182" y2="122" stroke="#111827" stroke-width="2"/>
+<polygon points="182,117 190,122 182,127" fill="#111827"/>
+<rect x="190" y="95" width="180" height="55" rx="8" fill="#dbeafe" stroke="#1d4ed8"/>
+<text x="280.0" y="128" text-anchor="middle" font-size="13" font-family="sans-serif">Causal Transformer V2</text>
+<line x1="370" y1="122" x2="402" y2="122" stroke="#111827" stroke-width="2"/>
+<polygon points="402,117 410,122 402,127" fill="#111827"/>
+<rect x="410" y="95" width="130" height="55" rx="8" fill="#dbeafe" stroke="#1d4ed8"/>
+<text x="475.0" y="128" text-anchor="middle" font-size="13" font-family="sans-serif">FP32 logits</text>
+<line x1="540" y1="122" x2="552" y2="122" stroke="#111827" stroke-width="2"/>
+<polygon points="552,117 560,122 552,127" fill="#111827"/>
+<rect x="560" y="95" width="180" height="55" rx="8" fill="#dbeafe" stroke="#1d4ed8"/>
+<text x="650.0" y="128" text-anchor="middle" font-size="13" font-family="sans-serif">Deterministic quantizer</text>
+<line x1="740" y1="122" x2="757" y2="122" stroke="#111827" stroke-width="2"/>
+<polygon points="757,117 765,122 757,127" fill="#111827"/>
+<rect x="765" y="95" width="130" height="55" rx="8" fill="#dbeafe" stroke="#1d4ed8"/>
+<text x="830.0" y="128" text-anchor="middle" font-size="13" font-family="sans-serif">rANS14</text>
+<line x1="895" y1="122" x2="882" y2="122" stroke="#111827" stroke-width="2"/>
+<polygon points="882,117 890,122 882,127" fill="#111827"/>
+<rect x="890" y="95" width="130" height="55" rx="8" fill="#dbeafe" stroke="#1d4ed8"/>
+<text x="955.0" y="128" text-anchor="middle" font-size="13" font-family="sans-serif">XAIC</text>
+<text x="525" y="190" text-anchor="middle" font-size="13" font-family="sans-serif">Decoder regenerates the identical probability/frequency sequence; SHA-256 is verified after reconstruction.</text>
+</svg>

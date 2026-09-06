@@ -1,0 +1,10 @@
+{
+  "title": "XAI-Compress Source",
+  "id": "alice/source",
+  "licenses": [
+    {
+      "name": "other"
+    }
+  ],
+  "isPrivate": true
+}

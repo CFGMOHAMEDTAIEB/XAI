@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="240">
+<rect width="100%" height="100%" fill="white"/>
+<text x="20" y="28" font-size="18">MEASURED — Lossy PSNR by quality</text>
+<text x="20" y="71" font-size="12">low</text>
+<rect x="270" y="55" width="600.00" height="20" fill="#3978c5"/>
+<text x="880.00" y="70" font-size="11">10.76</text>
+<text x="20" y="106" font-size="12">medium</text>
+<rect x="270" y="90" width="600.00" height="20" fill="#3978c5"/>
+<text x="880.00" y="105" font-size="11">10.76</text>
+<text x="20" y="141" font-size="12">high</text>
+<rect x="270" y="125" width="600.00" height="20" fill="#3978c5"/>
+<text x="880.00" y="140" font-size="11">10.76</text>
+</svg>

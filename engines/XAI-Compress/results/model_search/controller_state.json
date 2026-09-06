@@ -1,0 +1,7 @@
+{
+  "pid": 5248,
+  "phase": "STOPPED",
+  "candidate": null,
+  "updated_at": "2026-08-31T23:08:16.925315+00:00",
+  "result": "CONTROLLER_ERROR_RETRY_LIMIT"
+}

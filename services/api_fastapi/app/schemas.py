@@ -10,7 +10,10 @@ class LoginRequest(BaseModel):
     totp_code: str|None = None
 class TokenResponse(BaseModel):
     access_token: str
+    refresh_token: str|None = None
     token_type: str = 'bearer'
+class RefreshRequest(BaseModel):
+    refresh_token: str
 class FileCreate(BaseModel):
     name: str
     sha256: str = Field(pattern=r'^[0-9a-fA-F]{64}$')
@@ -25,3 +28,9 @@ class ShareCreate(BaseModel):
     anonymous_sender: bool = False
 class ShareRedeem(BaseModel):
     code: str = Field(min_length=8, max_length=32)
+
+class EmailSend(BaseModel):
+    recipient_email: EmailStr
+
+class TotpConfirm(BaseModel):
+    code: str = Field(pattern=r'^\d{6}$')

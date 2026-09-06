@@ -1,0 +1,9 @@
+{
+  "id": "EXP-01",
+  "model": "tiny-gru",
+  "preset": "tiny",
+  "epochs": 2,
+  "batch_size": 16,
+  "context_length": 64,
+  "max_samples": 2000
+}

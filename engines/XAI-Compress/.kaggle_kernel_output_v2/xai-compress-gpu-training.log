@@ -1,0 +1,14 @@
+[{"stream_name":"stderr","time":17.699839475,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":17.699943642,"data":"  File \"/kaggle/src/script.py\", line 36, in \u003cmodule\u003e\n"}
+,{"stream_name":"stderr","time":17.699953999,"data":"    project = materialize_source()\n"}
+,{"stream_name":"stderr","time":17.699996352,"data":"              ^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":17.700085209,"data":"  File \"/kaggle/src/script.py\", line 32, in materialize_source\n"}
+,{"stream_name":"stderr","time":17.700207133,"data":"    raise RuntimeError(\"Packaged xai_compress source could not be reconstructed\")\n"}
+,{"stream_name":"stderr","time":17.700216206,"data":"RuntimeError: Packaged xai_compress source could not be reconstructed\n"}
+,{"stream_name":"stderr","time":20.152613528,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":20.152650965,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":20.512701536,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":20.512727162,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":22.001467051,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":23.360774199,"data":"[NbConvertApp] Writing 285665 bytes to __results__.html\n"}
+]

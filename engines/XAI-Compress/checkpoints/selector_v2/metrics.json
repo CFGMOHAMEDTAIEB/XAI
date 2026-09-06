@@ -1,0 +1,48 @@
+{
+  "format": "xai-codec-selector-v2",
+  "training_groups": 735,
+  "validation_groups": 156,
+  "test_groups": 155,
+  "features": 111,
+  "selected_models": {
+    "smallest": "decision_tree",
+    "fastest": "extra_trees",
+    "balanced": "random_forest"
+  },
+  "confidence_thresholds": {
+    "smallest": {
+      "low": 0.6,
+      "high": 0.95,
+      "validation_objective": 0.00041461030926391915,
+      "mean_extra_candidates": 0.8717948717948718
+    },
+    "fastest": {
+      "low": 0.7,
+      "high": 0.8,
+      "validation_objective": 0.00010102381171224176,
+      "mean_extra_candidates": 1.6987179487179487
+    },
+    "balanced": {
+      "low": 0.7,
+      "high": 0.8,
+      "validation_objective": 7.644709322878188e-05,
+      "mean_extra_candidates": 1.3076923076923077
+    }
+  },
+  "top_1_accuracy": 0.6666666666666666,
+  "top_2_recall": 0.8107526881720429,
+  "top_3_recall": 0.8903225806451612,
+  "mean_regret": 0.0034826281333670984,
+  "median_regret": 0.0,
+  "p95_regret": 0.021321162440231477,
+  "mean_inference_ms": 0.3254526881538632,
+  "model_families_benchmarked": [
+    "rule_based",
+    "decision_tree",
+    "random_forest",
+    "extra_trees",
+    "gradient_boosting",
+    "histogram_gradient_boosting"
+  ],
+  "cost_sensitive_training": "measured profile-score-spread oversampling"
+}

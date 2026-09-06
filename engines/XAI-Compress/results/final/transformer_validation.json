@@ -1,0 +1,105 @@
+{
+  "cases": [
+    {
+      "actual_bpb": 5008.0,
+      "artifact_bytes": 626,
+      "bytes_equal": true,
+      "case": "empty",
+      "compression_seconds": 0.18499760000850074,
+      "decompression_seconds": 0.19159089999448042,
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "restored_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256_equal": true
+    },
+    {
+      "actual_bpb": 5016.0,
+      "artifact_bytes": 627,
+      "bytes_equal": true,
+      "case": "one_byte",
+      "compression_seconds": 0.20232780001242645,
+      "decompression_seconds": 0.22347120000631548,
+      "original_bytes": 1,
+      "original_sha256": "4b68ab3847feda7d6c62c1fbcbeebfa35eab7351ed5e78f4ddadea5df64b8015",
+      "restored_sha256": "4b68ab3847feda7d6c62c1fbcbeebfa35eab7351ed5e78f4ddadea5df64b8015",
+      "sha256_equal": true
+    },
+    {
+      "actual_bpb": 116.17391304347827,
+      "artifact_bytes": 668,
+      "bytes_equal": true,
+      "case": "short_text",
+      "compression_seconds": 0.5126470999966841,
+      "decompression_seconds": 0.7326298999978462,
+      "original_bytes": 46,
+      "original_sha256": "ace46208030ea7602e608e00032978c53139593e51007da4d6c8a6dae5dd2aff",
+      "restored_sha256": "ace46208030ea7602e608e00032978c53139593e51007da4d6c8a6dae5dd2aff",
+      "sha256_equal": true
+    },
+    {
+      "actual_bpb": 27.65625,
+      "artifact_bytes": 885,
+      "bytes_equal": true,
+      "case": "all_byte_values",
+      "compression_seconds": 3.20243410000694,
+      "decompression_seconds": 3.5633839999936754,
+      "original_bytes": 256,
+      "original_sha256": "40aff2e9d2d8922e47afd4648e6967497158785fbd1da870e7110266bf944880",
+      "restored_sha256": "40aff2e9d2d8922e47afd4648e6967497158785fbd1da870e7110266bf944880",
+      "sha256_equal": true
+    },
+    {
+      "actual_bpb": 17.84375,
+      "artifact_bytes": 1142,
+      "bytes_equal": true,
+      "case": "random_binary",
+      "compression_seconds": 7.059835899999598,
+      "decompression_seconds": 3.83325729999342,
+      "original_bytes": 512,
+      "original_sha256": "21bd9724258fac87d041144d4f1aa115dc63f97f15bb10147d3922e65a1ce239",
+      "restored_sha256": "21bd9724258fac87d041144d4f1aa115dc63f97f15bb10147d3922e65a1ce239",
+      "sha256_equal": true
+    },
+    {
+      "actual_bpb": 11.46875,
+      "artifact_bytes": 1468,
+      "bytes_equal": true,
+      "case": "repetitive",
+      "compression_seconds": 7.02924649999477,
+      "decompression_seconds": 6.800651099998504,
+      "original_bytes": 1024,
+      "original_sha256": "e997aebc766125e8834e5f986298903a9318c1450c6d3c3d179fa8fc2f88df14",
+      "restored_sha256": "e997aebc766125e8834e5f986298903a9318c1450c6d3c3d179fa8fc2f88df14",
+      "sha256_equal": true
+    },
+    {
+      "actual_bpb": 11.609375,
+      "artifact_bytes": 1486,
+      "bytes_equal": true,
+      "case": "structured_text_code",
+      "compression_seconds": 7.412852300010854,
+      "decompression_seconds": 7.322020699997665,
+      "original_bytes": 1024,
+      "original_sha256": "1eb5ceded149a76c5fe2e4deb54a32aa9de75d393a292eec3672b5cfc36565f0",
+      "restored_sha256": "1eb5ceded149a76c5fe2e4deb54a32aa9de75d393a292eec3672b5cfc36565f0",
+      "sha256_equal": true
+    },
+    {
+      "actual_bpb": 9.234375,
+      "artifact_bytes": 4728,
+      "bytes_equal": true,
+      "case": "medium_binary",
+      "compression_seconds": 27.919181599994772,
+      "decompression_seconds": 27.96677020000061,
+      "original_bytes": 4096,
+      "original_sha256": "03432726aef106f2497f7ac42ff377ecbea15e6522b4fe64f1b271e9067144f0",
+      "restored_sha256": "03432726aef106f2497f7ac42ff377ecbea15e6522b4fe64f1b271e9067144f0",
+      "sha256_equal": true
+    }
+  ],
+  "checkpoint_sha256": "584d8dfee979c6719a7602d00d81ef72443ee804878b13a1d651b5ea42129fb9",
+  "device": "cpu",
+  "entropy_coder": "rans14-v1",
+  "mode": "neural-lossless",
+  "status": "PASS"
+}

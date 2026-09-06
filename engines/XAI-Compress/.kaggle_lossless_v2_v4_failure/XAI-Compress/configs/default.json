@@ -1,0 +1,11 @@
+{
+  "chunk_size": 65536,
+  "context_size": 256,
+  "batch_size": 32,
+  "prefetch_size": 2,
+  "worker_count": 0,
+  "cache_size": 64,
+  "amp": true,
+  "grad_accum": 1,
+  "seed": 42
+}

@@ -1,0 +1,217 @@
+{
+  "generated_utc": "2026-09-01T17:01:06.446153+00:00",
+  "measurement_policy": "Only PASS rows are aggregated; unfinished values remain N/A.",
+  "selector": {
+    "training_samples": 18,
+    "validation_samples": 2,
+    "test_samples": 9,
+    "split_unit": "source_group",
+    "profiles": {
+      "smallest": "gradient_boosted_stumps",
+      "fastest": "random_forest",
+      "balanced": "gradient_boosted_stumps"
+    },
+    "top_1_accuracy": 0.7037037037037037,
+    "top_3_recall": 0.8148148148148148,
+    "mean_regret": 0.005558571008526661,
+    "median_regret": 0.0,
+    "p95_regret": 0.0294731490563029,
+    "mean_inference_ms": 1.2371444452717832,
+    "profile_metrics": [
+      {
+        "model": "rule_based",
+        "profile": "smallest",
+        "samples": 9,
+        "top_1_accuracy": 0.4444444444444444,
+        "top_3_recall": 0.4444444444444444,
+        "mean_regret": 0.02037250951349522,
+        "median_regret": 1.4563930207627128e-07,
+        "p95_regret": 0.09913699948639629,
+        "mean_size_regret_percent": 176.75050546303976,
+        "p95_size_regret_percent": 954.0523621823951,
+        "mean_inference_ms": 0.012822219610421194
+      },
+      {
+        "model": "gradient_boosted_stumps",
+        "profile": "smallest",
+        "samples": 9,
+        "top_1_accuracy": 0.7777777777777778,
+        "top_3_recall": 0.8888888888888888,
+        "mean_regret": 0.015086222656320054,
+        "median_regret": 0.0,
+        "p95_regret": 0.08019434970928127,
+        "mean_size_regret_percent": 176.73165658646602,
+        "p95_size_regret_percent": 954.0561052720756,
+        "mean_inference_ms": 1.7106888925708417,
+        "selected_for_profile": true
+      },
+      {
+        "model": "rule_based",
+        "profile": "fastest",
+        "samples": 9,
+        "top_1_accuracy": 0.2222222222222222,
+        "top_3_recall": 0.3333333333333333,
+        "mean_regret": 0.0008154469120960342,
+        "median_regret": 0.00029036356391925404,
+        "p95_regret": 0.002404309405500266,
+        "mean_size_regret_percent": 7.321210779994173,
+        "p95_size_regret_percent": 23.18076534107591,
+        "mean_inference_ms": 0.007611112475084762
+      },
+      {
+        "model": "random_forest",
+        "profile": "fastest",
+        "samples": 9,
+        "top_1_accuracy": 0.6666666666666666,
+        "top_3_recall": 0.7777777777777778,
+        "mean_regret": 0.00027312486903011303,
+        "median_regret": 0.0,
+        "p95_regret": 0.001320674505140614,
+        "mean_size_regret_percent": 3.484287415617427,
+        "p95_size_regret_percent": 18.12070282658517,
+        "mean_inference_ms": 0.3012666646908555,
+        "selected_for_profile": true
+      },
+      {
+        "model": "rule_based",
+        "profile": "balanced",
+        "samples": 9,
+        "top_1_accuracy": 0.3333333333333333,
+        "top_3_recall": 0.3333333333333333,
+        "mean_regret": 0.0076005220026703,
+        "median_regret": 1.0855583905075075e-05,
+        "p95_regret": 0.03890638566655635,
+        "mean_size_regret_percent": 176.60577922020016,
+        "p95_size_regret_percent": 953.5640809323951,
+        "mean_inference_ms": 0.007488889322202239
+      },
+      {
+        "model": "gradient_boosted_stumps",
+        "profile": "balanced",
+        "samples": 9,
+        "top_1_accuracy": 0.6666666666666666,
+        "top_3_recall": 0.7777777777777778,
+        "mean_regret": 0.0013163655002298167,
+        "median_regret": 0.0,
+        "p95_regret": 0.0069044229544868215,
+        "mean_size_regret_percent": 176.60377083467873,
+        "p95_size_regret_percent": 953.3779307217212,
+        "mean_inference_ms": 1.6994777785536523,
+        "selected_for_profile": true
+      }
+    ]
+  },
+  "lossless": {
+    "hybrid_sha_tests": "PASS",
+    "streaming": "PASS",
+    "chunk_level_hybrid": "PASS",
+    "benchmark_sha_pass_rows": 65,
+    "benchmark_sha_fail_rows": 0
+  },
+  "benchmark": {
+    "balanced_samples": 5,
+    "balanced_original_bytes": 116461568,
+    "balanced_hybrid_bytes": 128489,
+    "hybrid_actual_bpb_weighted": 0.008826190627967502,
+    "best_fixed_codec": "brotli-6",
+    "best_fixed_bytes": 66807,
+    "best_fixed_actual_bpb_weighted": 0.0045891190474097,
+    "hybrid_vs_best_fixed_percent": 92.32864819554837,
+    "category_wins": 0,
+    "categories_measured": 5,
+    "oracle_gap_weighted_percent": 1.0682171590832263,
+    "oracle_pairs_measured": 4,
+    "oracle_pairs_total": 5,
+    "compression_MB_s_weighted": 8.465241483272042,
+    "decompression_MB_s_weighted": 75.42018643386412,
+    "peak_RSS_MB": 220.78515625
+  },
+  "runtime": {
+    "balanced_feature_scan_ms_total": 10453.1884999451,
+    "balanced_model_inference_ms_total": 201.77420001709834,
+    "balanced_microbenchmark_ms_total": 647.8444999956992,
+    "balanced_selection_overhead_ms_total": 11302.807199957897,
+    "balanced_selection_overhead_ms_median_per_file": 184.94400000781752,
+    "optimization": {
+      "benchmark": "exact consecutive 64 KiB selection cache",
+      "selector_mode": "rules",
+      "profile": "balanced",
+      "iterations": 20,
+      "uncached_ms": 2342.42090000771,
+      "cached_ms": 93.89799999189563,
+      "measured_speedup": 24.946440820996028,
+      "same_strategy": true,
+      "cache_zero_timing_hits": 19,
+      "scope": "consecutive byte-for-byte identical chunks no larger than 1 MiB",
+      "method": "uncached creates a fresh selector per iteration; cached reuses one selector",
+      "claim_limit": "No speedup is claimed for non-identical or larger chunks."
+    },
+    "neural_cold_warm": {
+      "sample_bytes": 256,
+      "device": "cpu",
+      "xai-gru": {
+        "cold_compress_ms": 260.418000005302,
+        "warm_compress_ms": 228.67300000507385,
+        "cold_decompress_ms": 230.81370000727475,
+        "warm_decompress_ms": 225.2275000064401,
+        "sha_pass": true
+      },
+      "xai-transformer": {
+        "cold_compress_ms": 1342.6288999908138,
+        "warm_compress_ms": 1244.7532000078354,
+        "cold_decompress_ms": 1239.1425000096206,
+        "warm_decompress_ms": 1211.8776999996044,
+        "sha_pass": true
+      }
+    }
+  },
+  "models": {
+    "protected_gru": {
+      "path": "checkpoints/kaggle/best.pt",
+      "sha256": "083cda706612c3fd9ce62699741932b07e83fdf98eb6c5430d51bd29e1820429",
+      "expected_sha256": "083cda706612c3fd9ce62699741932b07e83fdf98eb6c5430d51bd29e1820429",
+      "integrity": "PASS"
+    },
+    "transformer": {
+      "path": "checkpoints/neural_lossless_v2/best.pt",
+      "sha256": "584d8dfee979c6719a7602d00d81ef72443ee804878b13a1d651b5ea42129fb9",
+      "expected_sha256": "584d8dfee979c6719a7602d00d81ef72443ee804878b13a1d651b5ea42129fb9",
+      "integrity": "PASS"
+    },
+    "selector": {
+      "path": "checkpoints/selector/best.json",
+      "models": {
+        "smallest": "gradient_boosted_stumps",
+        "fastest": "random_forest",
+        "balanced": "gradient_boosted_stumps"
+      }
+    }
+  },
+  "system": {
+    "python_tests": "177 passed, 3 skipped",
+    "rust_tests": "1 passed, 0 failed",
+    "focused_compatibility_parity_hybrid_tests": "24 passed",
+    "backward_compatibility": "PASS",
+    "cli_smoke": {
+      "status": "PASS",
+      "source_bytes": 46,
+      "artifact_bytes": 811,
+      "source_sha256": "f45c0e3fb9753cd33497eb2481789707e5c5d4debfce05563e8f7c67aea9d157",
+      "restored_sha256": "f45c0e3fb9753cd33497eb2481789707e5c5d4debfce05563e8f7c67aea9d157",
+      "command": "python -m xai_compress compress test.txt results/hybrid_ai/cli_smoke.xaic --mode hybrid --profile balanced --overwrite"
+    }
+  },
+  "production": {
+    "recommended_mode": "hybrid",
+    "recommended_default_profile": "balanced",
+    "promotion_claim": "Production-capable lossless orchestrator; not size-superior to the best fixed codec on this benchmark corpus."
+  },
+  "not_measured": {
+    "hybrid_smallest_structured_10MiB": "N/A: 1200 second timeout",
+    "oracle_fastest_structured_10MiB": "N/A: 1200 second timeout",
+    "oracle_repetitive_100MiB": "NOT MEASURED: exhaustive oracle was not resource-bounded",
+    "neural_inputs_above_4KiB": "NOT MEASURED by bounded policy",
+    "parallel_speedup": "NOT MEASURED; no worker-pool claim",
+    "new_rust_feature_scan_speedup": "NOT MEASURED; no new Rust path was added"
+  }
+}

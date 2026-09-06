@@ -1,0 +1,71 @@
+{
+  "atomic_output_replacement": "PASS",
+  "bounded_lengths": "PASS (64 KiB chunk limit exercised through 4 MiB)",
+  "large_transformer_streaming_above_2048_bytes": "NOT MEASURED",
+  "per_chunk_integrity": "PASS",
+  "rows": [
+    {
+      "artifact_bytes": 936,
+      "chunk_size": 65536,
+      "chunks": 1,
+      "compression_seconds": 0.0046491999964928254,
+      "decompression_seconds": 0.017284700006712228,
+      "format_version": 3,
+      "mode": "XAIC-v3 zlib streaming",
+      "original_bytes": 65536,
+      "process_peak_RSS_MB": 328.7578125,
+      "python_peak_alloc_MB": 2.431976318359375,
+      "restored_bytes": 65536,
+      "status": "PASS",
+      "whole_file_sha256_pass": true
+    },
+    {
+      "artifact_bytes": 10459,
+      "chunk_size": 65536,
+      "chunks": 16,
+      "compression_seconds": 0.016463599997223355,
+      "decompression_seconds": 0.024244699990958907,
+      "format_version": 3,
+      "mode": "XAIC-v3 zlib streaming",
+      "original_bytes": 1048576,
+      "process_peak_RSS_MB": 328.7578125,
+      "python_peak_alloc_MB": 2.433182716369629,
+      "restored_bytes": 1048576,
+      "status": "PASS",
+      "whole_file_sha256_pass": true
+    },
+    {
+      "artifact_bytes": 40920,
+      "chunk_size": 65536,
+      "chunks": 64,
+      "compression_seconds": 0.058380200003739446,
+      "decompression_seconds": 0.06470800000533927,
+      "format_version": 3,
+      "mode": "XAIC-v3 zlib streaming",
+      "original_bytes": 4194304,
+      "process_peak_RSS_MB": 328.7578125,
+      "python_peak_alloc_MB": 2.433182716369629,
+      "restored_bytes": 4194304,
+      "status": "PASS",
+      "whole_file_sha256_pass": true
+    },
+    {
+      "artifact_bytes": 2521,
+      "chunk_size": 512,
+      "chunks": 4,
+      "compression_seconds": 25.818229200012865,
+      "decompression_seconds": 18.118627200004994,
+      "format_version": 3,
+      "mode": "XAIC-v3 Transformer V2 + rANS streaming",
+      "original_bytes": 2048,
+      "process_peak_RSS_MB": 346.69921875,
+      "restored_bytes": 2048,
+      "status": "PASS",
+      "whole_file_sha256_pass": true
+    }
+  ],
+  "sequential_chunk_ids": "PASS (enforced by decoder and exercised by multi-chunk rows)",
+  "status": "PASS",
+  "trailing_data_rejection": "PASS",
+  "whole_file_integrity": "PASS"
+}

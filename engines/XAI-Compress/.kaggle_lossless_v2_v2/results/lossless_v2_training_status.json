@@ -1,0 +1,18 @@
+{
+  "status": "EARLY_STOPPED",
+  "last_update_timestamp": 1787913785.178099,
+  "epoch": 8,
+  "step": 28125,
+  "train_loss": NaN,
+  "validation_loss": NaN,
+  "BPB": NaN,
+  "elapsed_seconds": 4531.9243432250005,
+  "ETA": 0,
+  "GPU": "cuda",
+  "VRAM": {
+    "allocated_bytes": 79641088.0,
+    "reserved_bytes": 322961408.0,
+    "max_allocated_bytes": 278755840.0
+  },
+  "last_checkpoint": "/kaggle/working/checkpoints/lossless_v2.latest.pt"
+}

@@ -1,0 +1,20 @@
+Kaggle kernel: mohameddtaieb/xai-compress-gpu-training
+Kernel version: 9
+Status: KernelWorkerStatus.ERROR
+
+Successfully installed xai-compress-0.2.0
+RUST EXTENSION UNAVAILABLE — USING PYTHON FALLBACK
+Python: 3.12.13
+PyTorch: 2.10.0+cu128
+CUDA: 12.8
+GPU: Tesla T4 (2 GPUs)
+Total VRAM: 15636037632
+Free VRAM: 15526068224
+/kaggle/working free disk: 20938407936
+/kaggle/input usage: 17921462459
+System RAM: 33659379712
+Available RAM: 29017100288
+Traceback (most recent call last):
+  File "/kaggle/src/script.py", line 84, in <module>
+    raise RuntimeError("No attached training dataset was found")
+RuntimeError: No attached training dataset was found

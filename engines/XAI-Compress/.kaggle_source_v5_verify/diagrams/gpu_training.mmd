@@ -1,0 +1,4 @@
+flowchart TD
+ A[CPU workers] -->|pinned non-blocking| B[CUDA]
+ B --> C[AMP forward] --> D[GradScaler] --> E[Accumulation] --> F[Optimizer]
+ B --> G[VRAM telemetry]

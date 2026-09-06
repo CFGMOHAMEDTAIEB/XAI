@@ -1,0 +1,7 @@
+{
+  "candidate_id": "lr-0-0003-427431d37c",
+  "checkpoint": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_ingestion_reuses_existing0\\project\\checkpoints\\model_search\\lr-0-0003-427431d37c\\best.pt",
+  "size": 19,
+  "sha256": "baec090b0b6d0bdb264b0598f925693fa7f95b0f0679a5aa399119c216685e62",
+  "created_at": "2026-09-02T10:46:32.468352+00:00"
+}

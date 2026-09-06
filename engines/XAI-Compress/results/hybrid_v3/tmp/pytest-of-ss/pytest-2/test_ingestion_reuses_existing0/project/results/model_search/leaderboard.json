@@ -1,0 +1,20 @@
+[
+  {
+    "candidate_id": "lr-0-0003-427431d37c",
+    "candidate_key": "lr_0_0003",
+    "change": "LR 0.0003",
+    "status": "STABILITY_VALIDATED",
+    "best_val_bpb": 7.8500000000000005,
+    "actual_bpb": "N/A",
+    "ratio": "N/A",
+    "sha256": "N/A",
+    "max_activation": 1200.0,
+    "compression_MB_s": "N/A",
+    "decompression_MB_s": "N/A",
+    "peak_RSS_MB": "N/A",
+    "vram_bytes": 1000.0,
+    "checkpoint_size": 19,
+    "decision": "INCONCLUSIVE",
+    "pareto": "N/A"
+  }
+]

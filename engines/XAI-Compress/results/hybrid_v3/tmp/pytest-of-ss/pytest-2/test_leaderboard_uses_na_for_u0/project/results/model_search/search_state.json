@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "search_name": "test-search",
+  "config_path": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_leaderboard_uses_na_for_u0\\project\\configs\\search.json",
+  "created_at": "2026-09-02T10:46:34.548238+00:00",
+  "updated_at": "2026-09-02T10:46:34.677608+00:00",
+  "status": "ACTIVE",
+  "protected_baseline": {
+    "path": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_leaderboard_uses_na_for_u0\\project\\checkpoints\\kaggle\\best.pt",
+    "size": 13,
+    "sha256": "d2f07d3f09bf6662f8bdba6214efa8e83de36e78087eecbed6c26d8b3f61eba9"
+  },
+  "pending_candidates": [
+    "lr_0_0002"
+  ],
+  "running_candidate": null,
+  "completed_candidates": [],
+  "failed_candidates": [],
+  "validated_candidates": [],
+  "promoted_candidate": null,
+  "best_stable_candidate": null,
+  "candidates": {
+    "lr-0-0003-427431d37c": {
+      "candidate_id": "lr-0-0003-427431d37c",
+      "candidate_key": "lr_0_0003",
+      "fingerprint": "427431d37ced66a2f92edfcc27c49e471a3e204162ec25c602fc67ae604a0e00",
+      "parent": "base",
+      "change": {
+        "lr": 0.0003
+      },
+      "change_label": "LR 0.0003",
+      "activation_rule": "always",
+      "resolved_config": {
+        "architecture": "causal-byte-transformer-v2",
+        "lr": 0.0003,
+        "context_length": 256,
+        "embedding_dim": 12,
+        "hidden_dim": 12,
+        "num_layers": 1,
+        "n_heads": 3,
+        "ff_dim": 24,
+        "dropout": 0.0
+      },
+      "status": "PENDING",
+      "phase": 0,
+      "created_at": "2026-09-02T10:46:34.659080+00:00",
+      "updated_at": "2026-09-02T10:46:34.659159+00:00",
+      "checkpoint_dir": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_leaderboard_uses_na_for_u0\\project\\checkpoints\\model_search\\lr-0-0003-427431d37c",
+      "candidate_dir": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_leaderboard_uses_na_for_u0\\project\\results\\model_search\\candidates\\lr-0-0003-427431d37c",
+      "source_hashes": {},
+      "metrics": {},
+      "decision": "REJECT",
+      "infrastructure_retries": 0
+    }
+  },
+  "seen_fingerprints": {
+    "427431d37ced66a2f92edfcc27c49e471a3e204162ec25c602fc67ae604a0e00": "lr-0-0003-427431d37c"
+  },
+  "budget": {
+    "max_candidates": 5,
+    "max_gpu_hours": 10,
+    "max_kaggle_submissions": 3,
+    "max_failures": 3,
+    "no_improvement_patience": 2,
+    "candidates_consumed": 1,
+    "gpu_hours_consumed": 0.0,
+    "kaggle_submissions_consumed": 0,
+    "failures_consumed": 0,
+    "eligible_without_improvement": 0,
+    "infrastructure_retries_consumed": 0,
+    "numerical_failures_consumed": 0
+  },
+  "infrastructure_retries": {},
+  "stop_reason": null,
+  "protected_baseline_integrity": {
+    "expected_sha256": "d2f07d3f09bf6662f8bdba6214efa8e83de36e78087eecbed6c26d8b3f61eba9",
+    "measured_sha256": "d2f07d3f09bf6662f8bdba6214efa8e83de36e78087eecbed6c26d8b3f61eba9",
+    "expected_sha256_valid_format": true,
+    "match": true,
+    "verification_status": "VERIFIED",
+    "verified_at": "2026-09-02T10:46:34.548415+00:00"
+  },
+  "promotion_blocked": false,
+  "promotion_block_reason": null
+}

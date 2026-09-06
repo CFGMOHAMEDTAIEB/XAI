@@ -1,0 +1,53 @@
+[{"stream_name":"stdout","time":21.477378842,"data":"SOURCE HASH MANIFEST {\n"}
+,{"stream_name":"stdout","time":21.47750303,"data":"  \"expected\": {\n"}
+,{"stream_name":"stdout","time":21.477508578,"data":"    \"xai_compress/models/transformer_v2.py\": \"da3dfb52740b02287be3811abd95a3419485fe1fdee86f254ea0ccf7a70de39c\",\n"}
+,{"stream_name":"stdout","time":21.477512527000002,"data":"    \"xai_compress/train.py\": \"69b3132e3ca2f1d0485ac0feb9dae798b172517de2dc196cfaddc81ca4bc8ea0\",\n"}
+,{"stream_name":"stdout","time":21.477515724,"data":"    \"xai_compress/checkpoint.py\": \"d0890b80f5d1529409313da3d1c815dd597d2abdb3e7fd1cf41d50b4497423f1\",\n"}
+,{"stream_name":"stdout","time":21.477518862,"data":"    \"xai_compress/compression.py\": \"c4565d3d8b2dd98b923894cb9f3d13aec97bdb1928f57a219b9db6abb4bfa934\",\n"}
+,{"stream_name":"stdout","time":21.477521722,"data":"    \"scripts/run_v2_multi_epoch_gate.py\": \"a5dcb345c904fc68af5c01c431993fb44c5c3889295a52fc9a52861d61c18e37\"\n"}
+,{"stream_name":"stdout","time":21.477524883,"data":"  },\n"}
+,{"stream_name":"stdout","time":21.47752748,"data":"  \"actual\": {\n"}
+,{"stream_name":"stdout","time":21.477530166,"data":"    \"xai_compress/models/transformer_v2.py\": \"da3dfb52740b02287be3811abd95a3419485fe1fdee86f254ea0ccf7a70de39c\",\n"}
+,{"stream_name":"stdout","time":21.477533082,"data":"    \"xai_compress/train.py\": \"69b3132e3ca2f1d0485ac0feb9dae798b172517de2dc196cfaddc81ca4bc8ea0\",\n"}
+,{"stream_name":"stdout","time":21.477536127,"data":"    \"xai_compress/checkpoint.py\": \"d0890b80f5d1529409313da3d1c815dd597d2abdb3e7fd1cf41d50b4497423f1\",\n"}
+,{"stream_name":"stdout","time":21.477539108,"data":"    \"xai_compress/compression.py\": \"c4565d3d8b2dd98b923894cb9f3d13aec97bdb1928f57a219b9db6abb4bfa934\",\n"}
+,{"stream_name":"stdout","time":21.477541921,"data":"    \"scripts/run_v2_multi_epoch_gate.py\": \"a5dcb345c904fc68af5c01c431993fb44c5c3889295a52fc9a52861d61c18e37\"\n"}
+,{"stream_name":"stdout","time":21.477544923,"data":"  }\n"}
+,{"stream_name":"stdout","time":21.477547504,"data":"}\n"}
+,{"stream_name":"stdout","time":23.991557424,"data":"Obtaining file:///kaggle/working/XAI-Compress\n"}
+,{"stream_name":"stdout","time":23.993970881,"data":"  Checking if build backend supports build_editable: started\n"}
+,{"stream_name":"stdout","time":24.291830593,"data":"  Checking if build backend supports build_editable: finished with status 'done'\n"}
+,{"stream_name":"stdout","time":24.29317119,"data":"  Preparing editable metadata (pyproject.toml): started\n"}
+,{"stream_name":"stdout","time":25.56085467,"data":"  Preparing editable metadata (pyproject.toml): finished with status 'done'\n"}
+,{"stream_name":"stdout","time":25.923949749,"data":"Building wheels for collected packages: xai-compress\n"}
+,{"stream_name":"stdout","time":25.925175048,"data":"  Building editable for xai-compress (pyproject.toml): started\n"}
+,{"stream_name":"stdout","time":27.123485056,"data":"  Building editable for xai-compress (pyproject.toml): finished with status 'done'\n"}
+,{"stream_name":"stdout","time":27.124365489,"data":"  Created wheel for xai-compress: filename=xai_compress-0.2.0-0.editable-py3-none-any.whl size=3075 sha256=660ee9bd0eb386686642f87f3fe69d402971d3d75ed2a0ceeb12f22bd6a9fbfc\n"}
+,{"stream_name":"stdout","time":27.124626479,"data":"  Stored in directory: /tmp/pip-ephem-wheel-cache-g34clws8/wheels/52/74/c7/42d4c5cd443fff46e807f84d414cd4f69b3c3b2f29dc804409\n"}
+,{"stream_name":"stdout","time":27.127772961,"data":"Successfully built xai-compress\n"}
+,{"stream_name":"stdout","time":27.128236071,"data":"Installing collected packages: xai-compress\n"}
+,{"stream_name":"stdout","time":27.178503162,"data":"Successfully installed xai-compress-0.2.0\n"}
+,{"stream_name":"stdout","time":31.670178404,"data":"{\"candidate\": \"lr_0_0002\", \"learning_rate\": 0.0002, \"gpu\": \"Tesla T4\", \"torch\": \"2.10.0+cu128\", \"cuda\": \"12.8\", \"device_count\": 2}\n"}
+,{"stream_name":"stdout","time":37.39964619,"data":"STARTING APPROVED CANDIDATE B ONLY [\"/usr/bin/python3\", \"-u\", \"/kaggle/working/XAI-Compress/scripts/run_v2_multi_epoch_gate.py\", \"/kaggle/input/datasets\", \"--learning-rate\", \"0.0002\", \"--output-dir\", \"/kaggle/working/results/model_search/lr_0_0002\"]\n"}
+,{"stream_name":"stdout","time":39.50308169,"data":"CUDA available        : True\n"}
+,{"stream_name":"stdout","time":39.503130673,"data":"Selected device       : cuda\n"}
+,{"stream_name":"stdout","time":39.503137259,"data":"GPU name              : Tesla T4\n"}
+,{"stream_name":"stdout","time":39.503142052,"data":"GPU count             : 2\n"}
+,{"stream_name":"stdout","time":39.503147904,"data":"VRAM                  : 14.56 GiB\n"}
+,{"stream_name":"stdout","time":39.503153335,"data":"CUDA version          : 12.8\n"}
+,{"stream_name":"stdout","time":39.503158563,"data":"cuDNN version         : 91002\n"}
+,{"stream_name":"stdout","time":39.503163324,"data":"PyTorch               : 2.10.0+cu128\n"}
+,{"stream_name":"stdout","time":39.503168031,"data":"PyTorch CUDA support  : True\n"}
+,{"stream_name":"stderr","time":218.819455829,"data":"2026-08-30 16:30:59,023 INFO deduplicated files: 6467 -\u003e 6467\n"}
+,{"stream_name":"stdout","time":219.695880142,"data":"{'files_discovered': 6467, 'files_used': 6467, 'samples': 450000, 'bytes_considered': 16254113509, 'context_length': 256, 'stride': 128, 'max_bytes_per_file': 33554432, 'archives_included': False}\n"}
+,{"stream_name":"stderr","time":221.048805793,"data":"2026-08-30 16:31:01,253 INFO deduplicated files: 718 -\u003e 718\n"}
+,{"stream_name":"stdout","time":221.162103775,"data":"{'files_discovered': 718, 'files_used': 718, 'samples': 50000, 'bytes_considered': 1667563805, 'context_length': 256, 'stride': 128, 'max_bytes_per_file': 33554432, 'archives_included': False}\n"}
+,{"stream_name":"stdout","time":2864.673967091,"data":"MULTI-EPOCH STABILITY GATE FAILED {\"status\": \"FAIL\", \"learning_rate\": 0.0002, \"exception_type\": \"RuntimeError\", \"exception\": \"Expected all tensors to be on the same device, but got tensors is on cuda:0, different from other tensors on cpu (when checking argument in method wrapper_CUDA_cat)\", \"traceback\": \"Traceback (most recent call last):\\n  File \\\"/kaggle/working/XAI-Compress/scripts/run_v2_multi_epoch_gate.py\\\", line 59, in main\\n    train(\\n  File \\\"/kaggle/working/XAI-Compress/xai_compress/train.py\\\", line 607, in train\\n    optimizer_state_abs_max = _collection_abs_max(optimizer_tensors, device)\\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \\\"/kaggle/working/XAI-Compress/xai_compress/train.py\\\", line 52, in _collection_abs_max\\n    return torch.stack(maxima).max() if maxima else torch.zeros((), device=device)\\n           ^^^^^^^^^^^^^^^^^^^\\nRuntimeError: Expected all tensors to be on the same device, but got tensors is on cuda:0, different from other tensors on cpu (when checking argument in method wrapper_CUDA_cat)\\n\", \"duration_seconds\": 2825.543973891}\n"}
+,{"stream_name":"stdout","time":2866.762928036,"data":"CANDIDATE B SELECTION {\"status\": \"FAIL\", \"selected\": null, \"assessments\": [{\"learning_rate\": 0.0002, \"returncode\": 1, \"summary\": {\"status\": \"FAIL\", \"learning_rate\": 0.0002, \"exception_type\": \"RuntimeError\", \"exception\": \"Expected all tensors to be on the same device, but got tensors is on cuda:0, different from other tensors on cpu (when checking argument in method wrapper_CUDA_cat)\", \"traceback\": \"Traceback (most recent call last):\\n  File \\\"/kaggle/working/XAI-Compress/scripts/run_v2_multi_epoch_gate.py\\\", line 59, in main\\n    train(\\n  File \\\"/kaggle/working/XAI-Compress/xai_compress/train.py\\\", line 607, in train\\n    optimizer_state_abs_max = _collection_abs_max(optimizer_tensors, device)\\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \\\"/kaggle/working/XAI-Compress/xai_compress/train.py\\\", line 52, in _collection_abs_max\\n    return torch.stack(maxima).max() if maxima else torch.zeros((), device=device)\\n           ^^^^^^^^^^^^^^^^^^^\\nRuntimeError: Expected all tensors to be on the same device, but got tensors is on cuda:0, different from other tensors on cpu (when checking argument in method wrapper_CUDA_cat)\\n\", \"duration_seconds\": 2825.543973891}}], \"production_submitted\": false, \"candidate_a_retrained\": false}\n"}
+,{"stream_name":"stderr","time":2869.178979038,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":2869.179035439,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":2869.405206959,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":2869.405254911,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":2870.002285113,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":2871.189803674,"data":"[NbConvertApp] Writing 298772 bytes to __results__.html\n"}
+]

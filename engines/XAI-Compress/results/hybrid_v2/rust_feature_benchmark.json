@@ -1,0 +1,11 @@
+{
+  "benchmark": "bounded_byte_feature_extraction",
+  "input_bytes": 65536,
+  "iterations": 50,
+  "python_total_ms": 5006.4911,
+  "rust_total_ms": 209.3811,
+  "measured_speedup": 23.9109,
+  "scope": "byte_stats native core only through extract_features; Windows local CPU",
+  "parity_tolerance": 1e-12,
+  "claim_limit": "This measurement does not imply an end-to-end compression speedup."
+}

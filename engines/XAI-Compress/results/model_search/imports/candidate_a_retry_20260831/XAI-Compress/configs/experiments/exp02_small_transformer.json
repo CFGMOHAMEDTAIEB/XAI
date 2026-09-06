@@ -1,0 +1,9 @@
+{
+  "id": "EXP-02",
+  "model": "small-transformer",
+  "preset": "small",
+  "epochs": 2,
+  "batch_size": 8,
+  "context_length": 128,
+  "max_samples": 2000
+}

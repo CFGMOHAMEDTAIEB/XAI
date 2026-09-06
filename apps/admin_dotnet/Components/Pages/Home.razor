@@ -1,14 +1,26 @@
 @page "/"
 @inject PlatformApiClient Api
+@inject AdminSession Session
 
 <PageTitle>Dashboard</PageTitle>
 
+@if (_requiresLogin)
+{
+    <div class="page-heading"><div><h1>Admin sign in required</h1><p>Authenticate with your XAI platform administrator account.</p></div></div>
+    <a class="button primary" href="/login">Go to sign in</a>
+}
+else
+{
 <div class="page-heading">
     <div><h1>Security dashboard</h1><p>Operational overview of the XAI-Compress platform.</p></div>
     <button class="button" @onclick="LoadAsync">Refresh</button>
 </div>
 
-@if (_stats is null)
+@if (!string.IsNullOrWhiteSpace(_error))
+{
+    <div class="notice">@_error</div>
+}
+else if (_stats is null)
 {
     <div class="loading">Loading dashboard...</div>
 }
@@ -55,18 +67,39 @@ else
         </section>
     </div>
 }
+}
 
 @code {
     private DashboardStats? _stats;
     private IReadOnlyList<CompressionJob> _jobs = [];
     private IReadOnlyList<SecurityIncident> _incidents = [];
+    private bool _requiresLogin;
+    private string? _error;
 
-    protected override Task OnInitializedAsync() => LoadAsync();
+    protected override Task OnInitializedAsync()
+    {
+        _requiresLogin = !Session.IsAuthenticated;
+        return _requiresLogin ? Task.CompletedTask : LoadAsync();
+    }
+
     private async Task LoadAsync()
     {
-        _stats = await Api.GetDashboardAsync();
-        _jobs = await Api.GetJobsAsync();
-        _incidents = await Api.GetIncidentsAsync();
+        try
+        {
+            _error = null;
+            _stats = await Api.GetDashboardAsync();
+            _jobs = await Api.GetJobsAsync();
+            _incidents = await Api.GetIncidentsAsync();
+        }
+        catch (AdminApiAuthorizationException)
+        {
+            _stats = null;
+            _requiresLogin = true;
+        }
+        catch (HttpRequestException)
+        {
+            _error = "The backend is currently unavailable. Try again shortly.";
+        }
     }
 
     private static string FormatBytes(long bytes) => bytes >= 1_073_741_824

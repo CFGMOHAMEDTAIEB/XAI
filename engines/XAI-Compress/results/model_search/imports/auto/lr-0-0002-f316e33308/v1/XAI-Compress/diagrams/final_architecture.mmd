@@ -1,0 +1,10 @@
+flowchart TD
+ A[Versioned corpus] --> B[Deduplicated lazy training]
+ B --> C[Validated model registry]
+ C --> D[Adaptive block selector]
+ D --> E[Deterministic probability interface]
+ E --> F[Native-target arithmetic/rANS]
+ F --> G[Versioned, checksummed stream]
+ G --> H[CPU/GPU exact decoder]
+ H --> I[Benchmark + experiment records]
+ I --> J[Generated evidence-backed report]

@@ -1,0 +1,29 @@
+{
+  "status": "FAILED",
+  "last_update_timestamp": 1788207087.1323187,
+  "epoch": 5,
+  "step": 8522,
+  "train_loss": 5.5236586761676065,
+  "validation_loss": null,
+  "BPB": null,
+  "elapsed_seconds": 12050.499003576999,
+  "ETA": null,
+  "GPU": "cuda",
+  "VRAM": {
+    "allocated_bytes": 101963264.0,
+    "reserved_bytes": 641728512.0,
+    "max_allocated_bytes": 582540800.0
+  },
+  "last_checkpoint": "/kaggle/working/results/model_search/residual_scale_depth/best.latest.pt",
+  "exception_type": "FloatingPointError",
+  "exception": "FIRST NON-FINITE STAGE = gradient:output.weight; epoch=5; step=8522",
+  "loss": 5.301047325134277,
+  "grad_scaler_scale": 4194304.0,
+  "gradient_norm": null,
+  "gradient_abs_max_finite_values": 0.01282501220703125,
+  "gradients_finite": false,
+  "parameter_abs_max_finite_values": 3.7109503746032715,
+  "parameters_finite": true,
+  "optimizer_state_abs_max_finite_values": 121021.0,
+  "optimizer_state_finite": true
+}

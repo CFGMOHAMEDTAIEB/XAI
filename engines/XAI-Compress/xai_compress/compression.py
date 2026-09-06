@@ -13,6 +13,7 @@ from .entropy.quant import NEURAL_TOTAL, logits_batch_to_cumulative, logits_to_c
 from .entropy.rans import RANSDecoder, RANSEncoder
 from .format import pack_container, sha256, unpack_container, FormatError
 from .utils.device import select_device
+from .modes import NEURAL_LOSSLESS, NEURAL_LOSSY, canonical_mode
 
 CODER_VERSION = "arithmetic32-v1"
 CODER_RANS = "rans14-v1"
@@ -96,14 +97,16 @@ def _encode_neural(data: bytes, checkpoint: str, block_size: int = 4096, device:
     with torch.inference_mode():
         model.eval()
         if _is_gru(model):
-            i = 0
-            n = len(data)
-            while i < n:
-                take = min(block_size, n - i)
-                logits, hidden = _neural_block_logits(model, data, i, take, hidden)
-                tables = logits_batch_to_cumulative(logits)
-                _write_symbols(enc, tables, data, i)
-                i += take
+            # Decoder inference is necessarily autoregressive. Use the exact
+            # same GRU step path here: fused sequence kernels can differ by a
+            # few floating-point bits and cross deterministic quantization
+            # boundaries on longer streams.
+            from .model import BOS_TOKEN
+            previous = BOS_TOKEN
+            for symbol in data:
+                logits, hidden = model.step(previous, hidden)
+                enc.write_fast(logits_to_cumulative(logits), symbol)
+                previous = symbol
         else:
             # Entropy decoding is autoregressive. Generate transformer tables
             # with the exact same incremental KV-cache path so bounded context
@@ -258,6 +261,8 @@ def compress_bytes(
     if not isinstance(data, (bytes, bytearray)):
         raise TypeError("data must be bytes")
     data = bytes(data)
+    requested_mode = mode
+    mode = canonical_mode(mode)
     metadata = {
         "mode": mode,
         "coder_version": CODER_RANS if coder == "rans" and mode != "static" else CODER_VERSION,
@@ -268,7 +273,7 @@ def compress_bytes(
     format_version = 1
     if mode == "static":
         payload = _encode_static(data)
-    elif mode == "neural":
+    elif mode == NEURAL_LOSSLESS:
         if not checkpoint:
             raise CompressionError("neural mode requires --checkpoint")
         payload, fp, cfg = _encode_neural(data, checkpoint, device=device, coder=coder)
@@ -284,8 +289,10 @@ def compress_bytes(
     elif mode == "zlib":
         payload = zlib.compress(data, 9)
         metadata["coder_version"] = "zlib-9"
+    elif mode == NEURAL_LOSSY:
+        raise CompressionError("neural-lossy is media-only; use the lossy media API with a lossy checkpoint")
     else:
-        raise CompressionError("mode must be static, neural, hybrid, auto, or zlib")
+        raise CompressionError("mode must be static, neural-lossless, neural-lossy, hybrid, auto, or zlib")
     return pack_container(metadata, payload, format_version=format_version)
 
 
@@ -302,13 +309,18 @@ def decompress_bytes(blob: bytes, checkpoint=None, max_output_size=8 << 30, devi
         if md["coder_version"] != CODER_VERSION:
             raise CompressionError("unsupported coder version")
         data = _decode_static(payload, md["original_size"])
-    elif md["mode"] == "neural":
+    elif md["mode"] in ("neural", NEURAL_LOSSLESS):
         if not checkpoint:
             raise CompressionError("neural artifact requires a checkpoint")
         coder = "rans" if md.get("coder_version") == CODER_RANS else "arithmetic"
         data = _decode_neural(payload, md["original_size"], checkpoint, md.get("model_fingerprint", ""), device, coder)
     elif md["mode"] == "zlib":
         data = zlib.decompress(payload)
+    elif md["mode"] == NEURAL_LOSSY:
+        if not checkpoint:
+            raise CompressionError("neural-lossy artifact requires a checkpoint")
+        from .lossy import decompress_lossy_bytes
+        return decompress_lossy_bytes(blob, checkpoint, device or "cpu")
     else:
         raise CompressionError("unsupported coding mode")
     if len(data) != md["original_size"]:
@@ -318,7 +330,26 @@ def decompress_bytes(blob: bytes, checkpoint=None, max_output_size=8 << 30, devi
     return data
 
 
-def compress_file(input_path, output_path, mode="static", checkpoint=None, overwrite=False, chunk_size=DEFAULT_CHUNK, device=None, coder="arithmetic"):
+def compress_file(
+    input_path,
+    output_path,
+    mode="static",
+    checkpoint=None,
+    overwrite=False,
+    chunk_size=DEFAULT_CHUNK,
+    device=None,
+    coder="arithmetic",
+    quality="medium",
+    profile=None,
+    selector_mode=None,
+    top_k=3,
+    microbench_bytes=64 << 10,
+    selector_model=None,
+    gru_checkpoint=None,
+    transformer_checkpoint=None,
+    collect_selector_metrics=None,
+    adaptive_chunking=True,
+):
     src, dst = Path(input_path), Path(output_path)
     if not src.is_file():
         raise FileNotFoundError(src)
@@ -326,6 +357,43 @@ def compress_file(input_path, output_path, mode="static", checkpoint=None, overw
         raise FileExistsError(dst)
     if chunk_size <= 0:
         raise CompressionError("chunk_size must be positive")
+    mode = canonical_mode(mode)
+    if mode == NEURAL_LOSSY:
+        from .lossy import compress_lossy_file
+        return compress_lossy_file(src, dst, checkpoint=checkpoint, quality=quality, overwrite=overwrite)
+    if mode == "hybrid-v2":
+        from .hybrid.container_v2 import compress_hybrid_v2_file
+
+        return compress_hybrid_v2_file(
+            src,
+            dst,
+            profile=profile or "balanced",
+            selector_model=selector_model,
+            chunk_size=None if adaptive_chunking else chunk_size,
+            microbench_bytes=microbench_bytes,
+            overwrite=overwrite,
+        )
+    # Preserve the legacy programmatic v3 hybrid behavior when no selector
+    # options are supplied.  The CLI always supplies a profile and therefore
+    # creates the new backward-compatible XAIC v5 hybrid container.
+    if mode == "hybrid" and (profile is not None or selector_mode is not None):
+        from .hybrid.container import compress_hybrid_file
+
+        return compress_hybrid_file(
+            src,
+            dst,
+            profile=profile or "balanced",
+            selector_mode=selector_mode or "ai-benchmark",
+            chunk_size=chunk_size,
+            top_k=top_k,
+            microbench_bytes=microbench_bytes,
+            selector_model=selector_model,
+            gru_checkpoint=gru_checkpoint,
+            transformer_checkpoint=transformer_checkpoint,
+            device=device or "cpu",
+            overwrite=overwrite,
+            collect_path=collect_selector_metrics,
+        )
     size = src.stat().st_size
     from .streaming import atomic_target, write_chunk, write_footer, write_header
 
@@ -361,7 +429,7 @@ def compress_file(input_path, output_path, mode="static", checkpoint=None, overw
                 if mode in ("hybrid", "auto"):
                     strategy = choose_strategy(block, neural_available=bool(checkpoint))
                 else:
-                    strategy = mode
+                    strategy = "neural" if mode == NEURAL_LOSSLESS else mode
                 packed = _encode_chunk(block, strategy, neural_state, coder)
                 codec_id, raw_len, payload_len = CHUNK_HEADER.unpack_from(packed)
                 payload = packed[CHUNK_HEADER.size:]
@@ -379,7 +447,16 @@ def compress_file(input_path, output_path, mode="static", checkpoint=None, overw
     return {"original_size": size, "artifact_size": encoded_size, "mode": mode, "format_version": 3, "chunks": chunks}
 
 
-def decompress_file(input_path, output_path, checkpoint=None, overwrite=False, max_output_size=8 << 30, device=None):
+def decompress_file(
+    input_path,
+    output_path,
+    checkpoint=None,
+    overwrite=False,
+    max_output_size=8 << 30,
+    device=None,
+    gru_checkpoint=None,
+    transformer_checkpoint=None,
+):
     src, dst = Path(input_path), Path(output_path)
     if not src.is_file():
         raise FileNotFoundError(src)
@@ -387,6 +464,27 @@ def decompress_file(input_path, output_path, checkpoint=None, overwrite=False, m
         raise FileExistsError(dst)
     with src.open("rb") as probe:
         prefix = probe.read(5)
+    if len(prefix) == 5 and prefix[:4] == b"XAIC" and prefix[4] == 5:
+        from .hybrid.container import decompress_hybrid_file
+
+        return decompress_hybrid_file(
+            src,
+            dst,
+            max_output_size=max_output_size,
+            gru_checkpoint=gru_checkpoint,
+            transformer_checkpoint=transformer_checkpoint,
+            device=device or "cpu",
+            overwrite=overwrite,
+        )
+    if len(prefix) == 5 and prefix[:4] == b"XAIC" and prefix[4] == 6:
+        from .hybrid.container_v2 import decompress_hybrid_v2_file
+
+        return decompress_hybrid_v2_file(
+            src,
+            dst,
+            max_output_size=max_output_size,
+            overwrite=overwrite,
+        )
     if len(prefix) == 5 and prefix[:4] == b"XAIC" and prefix[4] == 3:
         return _decompress_stream_file(src, dst, checkpoint, overwrite, max_output_size, device)
     data = decompress_bytes(src.read_bytes(), checkpoint=checkpoint, max_output_size=max_output_size, device=device)

@@ -1,0 +1,4 @@
+{"benchmark_version": "hybrid-v3-final-140-v1", "source_id": "src", "source_sha256": "abc", "method": "hybrid_v3_top3", "routing_mode": "top3", "original_bytes": 100, "compression_ms": 12.5, "decompression_ms": 3.0, "roundtrip_sha_pass": true, "status": "PASS", "repetition": 0}
+{"benchmark_version": "hybrid-v3-final-140-v1", "source_id": "src", "source_sha256": "abc", "method": "hybrid_v1", "routing_mode": "", "original_bytes": 100, "compressed_bytes": 0, "compression_ms": 12.5, "decompression_ms": 3.0, "roundtrip_sha_pass": false, "status": "FAIL", "repetition": 0}
+not json
+{"benchmark_version": "hybrid-v3-final-140-v1", "source_id": "src", "source_sha256": "abc", "method": "brotli-11", "routing_mode": "", "original_bytes": 100, "compressed_bytes": 80, "compression_ms": 12.5, "decompression_ms": 3.0, "roundtrip_sha_pass": true, "status": "PASS", "repetition": 0}

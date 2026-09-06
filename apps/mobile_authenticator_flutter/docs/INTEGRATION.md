@@ -19,7 +19,7 @@ The mobile application scans `otpauth_uri`, validates the scheme and type, and s
 The mobile code is submitted to:
 
 ```text
-POST /auth/totp/confirm?code=123456
+POST /auth/totp/confirm (JSON body: {"code":"123456"})
 Authorization: Bearer <access-token>
 ```
 

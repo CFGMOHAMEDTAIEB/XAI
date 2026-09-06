@@ -1,0 +1,37 @@
+[
+  {
+    "sample_id": "text_4KiB",
+    "category": "text",
+    "size": 4096,
+    "path": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_ai\\xai-hybrid-corpus-okswm6my\\text_4KiB.bin",
+    "sha256": "6c6ff8a1e38b9cf8354baaf600185011edb5f207e1c3b1afe3c5b4c87dd7f7b5"
+  },
+  {
+    "sample_id": "random_64KiB",
+    "category": "random",
+    "size": 65536,
+    "path": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_ai\\xai-hybrid-corpus-okswm6my\\random_64KiB.bin",
+    "sha256": "fccda630e3937e2ccd445beaccbb4e93af75cad811621cd687b8e22fdd562fea"
+  },
+  {
+    "sample_id": "numeric_1MiB",
+    "category": "scientific",
+    "size": 1048576,
+    "path": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_ai\\xai-hybrid-corpus-okswm6my\\numeric_1MiB.bin",
+    "sha256": "fbbab289f7f94b25736c58be46a994c441fd02552cc6022352e3d86d2fab7c83"
+  },
+  {
+    "sample_id": "structured_10MiB",
+    "category": "json",
+    "size": 10485760,
+    "path": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_ai\\xai-hybrid-corpus-okswm6my\\structured_10MiB.bin",
+    "sha256": "12771b801fde1fcbf9f3643539add874ada85856df048781cfd006cc489c2157"
+  },
+  {
+    "sample_id": "repetitive_100MiB",
+    "category": "repetitive",
+    "size": 104857600,
+    "path": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_ai\\xai-hybrid-corpus-okswm6my\\repetitive_100MiB.bin",
+    "sha256": "399512cf4031aab20dbeb8b5aff19e18a5e230c9fb98be34394623665cf0b135"
+  }
+]

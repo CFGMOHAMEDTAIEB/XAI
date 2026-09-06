@@ -1,30 +1,21 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:provider/provider.dart';
 import 'package:xai_compress_authenticator/main.dart';
+import 'package:xai_compress_authenticator/core/app_state.dart';
+import 'package:xai_compress_authenticator/services/api_service.dart';
+import 'package:xai_compress_authenticator/services/biometric_service.dart';
+import 'package:xai_compress_authenticator/services/secure_account_store.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
-
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  testWidgets('Authenticator starts locked and does not expose account codes', (tester) async {
+    final state = AppState(accountStore: SecureAccountStore(),
+      biometricService: BiometricService(), apiService: ApiService())..loading = false;
+    addTearDown(state.dispose);
+    await tester.pumpWidget(ChangeNotifierProvider<AppState>.value(
+      value: state, child: const XaiAuthenticatorApp()));
+    expect(find.text('Unlock'), findsOneWidget);
+    expect(find.text('XAI-Compress Authenticator'), findsOneWidget);
+    expect(find.text('Add account'), findsNothing);
+    expect(tester.takeException(), isNull);
   });
 }

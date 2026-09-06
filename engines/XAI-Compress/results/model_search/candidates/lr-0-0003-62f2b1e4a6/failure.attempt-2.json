@@ -1,0 +1,73 @@
+{
+  "candidate_id": "lr-0-0003-62f2b1e4a6",
+  "candidate_key": "lr_0_0003",
+  "parent_candidate": "base",
+  "timestamp": "2026-08-31T09:45:18.691761+00:00",
+  "stage": "MULTI_EPOCH_STABILITY",
+  "classification": "GRADIENT_INSTABILITY",
+  "exception": "FIRST NON-FINITE STAGE = gradient:output.weight; epoch=5; step=15",
+  "epoch": 5,
+  "step": 15,
+  "tensor_name": "output.weight",
+  "dtype": null,
+  "shape": null,
+  "min": null,
+  "max": null,
+  "mean": null,
+  "std": null,
+  "activation_maxima": null,
+  "grad_scaler_scale": null,
+  "grad_norm": null,
+  "learning_rate": 0.0003,
+  "source_hashes": {
+    "xai_compress/models/transformer_v2.py": "da3dfb52740b02287be3811abd95a3419485fe1fdee86f254ea0ccf7a70de39c",
+    "xai_compress/train.py": "972effc238921a7da49ec4372d6d9db37be1f6b425f6ead6c5e128a80d012b88",
+    "xai_compress/checkpoint.py": "d0890b80f5d1529409313da3d1c815dd597d2abdb3e7fd1cf41d50b4497423f1",
+    "xai_compress/compression.py": "c4565d3d8b2dd98b923894cb9f3d13aec97bdb1928f57a219b9db6abb4bfa934",
+    "scripts/run_v2_multi_epoch_gate.py": "a5dcb345c904fc68af5c01c431993fb44c5c3889295a52fc9a52861d61c18e37"
+  },
+  "traceback": "Traceback (most recent call last):\n  File \"/kaggle/working/XAI-Compress/xai_compress/train.py\", line 549, in train\n    require_finite_gradients(trainable, epoch, step)\n  File \"/kaggle/working/XAI-Compress/xai_compress/train.py\", line 39, in require_finite_gradients\n    require_finite(parameter.grad, f\"{prefix}:{name}\", epoch, step)\n  File \"/kaggle/working/XAI-Compress/xai_compress/train.py\", line 32, in require_finite\n    raise FloatingPointError(f\"FIRST NON-FINITE STAGE = {stage}; epoch={epoch}; step={step}\")\nFloatingPointError: FIRST NON-FINITE STAGE = gradient:output.weight; epoch=5; step=15\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/kaggle/working/XAI-Compress/scripts/run_v2_multi_epoch_gate.py\", line 59, in main\n    train(\n  File \"/kaggle/working/XAI-Compress/xai_compress/train.py\", line 575, in train\n    **failure_snapshot(current_loss))\n      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/kaggle/working/XAI-Compress/xai_compress/train.py\", line 464, in failure_snapshot\n    optimizer_finite, optimizer_max = finite_and_abs_max(optimizer_tensors)\n                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/kaggle/working/XAI-Compress/xai_compress/train.py\", line 459, in finite_and_abs_max\n    maximum = float(torch.stack(maxima).max().item()) if maxima else None\n                    ^^^^^^^^^^^^^^^^^^^\nRuntimeError: Expected all tensors to be on the same device, but got tensors is on cuda:0, different from other tensors on cpu (when checking argument in method wrapper_CUDA_cat)\n",
+  "status": "MULTI_EPOCH_STABILITY_FAILED",
+  "evidence": {
+    "status": "FAIL",
+    "learning_rate": 0.0003,
+    "exception_type": "RuntimeError",
+    "exception": "Expected all tensors to be on the same device, but got tensors is on cuda:0, different from other tensors on cpu (when checking argument in method wrapper_CUDA_cat)",
+    "traceback": "Traceback (most recent call last):\n  File \"/kaggle/working/XAI-Compress/xai_compress/train.py\", line 549, in train\n    require_finite_gradients(trainable, epoch, step)\n  File \"/kaggle/working/XAI-Compress/xai_compress/train.py\", line 39, in require_finite_gradients\n    require_finite(parameter.grad, f\"{prefix}:{name}\", epoch, step)\n  File \"/kaggle/working/XAI-Compress/xai_compress/train.py\", line 32, in require_finite\n    raise FloatingPointError(f\"FIRST NON-FINITE STAGE = {stage}; epoch={epoch}; step={step}\")\nFloatingPointError: FIRST NON-FINITE STAGE = gradient:output.weight; epoch=5; step=15\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/kaggle/working/XAI-Compress/scripts/run_v2_multi_epoch_gate.py\", line 59, in main\n    train(\n  File \"/kaggle/working/XAI-Compress/xai_compress/train.py\", line 575, in train\n    **failure_snapshot(current_loss))\n      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/kaggle/working/XAI-Compress/xai_compress/train.py\", line 464, in failure_snapshot\n    optimizer_finite, optimizer_max = finite_and_abs_max(optimizer_tensors)\n                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/kaggle/working/XAI-Compress/xai_compress/train.py\", line 459, in finite_and_abs_max\n    maximum = float(torch.stack(maxima).max().item()) if maxima else None\n                    ^^^^^^^^^^^^^^^^^^^\nRuntimeError: Expected all tensors to be on the same device, but got tensors is on cuda:0, different from other tensors on cpu (when checking argument in method wrapper_CUDA_cat)\n",
+    "duration_seconds": 10849.206402055,
+    "training_status": {
+      "status": "TRAINING",
+      "last_update_timestamp": 1788140761.418219,
+      "epoch": 5,
+      "step": 1,
+      "train_loss": null,
+      "validation_loss": null,
+      "BPB": null,
+      "elapsed_seconds": 10655.119660321001,
+      "ETA": null,
+      "GPU": "cuda",
+      "VRAM": {
+        "allocated_bytes": 88288256.0,
+        "reserved_bytes": 616562688.0,
+        "max_allocated_bytes": 582532608.0
+      },
+      "last_checkpoint": "/kaggle/working/results/model_search/lr_0_0003/best.latest.pt"
+    },
+    "epoch": 5,
+    "step": 15,
+    "gpu": "cuda",
+    "vram": {
+      "allocated_bytes": 88288256.0,
+      "reserved_bytes": 616562688.0,
+      "max_allocated_bytes": 582532608.0
+    },
+    "last_checkpoint": "/kaggle/working/results/model_search/lr_0_0003/best.latest.pt",
+    "last_known_stage": "TRAINING",
+    "first_non_finite_stage": "gradient:output.weight",
+    "tensor_name": "output.weight",
+    "primary_exception": "FIRST NON-FINITE STAGE = gradient:output.weight; epoch=5; step=15",
+    "telemetry_masked_primary_failure": true
+  },
+  "attempt": 2,
+  "evidence_path": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\model_search\\failures\\lr-0-0003-62f2b1e4a6.attempt-2.json"
+}

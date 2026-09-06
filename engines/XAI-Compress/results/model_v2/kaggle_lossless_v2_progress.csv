@@ -1,0 +1,14 @@
+kernel_version,epoch,train_cross_entropy,val_cross_entropy,val_bpb_estimate,learning_rate,samples_per_second,epoch_seconds,gpu_utilization_percent,vram_max_bytes,best_epoch,best_bpb,early_stop_counter
+2,1,nan,nan,nan,0.001,N/A,N/A,N/A,N/A,N/A,N/A,1
+2,2,nan,nan,nan,0.0005,N/A,N/A,N/A,N/A,N/A,N/A,2
+2,3,nan,nan,nan,0.0005,N/A,N/A,N/A,N/A,N/A,N/A,3
+2,4,nan,nan,nan,0.00025,N/A,N/A,N/A,N/A,N/A,N/A,4
+2,5,nan,nan,nan,0.00025,N/A,N/A,N/A,N/A,N/A,N/A,5
+2,6,nan,nan,nan,0.000125,N/A,N/A,N/A,N/A,N/A,N/A,6
+2,7,nan,nan,nan,0.000125,N/A,N/A,N/A,N/A,N/A,N/A,7
+2,8,nan,nan,nan,0.0000625,N/A,N/A,N/A,N/A,N/A,N/A,8
+3,1,nan,nan,nan,0.001,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+6,1,5.5278756579,5.5254685097,7.9715660175,0.0005,231.933,1940.213,77,556357120,1,7.9715660175,0
+6,2,5.5246731141,5.5245542484,7.9702470172,0.0005,232.646,1934.268,77,557798400,2,7.9702470172,0
+6,3,5.5239208685,5.5239324425,7.9693499410,0.0005,N/A,N/A,N/A,N/A,3,7.9693499410,0
+6,4,N/A,N/A,N/A,0.0005,N/A,N/A,N/A,N/A,3,7.9693499410,N/A

@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+data/train/*
+!data/train/.gitkeep
+data/test/*
+!data/test/.gitkeep
+checkpoints/*.pt
+*.xaic
+*.metrics.csv
+benchmark_results*.csv
+rust-core/target/
+.kaggle_build/
+kaggle.json

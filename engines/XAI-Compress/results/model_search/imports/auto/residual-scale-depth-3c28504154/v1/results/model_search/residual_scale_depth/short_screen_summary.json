@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "samples": 32768,
+  "checkpoint_load": true,
+  "finite_parameters": true,
+  "checkpoint_epoch": 1,
+  "duration_seconds": 371.990071143,
+  "checkpoint_sha256": "989ec35dfeb8ed0d723b5ee89608d0ef8ffbfc9dbf86e3bc168d6c6b8884f1af"
+}

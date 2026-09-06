@@ -1,0 +1,8 @@
+method,original_bytes,compressed_bytes,ratio,space_saving_percent,actual_bpb,compression_MB_s,decompression_MB_s,peak_RSS_MB,SHA256_roundtrip,measurement
+gzip,4000,1523,2.6263952724885096,61.92500000000001,3.046,5.002226103581405,19.64314081640605,N/A,PASS,MEASURED: single cold-path pass on 4000-byte text/source corpus
+bz2,4000,1709,2.3405500292568755,57.275,3.418,1.6198976905681002,8.419105367282445,N/A,PASS,MEASURED: single cold-path pass on 4000-byte text/source corpus
+lzma,4000,1736,2.304147465437788,56.60000000000001,3.472,0.18184621943704837,6.81195922096116,N/A,PASS,MEASURED: single cold-path pass on 4000-byte text/source corpus
+zstd,4000,1586,2.5220680958385877,60.349999999999994,3.172,6.004559859238809,8.952585964892629,N/A,PASS,MEASURED: single cold-path pass on 4000-byte text/source corpus
+brotli,4000,1330,3.007518796992481,66.75,2.66,0.1994581668497331,4.290033102826534,N/A,PASS,MEASURED: single cold-path pass on 4000-byte text/source corpus
+mouve_static,4000,3714,1.0770059235325795,7.15,7.428,0.009489969476585317,0.010244615351284262,N/A,PASS,MEASURED: single cold-path pass on 4000-byte text/source corpus
+mouve_neural,4000,4443,0.9002925950934053,-11.07499999999999,8.886,0.0009401053064717075,0.0009238793908388763,N/A,PASS,MEASURED: single cold-path pass on 4000-byte text/source corpus

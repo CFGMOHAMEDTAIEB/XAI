@@ -1,0 +1,30 @@
+{
+  "generated_utc": "2026-08-31T22:11:36.927315+00:00",
+  "protected_gru": {
+    "path": "checkpoints\\kaggle\\best.pt",
+    "sha256_before": "083cda706612c3fd9ce62699741932b07e83fdf98eb6c5430d51bd29e1820429",
+    "sha256_after": "083cda706612c3fd9ce62699741932b07e83fdf98eb6c5430d51bd29e1820429",
+    "unchanged": true,
+    "size": 20423284,
+    "architecture": "causal-byte-gru-v1",
+    "epoch": 8,
+    "parameters": 1700800
+  },
+  "lossy_validation": {
+    "path": "checkpoints\\neural_lossy_v1\\validation.pt",
+    "sha256": "08301fd635335e6103b54cc2a4efc581b8a580e1b983368e392288b66cec41dc",
+    "size": 136080,
+    "architecture": "conv-image-autoencoder-v1",
+    "epoch": 2,
+    "parameters": 9323
+  },
+  "transformer": {
+    "first_validated": null,
+    "status": "EXPERIMENTAL / NOT VALIDATED",
+    "failed_candidates": [
+      "lr-0-0003-62f2b1e4a6",
+      "lr-0-0002-f316e33308",
+      "residual-scale-depth-3c28504154"
+    ]
+  }
+}

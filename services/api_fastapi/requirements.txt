@@ -4,6 +4,7 @@ sqlalchemy>=2.0
 pydantic-settings>=2.8
 python-jose[cryptography]>=3.3
 passlib[bcrypt]>=1.7
+bcrypt<5
 pyotp>=2.9
 qrcode[pil]>=8.0
 python-multipart>=0.0.20
@@ -12,3 +13,7 @@ redis>=5.2
 email-validator>=2.2
 pytest>=8.0
 httpx>=0.28
+zstandard>=0.23
+brotli>=1.1
+numpy>=1.26
+torch>=2.2

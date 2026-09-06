@@ -1,0 +1,44 @@
+{
+  "test_date": "Wed Sep  2 00:48:20 2026",
+  "context_load_ms": 142.67800000379793,
+  "tests": [
+    {
+      "file": "binary_10kb.bin",
+      "size": 10240,
+      "total_compression_ms": 479.13980000885203,
+      "selection_ms": 469.5227000047453,
+      "candidate_generation_ms": 0.13540001236833632,
+      "feature_scan_ms": 235.04260001936927,
+      "inference_ms": 1.5431999927386642,
+      "microbench_ms": 192.03720000223257,
+      "artifact_bytes": 90
+    },
+    {
+      "file": "text_20kb.txt",
+      "size": 20480,
+      "total_compression_ms": 111.24929998186417,
+      "selection_ms": 100.56739998981357,
+      "candidate_generation_ms": 0.079699995694682,
+      "feature_scan_ms": 62.87629998405464,
+      "inference_ms": 1.190800016047433,
+      "microbench_ms": 1.0519000061322004,
+      "artifact_bytes": 155
+    },
+    {
+      "file": "random_15kb.dat",
+      "size": 15360,
+      "total_compression_ms": 103.37659998913296,
+      "selection_ms": 95.7693999807816,
+      "candidate_generation_ms": 0.05599998985417187,
+      "feature_scan_ms": 58.48220002371818,
+      "inference_ms": 0.8314000151585788,
+      "microbench_ms": 0.8911000040825456,
+      "artifact_bytes": 343
+    }
+  ],
+  "summary": {
+    "total_tests": 3,
+    "avg_candidate_generation_ms": 0.09036666597239673,
+    "status": "PASS"
+  }
+}

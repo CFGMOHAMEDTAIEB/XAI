@@ -1,0 +1,87 @@
+[
+  {
+    "microbench_bytes": 2048,
+    "mean_regret": -0.15469237731346708,
+    "p95_regret": 0.0,
+    "mean_select_ms": 47.44561857244532,
+    "median_select_ms": 52.357749998918734,
+    "mean_compression_ms": 77.00956500027262,
+    "mean_decompression_ms": 36.182842143171,
+    "mean_artifact_bytes": 2586824.492857143,
+    "route_counts": {
+      "direct_bypass": 56,
+      "small_file_rule_direct": 10,
+      "top_2_microbenchmark": 2,
+      "top_3_microbenchmark": 72
+    },
+    "files_measured": 140
+  },
+  {
+    "microbench_bytes": 4096,
+    "mean_regret": -0.1544131164539463,
+    "p95_regret": 0.0,
+    "mean_select_ms": 51.74497714220446,
+    "median_select_ms": 56.75144998531323,
+    "mean_compression_ms": 97.16593071539786,
+    "mean_decompression_ms": 31.119184285801435,
+    "mean_artifact_bytes": 2586865.4857142856,
+    "route_counts": {
+      "direct_bypass": 56,
+      "small_file_rule_direct": 10,
+      "top_2_microbenchmark": 2,
+      "top_3_microbenchmark": 72
+    },
+    "files_measured": 140
+  },
+  {
+    "microbench_bytes": 8192,
+    "mean_regret": -0.15448506835797032,
+    "p95_regret": 0.0,
+    "mean_select_ms": 47.22245071586388,
+    "median_select_ms": 56.345549994148314,
+    "mean_compression_ms": 95.23171857186493,
+    "mean_decompression_ms": 32.062079287217266,
+    "mean_artifact_bytes": 2587253.3214285714,
+    "route_counts": {
+      "direct_bypass": 56,
+      "small_file_rule_direct": 10,
+      "top_2_microbenchmark": 2,
+      "top_3_microbenchmark": 72
+    },
+    "files_measured": 140
+  },
+  {
+    "microbench_bytes": 16384,
+    "mean_regret": -0.15479325257534063,
+    "p95_regret": 0.0,
+    "mean_select_ms": 44.755348570678116,
+    "median_select_ms": 54.44705000263639,
+    "mean_compression_ms": 90.87193785609477,
+    "mean_decompression_ms": 29.427034999493376,
+    "mean_artifact_bytes": 2587059.1357142855,
+    "route_counts": {
+      "direct_bypass": 56,
+      "small_file_rule_direct": 10,
+      "top_2_microbenchmark": 2,
+      "top_3_microbenchmark": 72
+    },
+    "files_measured": 140
+  },
+  {
+    "microbench_bytes": 32768,
+    "mean_regret": -0.1544790185586448,
+    "p95_regret": 0.0,
+    "mean_select_ms": 65.51221857204966,
+    "median_select_ms": 60.182150002219714,
+    "mean_compression_ms": 136.91131142861974,
+    "mean_decompression_ms": 37.80500500080442,
+    "mean_artifact_bytes": 2587554.2285714285,
+    "route_counts": {
+      "direct_bypass": 56,
+      "small_file_rule_direct": 10,
+      "top_2_microbenchmark": 2,
+      "top_3_microbenchmark": 72
+    },
+    "files_measured": 140
+  }
+]

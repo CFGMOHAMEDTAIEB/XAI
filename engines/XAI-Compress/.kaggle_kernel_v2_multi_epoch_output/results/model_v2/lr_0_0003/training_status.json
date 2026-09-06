@@ -1,0 +1,18 @@
+{
+  "status": "VALIDATING",
+  "last_update_timestamp": 1788090392.080982,
+  "epoch": 1,
+  "step": 28125,
+  "train_loss": 5.527853248833551,
+  "validation_loss": null,
+  "BPB": null,
+  "elapsed_seconds": 2715.4941688110002,
+  "ETA": null,
+  "GPU": "cuda",
+  "VRAM": {
+    "allocated_bytes": 90634240.0,
+    "reserved_bytes": 616562688.0,
+    "max_allocated_bytes": 582532608.0
+  },
+  "last_checkpoint": "/kaggle/working/results/model_v2/lr_0_0003/best.latest.pt"
+}

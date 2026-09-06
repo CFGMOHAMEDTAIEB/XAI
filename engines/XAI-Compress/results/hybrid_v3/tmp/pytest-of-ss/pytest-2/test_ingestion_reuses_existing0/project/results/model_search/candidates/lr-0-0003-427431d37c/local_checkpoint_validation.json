@@ -1,0 +1,15 @@
+{
+  "checkpoint_load": true,
+  "finite_parameters": true,
+  "finite_optimizer_state": true,
+  "deterministic_inference": true,
+  "lossless_sha256": true,
+  "roundtrips": [],
+  "checkpoint_size": 19,
+  "checkpoint_sha256": "test",
+  "checkpoint_epoch": 5,
+  "parameter_tensor_count": 1,
+  "optimizer_tensor_count": 1,
+  "parameter_abs_max": 1.0,
+  "optimizer_state_abs_max": 1.0
+}

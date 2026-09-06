@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-08-31T09:57:20.746963+00:00",
+  "candidate_id": "lr-0-0002-f316e33308",
+  "failure_class": "TELEMETRY_INFRASTRUCTURE_ERROR",
+  "reason": "ADAMW_TELEMETRY_DEVICE_MISMATCH",
+  "scientific_status": "UNRESOLVED",
+  "model_evidence_valid": false,
+  "numerical_instability_established": false,
+  "previous_classification_id": "d88071666347940b0a1b5a12bc9b49dc0374205ddc583f8c3b53b8b90244819d",
+  "original_failure_preserved_at": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\model_search\\failures\\lr-0-0002-f316e33308.json",
+  "repair_scope": "TELEMETRY_ONLY",
+  "test_evidence": {
+    "python_pass": true,
+    "python_passed": 143,
+    "python_skipped_cuda": 3,
+    "rust_pass": true,
+    "rust_passed": 1,
+    "rust_failed": 0,
+    "rust_environment": "PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1"
+  },
+  "retry_number": 1,
+  "max_infrastructure_retries": 2
+}

@@ -1,0 +1,28 @@
+{
+  "recorded_at": "2026-09-01T11:56:54.9533869+02:00",
+  "git_commit": "962853ebc3b197cc182d84ff7685354409a56a7b",
+  "python_tests": {
+    "status": "PASS",
+    "result": "156 passed, 3 skipped in 21.28s"
+  },
+  "rust_tests": {
+    "status": "PASS",
+    "result": "1 passed, 0 failed",
+    "pyo3_stable_abi_forward_compatibility": true
+  },
+  "protected_gru": {
+    "path": "checkpoints/kaggle/best.pt",
+    "expected_sha256": "083cda706612c3fd9ce62699741932b07e83fdf98eb6c5430d51bd29e1820429",
+    "measured_sha256": "083cda706612c3fd9ce62699741932b07e83fdf98eb6c5430d51bd29e1820429",
+    "integrity": "PASS",
+    "immutable": true
+  },
+  "transformer_v2": {
+    "path": "checkpoints/neural_lossless_v2/best.pt",
+    "expected_sha256": "584d8dfee979c6719a7602d00d81ef72443ee804878b13a1d651b5ea42129fb9",
+    "measured_sha256": "584d8dfee979c6719a7602d00d81ef72443ee804878b13a1d651b5ea42129fb9",
+    "integrity": "PASS",
+    "immutable": true
+  },
+  "overall": "PASS"
+}

@@ -1,0 +1,16 @@
+flowchart TD
+    A[Input bytes] --> B[Streaming chunk loader]
+    B --> C[Entropy and type analyzer]
+    C --> D{Adaptive selector}
+    D -->|incompressible| E[Store]
+    D -->|LZ-friendly| F[zlib fallback]
+    D -->|order-0| G[Adaptive byte model]
+    D -->|domain match| H[GRU / Transformer]
+    G --> I[Integer probabilities]
+    H --> I
+    I --> J[Arithmetic coder / rANS]
+    E --> K[Versioned XAIC container]
+    F --> K
+    J --> K
+    K --> L[Verified decoder]
+    L --> M[Exact original bytes]

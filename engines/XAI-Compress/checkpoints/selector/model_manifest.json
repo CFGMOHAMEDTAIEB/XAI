@@ -1,0 +1,17 @@
+{
+  "format": "xai-codec-selector-v1",
+  "artifact": "best.json",
+  "artifact_sha256": "3992fead42e8c2f4f23b9618a1810b1e665116aa5799c68ca93a6973dfbce296",
+  "model_families_benchmarked": [
+    "rule_based",
+    "random_forest",
+    "gradient_boosted_stumps"
+  ],
+  "selected_models": {
+    "smallest": "gradient_boosted_stumps",
+    "fastest": "random_forest",
+    "balanced": "gradient_boosted_stumps"
+  },
+  "requires_sklearn": false,
+  "deterministic_seed": 20260901
+}

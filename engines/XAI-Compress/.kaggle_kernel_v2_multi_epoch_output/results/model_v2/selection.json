@@ -1,0 +1,18 @@
+{
+  "status": "FAIL",
+  "selected": null,
+  "assessments": [
+    {
+      "learning_rate": 0.0003,
+      "returncode": 1,
+      "summary": {
+        "status": "FAIL",
+        "learning_rate": 0.0003,
+        "exception_type": "RuntimeError",
+        "exception": "Expected all tensors to be on the same device, but got tensors is on cuda:0, different from other tensors on cpu (when checking argument in method wrapper_CUDA_cat)",
+        "duration_seconds": 3038.439749111
+      }
+    }
+  ],
+  "production_submitted": false
+}

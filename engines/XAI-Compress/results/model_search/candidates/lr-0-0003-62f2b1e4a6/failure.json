@@ -1,0 +1,67 @@
+{
+  "candidate_id": "lr-0-0003-62f2b1e4a6",
+  "candidate_key": "lr_0_0003",
+  "parent_candidate": "base",
+  "timestamp": "2026-08-30T16:13:46.538458+00:00",
+  "stage": "MULTI_EPOCH_STABILITY",
+  "classification": "CUDA_ERROR",
+  "exception": "Expected all tensors to be on the same device, but got tensors is on cuda:0, different from other tensors on cpu (when checking argument in method wrapper_CUDA_cat)",
+  "epoch": 1,
+  "step": 28125,
+  "tensor_name": null,
+  "dtype": null,
+  "shape": null,
+  "min": null,
+  "max": null,
+  "mean": null,
+  "std": null,
+  "activation_maxima": null,
+  "grad_scaler_scale": null,
+  "grad_norm": null,
+  "learning_rate": 0.0003,
+  "source_hashes": {
+    "xai_compress/models/transformer_v2.py": "da3dfb52740b02287be3811abd95a3419485fe1fdee86f254ea0ccf7a70de39c",
+    "xai_compress/train.py": "7b1cfe547c85c7733d8ba3f3ead8b5372cf56eba2406f0ba3076c3fbbdf59ffe",
+    "xai_compress/checkpoint.py": "d0890b80f5d1529409313da3d1c815dd597d2abdb3e7fd1cf41d50b4497423f1",
+    "xai_compress/compression.py": "c4565d3d8b2dd98b923894cb9f3d13aec97bdb1928f57a219b9db6abb4bfa934",
+    "scripts/run_v2_multi_epoch_gate.py": "614e395bda278afa348720a68dfd1ed7de75320019a688658386faa9115170d5"
+  },
+  "traceback": null,
+  "status": "MULTI_EPOCH_STABILITY_FAILED",
+  "evidence": {
+    "status": "FAIL",
+    "learning_rate": 0.0003,
+    "exception_type": "RuntimeError",
+    "exception": "Expected all tensors to be on the same device, but got tensors is on cuda:0, different from other tensors on cpu (when checking argument in method wrapper_CUDA_cat)",
+    "duration_seconds": 3038.439749111,
+    "training_status": {
+      "status": "VALIDATING",
+      "last_update_timestamp": 1788090392.080982,
+      "epoch": 1,
+      "step": 28125,
+      "train_loss": 5.527853248833551,
+      "validation_loss": null,
+      "BPB": null,
+      "elapsed_seconds": 2715.4941688110002,
+      "ETA": null,
+      "GPU": "cuda",
+      "VRAM": {
+        "allocated_bytes": 90634240.0,
+        "reserved_bytes": 616562688.0,
+        "max_allocated_bytes": 582532608.0
+      },
+      "last_checkpoint": "/kaggle/working/results/model_v2/lr_0_0003/best.latest.pt"
+    },
+    "epoch": 1,
+    "step": 28125,
+    "loss": 5.527853248833551,
+    "gpu": "cuda",
+    "vram": {
+      "allocated_bytes": 90634240.0,
+      "reserved_bytes": 616562688.0,
+      "max_allocated_bytes": 582532608.0
+    },
+    "last_checkpoint": "/kaggle/working/results/model_v2/lr_0_0003/best.latest.pt",
+    "last_known_stage": "VALIDATING"
+  }
+}

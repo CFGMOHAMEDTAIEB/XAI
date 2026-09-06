@@ -9,10 +9,8 @@ class BiometricService {
       if (!supported) return true;
       return await _auth.authenticate(
         localizedReason: 'Unlock XAI-Compress Authenticator',
-        options: const AuthenticationOptions(
-          biometricOnly: false,
-          stickyAuth: true,
-        ),
+        biometricOnly: false,
+        persistAcrossBackgrounding: true,
       );
     } catch (_) {
       return false;

@@ -1,0 +1,4 @@
+candidate,status,epoch,step,failure_classification,first_non_finite_tensor
+lr-0-0003-62f2b1e4a6,MULTI_EPOCH_STABILITY_FAILED,5,15,GRADIENT_INSTABILITY,output.weight
+lr-0-0002-f316e33308,INFRASTRUCTURE_FAILED,,,INFRASTRUCTURE_ERROR,
+residual-scale-depth-3c28504154,MULTI_EPOCH_STABILITY_FAILED,5,8522,GRADIENT_INSTABILITY,output.weight

@@ -1,0 +1,6 @@
+flowchart LR
+    V0[V0 GRU + arithmetic] --> V1[V1 GPU training]
+    V1 --> V2[V2 deterministic batched probabilities]
+    V2 --> V3[V3 Transformer + KV cache]
+    V3 --> V4[V4 rANS + adaptive chunks]
+    V4 --> VF[Current hybrid system]

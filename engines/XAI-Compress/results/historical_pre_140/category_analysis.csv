@@ -1,0 +1,65 @@
+actual_bpb,category,compressed_bytes,files,method,reason,status
+7.998420607251879,archive,10877983,2,hybrid_v1,,PASS
+N/A,audio,N/A,0,hybrid_v1,no independent held-out real file in corpus,N/A
+183.77142857142857,binary,2412,3,hybrid_v1,,PASS
+104.125,csv,1666,2,hybrid_v1,,PASS
+4.316909294512878,executable,30840,2,hybrid_v1,,PASS
+N/A,high_entropy,N/A,0,hybrid_v1,no independent held-out real file in corpus,N/A
+3.4372752274169662,image,8124,2,hybrid_v1,,PASS
+0.9482800151409138,json,10334,3,hybrid_v1,,PASS
+0.9834372441589521,logs,5856,3,hybrid_v1,,PASS
+28.79377431906615,markdown,1850,2,hybrid_v1,,PASS
+6.761689090182497,model,139590,3,hybrid_v1,,PASS
+N/A,pdf,N/A,0,hybrid_v1,no independent held-out real file in corpus,N/A
+N/A,repetitive,N/A,0,hybrid_v1,no independent held-out real file in corpus,N/A
+3.135482614200838,source_code,8048,3,hybrid_v1,,PASS
+9.537512846865365,text,2320,2,hybrid_v1,,PASS
+8.006458520730087,video,3039680,2,hybrid_v1,,PASS
+8.00012941020655,archive,10880307,2,hybrid_v2,,PASS
+N/A,audio,N/A,0,hybrid_v2,no independent held-out real file in corpus,N/A
+22.17142857142857,binary,291,3,hybrid_v2,,PASS
+15.75,csv,252,2,hybrid_v2,,PASS
+4.258118701007839,executable,30420,2,hybrid_v2,,PASS
+N/A,high_entropy,N/A,0,hybrid_v2,no independent held-out real file in corpus,N/A
+2.8821662788237785,image,6812,2,hybrid_v2,,PASS
+0.8162328947821199,json,8895,3,hybrid_v2,,PASS
+0.6776245355500976,logs,4035,3,hybrid_v2,,PASS
+6.910505836575876,markdown,444,2,hybrid_v2,,PASS
+7.813168315632682,model,161297,3,hybrid_v2,,PASS
+N/A,pdf,N/A,0,hybrid_v2,no independent held-out real file in corpus,N/A
+N/A,repetitive,N/A,0,hybrid_v2,no independent held-out real file in corpus,N/A
+2.4151163923249244,source_code,6199,3,hybrid_v2,,PASS
+4.102774922918808,text,998,2,hybrid_v2,,PASS
+8.000379293223952,video,3037372,2,hybrid_v2,,PASS
+7.761343314708252,archive,42222216,8,best_fixed,,PASS
+N/A,audio,N/A,0,best_fixed,no independent held-out real file in corpus,N/A
+8.444444444444445,binary,380,8,best_fixed,,PASS
+7.125,csv,456,8,best_fixed,,PASS
+3.882978723404255,executable,110960,8,best_fixed,,PASS
+N/A,high_entropy,N/A,0,best_fixed,no independent held-out real file in corpus,N/A
+2.694309287074254,image,25472,8,best_fixed,,PASS
+0.6746424106169923,json,29408,12,best_fixed,,PASS
+0.5502264927934111,logs,10021,8,best_fixed,,PASS
+4.202334630350195,markdown,1080,8,best_fixed,,PASS
+6.49249726450945,model,357498,8,best_fixed,,PASS
+N/A,pdf,N/A,0,best_fixed,no independent held-out real file in corpus,N/A
+N/A,repetitive,N/A,0,best_fixed,no independent held-out real file in corpus,N/A
+2.072270380831791,source_code,21276,12,best_fixed,,PASS
+2.8735868448098665,text,2796,8,best_fixed,,PASS
+7.986661521624323,video,12128656,8,best_fixed,,PASS
+8.206391990758567,archive,10656,4,oracle_balanced,,PASS
+N/A,audio,N/A,0,oracle_balanced,no independent held-out real file in corpus,N/A
+19.022222222222222,binary,856,8,oracle_balanced,,PASS
+14.5,csv,928,8,oracle_balanced,,PASS
+4.048432250839865,executable,115688,8,oracle_balanced,,PASS
+N/A,high_entropy,N/A,0,oracle_balanced,no independent held-out real file in corpus,N/A
+2.895705521472393,image,27376,8,oracle_balanced,,PASS
+0.8165999472362098,json,35596,12,oracle_balanced,,PASS
+0.6840905971173644,logs,12459,8,oracle_balanced,,PASS
+6.256809338521401,markdown,1608,8,oracle_balanced,,PASS
+6.635187715944845,model,365355,8,oracle_balanced,,PASS
+N/A,pdf,N/A,0,oracle_balanced,no independent held-out real file in corpus,N/A
+N/A,repetitive,N/A,0,oracle_balanced,no independent held-out real file in corpus,N/A
+2.3878445505016073,source_code,24516,12,oracle_balanced,,PASS
+3.4162384378211716,text,3324,8,oracle_balanced,,PASS
+7.995524866753501,video,12142116,8,oracle_balanced,,PASS

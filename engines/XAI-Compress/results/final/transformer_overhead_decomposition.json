@@ -1,0 +1,10 @@
+{
+  "corpus_original_bytes": 4096,
+  "identity_check_bpb": 12.162109375,
+  "model_entropy_bpb": 7.267445970517028,
+  "probability_quantization_contribution_bpb": -0.034925519650886194,
+  "rans_entropy_coder_overhead_bpb": 0.027245174133858185,
+  "status": "MEASURED",
+  "total_actual_bpb": 12.162109375,
+  "xaic_container_overhead_bpb": 4.90234375
+}

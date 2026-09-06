@@ -1,0 +1,12 @@
+stateDiagram-v2
+ [*] --> Read
+ Read --> Analyze
+ Analyze --> Store
+ Analyze --> Zlib
+ Analyze --> Static
+ Analyze --> Neural
+ Store --> Write
+ Zlib --> Write
+ Static --> Write
+ Neural --> Write
+ Write --> Read

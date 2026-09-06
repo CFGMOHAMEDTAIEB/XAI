@@ -1,0 +1,32 @@
+{
+  "candidate_id": "lr-0-0002-13e50e3524",
+  "candidate_key": "lr_0_0002",
+  "parent_candidate": "base",
+  "timestamp": "2026-09-02T10:46:37.559460+00:00",
+  "stage": "MULTI_EPOCH_STABILITY",
+  "classification": "CUDA_ERROR",
+  "exception": "Expected all tensors to be on the same device, but got cuda:0 and cpu",
+  "epoch": 1,
+  "step": 28125,
+  "tensor_name": null,
+  "dtype": null,
+  "shape": null,
+  "min": null,
+  "max": null,
+  "mean": null,
+  "std": null,
+  "activation_maxima": null,
+  "grad_scaler_scale": null,
+  "grad_norm": null,
+  "learning_rate": 0.0002,
+  "source_hashes": {},
+  "traceback": null,
+  "status": "MULTI_EPOCH_STABILITY_FAILED",
+  "evidence": {
+    "epoch": 1,
+    "step": 28125,
+    "traceback": "optimizer_state_abs_max = _collection_abs_max(optimizer_tensors, device)"
+  },
+  "attempt": 1,
+  "evidence_path": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_optimizer_telemetry_failu0\\project\\results\\model_search\\failures\\lr-0-0002-13e50e3524.json"
+}

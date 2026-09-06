@@ -1,0 +1,26 @@
+{
+  "kernel_version": 4,
+  "kernel_status": "ERROR",
+  "classification": "GRADIENT_INSTABILITY",
+  "epoch": 1,
+  "step": 10169,
+  "first_non_finite_stage": "gradient:blocks.2.attn.qkv.weight",
+  "optimizer_step_executed_for_failing_batch": false,
+  "production_epoch_completed": false,
+  "production_checkpoint_created": false,
+  "smoke": {
+    "train_cross_entropy": 5.597291023283388,
+    "val_cross_entropy": 5.554742604783438,
+    "val_bpb_estimate": 8.01379960933571,
+    "peak_vram_bytes": 319257088,
+    "checkpoint_bytes": 29671967,
+    "deterministic_inference": true,
+    "lossless_sha256": true
+  },
+  "hardware": {
+    "gpu": "Tesla T4",
+    "gpu_count": 2,
+    "pytorch": "2.10.0+cu128",
+    "cuda": "12.8"
+  }
+}

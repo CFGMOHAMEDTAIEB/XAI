@@ -1,0 +1,110 @@
+{
+  "timestamp": "2026-08-28T21:07:08.633239+00:00",
+  "experiment_id": "b2a82c79beb347b4b6832bfa86b6434a",
+  "dataset": {
+    "path": "/kaggle/input/datasets",
+    "files": 7163,
+    "bytes": 17921515409,
+    "readable_files": 7163,
+    "supported_files": 7163,
+    "excluded_files": 0,
+    "extensions": {
+      ".py": 75,
+      ".csv": 14,
+      "<none>": 1,
+      ".toml": 3,
+      ".md": 9,
+      ".json": 7,
+      ".txt": 3,
+      ".ipynb": 22,
+      ".bat": 1,
+      ".mmd": 18,
+      ".lock": 1,
+      ".ps1": 8,
+      ".rs": 1,
+      ".mp4": 7000
+    },
+    "largest": [
+      {
+        "path": "/kaggle/input/datasets/xdxd003/ff-c23/FaceForensics++_C23/DeepFakeDetection/02_15__walking_and_outside_surprised__HTG660F8.mp4",
+        "bytes": 26943143
+      },
+      {
+        "path": "/kaggle/input/datasets/xdxd003/ff-c23/FaceForensics++_C23/DeepFakeDetection/27_01__walking_and_outside_surprised__S2YCUY48.mp4",
+        "bytes": 26903752
+      },
+      {
+        "path": "/kaggle/input/datasets/xdxd003/ff-c23/FaceForensics++_C23/DeepFakeDetection/27_03__walking_and_outside_surprised__KWGI1LSZ.mp4",
+        "bytes": 26869471
+      },
+      {
+        "path": "/kaggle/input/datasets/xdxd003/ff-c23/FaceForensics++_C23/DeepFakeDetection/02_07__walking_and_outside_surprised__1VMZUH1W.mp4",
+        "bytes": 26712461
+      },
+      {
+        "path": "/kaggle/input/datasets/xdxd003/ff-c23/FaceForensics++_C23/DeepFakeDetection/02_15__walking_and_outside_surprised__I8G2LWD1.mp4",
+        "bytes": 26689020
+      },
+      {
+        "path": "/kaggle/input/datasets/xdxd003/ff-c23/FaceForensics++_C23/DeepFakeDetection/03_27__walking_and_outside_surprised__KWGI1LSZ.mp4",
+        "bytes": 26303104
+      },
+      {
+        "path": "/kaggle/input/datasets/xdxd003/ff-c23/FaceForensics++_C23/DeepFakeDetection/03_01__walking_and_outside_surprised__JZUXXFRB.mp4",
+        "bytes": 25829532
+      },
+      {
+        "path": "/kaggle/input/datasets/xdxd003/ff-c23/FaceForensics++_C23/DeepFakeDetection/02_12__walking_and_outside_surprised__9D2ZHEKW.mp4",
+        "bytes": 25325557
+      },
+      {
+        "path": "/kaggle/input/datasets/xdxd003/ff-c23/FaceForensics++_C23/DeepFakeDetection/03_27__walking_down_indoor_hall_disgust__IL675GCI.mp4",
+        "bytes": 25158522
+      },
+      {
+        "path": "/kaggle/input/datasets/xdxd003/ff-c23/FaceForensics++_C23/DeepFakeDetection/03_14__walking_down_indoor_hall_disgust__KJ221YN0.mp4",
+        "bytes": 25087286
+      }
+    ]
+  },
+  "model_configuration": {
+    "embedding_dim": 192,
+    "hidden_dim": 192,
+    "num_layers": 4,
+    "context_length": 256,
+    "dropout": 0.1,
+    "architecture_id": "causal-byte-transformer-v2",
+    "n_heads": 6,
+    "ff_dim": 768
+  },
+  "training_configuration": {
+    "epochs": 1,
+    "context_length": 256,
+    "batch_size": 16,
+    "stride": 128,
+    "max_samples": 1024,
+    "max_bytes_per_file": 33554432,
+    "embedding_dim": 192,
+    "hidden_dim": 192,
+    "num_layers": 4,
+    "dropout": 0.1,
+    "early_stopping_patience": 8,
+    "checkpoint_every": 1,
+    "architecture": "causal-byte-transformer-v2",
+    "n_heads": 6,
+    "ff_dim": 768
+  },
+  "gpu": {
+    "name": "Tesla T4",
+    "count": 2,
+    "vram_bytes": 15636037632,
+    "torch": "2.10.0+cu128",
+    "cuda": "12.8"
+  },
+  "python": "3.12.13",
+  "checkpoint": "/kaggle/working/checkpoints/lossless_v2_smoke.pt",
+  "epochs": 1,
+  "best_validation_loss": 5.554742604783438,
+  "best_bpb": 8.01379960933571,
+  "runtime_seconds": 88.00634455680847
+}

@@ -11,6 +11,7 @@ class User(Base):
     display_name: Mapped[str] = mapped_column(String(120), default='')
     totp_secret: Mapped[str|None] = mapped_column(String(128), nullable=True)
     totp_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
+    role: Mapped[str] = mapped_column(String(32), default='user')
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 class FileRecord(Base):
@@ -22,6 +23,10 @@ class FileRecord(Base):
     original_size: Mapped[int] = mapped_column(Integer)
     compressed_size: Mapped[int] = mapped_column(Integer)
     codec: Mapped[str] = mapped_column(String(64))
+    source_path: Mapped[str|None] = mapped_column(String(1024), nullable=True)
+    artifact_path: Mapped[str|None] = mapped_column(String(1024), nullable=True)
+    integrity_verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    status: Mapped[str] = mapped_column(String(32), default='completed')
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 class ShareCode(Base):
@@ -45,4 +50,13 @@ class AuditEvent(Base):
     resource: Mapped[str] = mapped_column(String(255), default='')
     result: Mapped[str] = mapped_column(String(32), default='success')
     details: Mapped[str] = mapped_column(Text, default='')
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+class RefreshToken(Base):
+    __tablename__='refresh_tokens'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'), index=True)
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    expires_at: Mapped[datetime] = mapped_column(DateTime)
+    revoked: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)

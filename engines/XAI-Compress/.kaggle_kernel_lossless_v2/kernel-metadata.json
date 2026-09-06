@@ -1,0 +1,21 @@
+{
+    "competition_sources":  [
+
+                            ],
+    "id":  "mohameddtaieb/xai-compress-lossless-v2",
+    "enable_gpu":  true,
+    "kernel_type":  "script",
+    "kernel_sources":  [
+
+                       ],
+    "enable_internet":  false,
+    "dataset_sources":  [
+                            "mohameddtaieb/xai-compress-source",
+                            "xdxd003/ff-c23"
+                        ],
+    "is_private":  true,
+    "machine_shape":  "NvidiaTeslaT4",
+    "language":  "python",
+    "title":  "XAI Compress lossless_v2",
+    "code_file":  "run_kaggle_lossless_v2.py"
+}

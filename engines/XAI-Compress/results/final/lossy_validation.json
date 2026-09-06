@@ -1,0 +1,73 @@
+{
+  "MS_SSIM": "NOT MEASURED",
+  "architecture_id": "conv-image-autoencoder-v1",
+  "checkpoint": "checkpoints\\neural_lossy_v1\\validation.pt",
+  "checkpoint_sha256": "08301fd635335e6103b54cc2a4efc581b8a580e1b983368e392288b66cec41dc",
+  "decode_validation": "PASS",
+  "finite_parameters": true,
+  "measurements": [
+    {
+      "artifact_bytes": "1150",
+      "bits_per_pixel": "8.984375",
+      "channels_preserved": "True",
+      "compression_ratio": "2.6826086956521737",
+      "corpus_label": "MEASURED ON DETERMINISTIC VALIDATION CORPUS",
+      "decode_seconds": "0.03526170000259299",
+      "decode_status": "PASS",
+      "dimensions_preserved": "True",
+      "encode_seconds": "0.029927600000519305",
+      "file": "generated held-out image_6.ppm",
+      "ms_ssim": "NOT MEASURED",
+      "peak_RSS_MB": "274.86328125",
+      "psnr_db": "10.759693124323535",
+      "quality": "low",
+      "ssim": "0.024958053968823574",
+      "values_valid": "True"
+    },
+    {
+      "artifact_bytes": "1153",
+      "bits_per_pixel": "9.0078125",
+      "channels_preserved": "True",
+      "compression_ratio": "2.675628794449263",
+      "corpus_label": "MEASURED ON DETERMINISTIC VALIDATION CORPUS",
+      "decode_seconds": "0.02519870000105584",
+      "decode_status": "PASS",
+      "dimensions_preserved": "True",
+      "encode_seconds": "0.023500800001784228",
+      "file": "generated held-out image_6.ppm",
+      "ms_ssim": "NOT MEASURED",
+      "peak_RSS_MB": "274.86328125",
+      "psnr_db": "10.759693124323535",
+      "quality": "medium",
+      "ssim": "0.024958053968823574",
+      "values_valid": "True"
+    },
+    {
+      "artifact_bytes": "1151",
+      "bits_per_pixel": "8.9921875",
+      "channels_preserved": "True",
+      "compression_ratio": "2.680278019113814",
+      "corpus_label": "MEASURED ON DETERMINISTIC VALIDATION CORPUS",
+      "decode_seconds": "0.023908300005132332",
+      "decode_status": "PASS",
+      "dimensions_preserved": "True",
+      "encode_seconds": "0.024264299994683824",
+      "file": "generated held-out image_6.ppm",
+      "ms_ssim": "NOT MEASURED",
+      "peak_RSS_MB": "274.86328125",
+      "psnr_db": "10.759693124323535",
+      "quality": "high",
+      "ssim": "0.024958053968823574",
+      "values_valid": "True"
+    }
+  ],
+  "quality_modes": [
+    "LOW",
+    "MEDIUM",
+    "HIGH"
+  ],
+  "retrained_by_this_workflow": false,
+  "status": "EXPERIMENTAL",
+  "strict_checkpoint_load": true,
+  "training_scope": "deterministic validation corpus only"
+}

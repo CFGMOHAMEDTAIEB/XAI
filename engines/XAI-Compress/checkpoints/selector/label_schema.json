@@ -1,0 +1,9 @@
+{
+  "strategy_id": "codec|level|transform",
+  "profiles": [
+    "smallest",
+    "fastest",
+    "balanced"
+  ],
+  "target": "minimum measured normalized score"
+}

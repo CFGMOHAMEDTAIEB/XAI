@@ -1,0 +1,117 @@
+{
+  "candidate_id": "lr-0-0003-427431d37c",
+  "candidate_key": "lr_0_0003",
+  "fingerprint": "427431d37ced66a2f92edfcc27c49e471a3e204162ec25c602fc67ae604a0e00",
+  "parent": "base",
+  "change": {
+    "lr": 0.0003
+  },
+  "change_label": "LR 0.0003",
+  "activation_rule": "always",
+  "resolved_config": {
+    "architecture": "causal-byte-transformer-v2",
+    "lr": 0.0003,
+    "context_length": 256,
+    "embedding_dim": 12,
+    "hidden_dim": 12,
+    "num_layers": 1,
+    "n_heads": 3,
+    "ff_dim": 24,
+    "dropout": 0.0
+  },
+  "status": "STABILITY_VALIDATED",
+  "phase": 3,
+  "created_at": "2026-09-02T10:46:32.285163+00:00",
+  "updated_at": "2026-09-02T10:46:32.490672+00:00",
+  "checkpoint_dir": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_ingestion_reuses_existing0\\project\\checkpoints\\model_search\\lr-0-0003-427431d37c",
+  "candidate_dir": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_ingestion_reuses_existing0\\project\\results\\model_search\\candidates\\lr-0-0003-427431d37c",
+  "source_hashes": {},
+  "metrics": {
+    "best_validation_ce": 5.45,
+    "best_validation_bpb": 7.8500000000000005,
+    "best_epoch": 5,
+    "max_activation": 1200.0,
+    "vram_bytes": 1000.0,
+    "training_samples_per_second": 20.0,
+    "checkpoint_size": 19,
+    "duration_seconds": null
+  },
+  "decision": "INCONCLUSIVE",
+  "infrastructure_retries": 0,
+  "kaggle_kernel": "owner/kernel",
+  "kaggle_version": 1,
+  "stability_summary": {
+    "status": "PASS",
+    "epochs": 5,
+    "training_samples_per_epoch": 450000,
+    "validation_samples_per_epoch": 50000,
+    "finite_metrics": true,
+    "finite_parameters": true,
+    "finite_optimizer_state": true,
+    "checkpoint_load": true,
+    "deterministic_inference": true,
+    "lossless_sha256": true,
+    "max_activation": 1200.0,
+    "layer_3_growth": "STABLE",
+    "history": [
+      {
+        "epoch": 1,
+        "val_cross_entropy": 5.49,
+        "val_bpb_estimate": 7.890000000000001,
+        "vram_max_bytes": 1000,
+        "samples_per_second": 20
+      },
+      {
+        "epoch": 2,
+        "val_cross_entropy": 5.48,
+        "val_bpb_estimate": 7.880000000000001,
+        "vram_max_bytes": 1000,
+        "samples_per_second": 20
+      },
+      {
+        "epoch": 3,
+        "val_cross_entropy": 5.47,
+        "val_bpb_estimate": 7.87,
+        "vram_max_bytes": 1000,
+        "samples_per_second": 20
+      },
+      {
+        "epoch": 4,
+        "val_cross_entropy": 5.46,
+        "val_bpb_estimate": 7.86,
+        "vram_max_bytes": 1000,
+        "samples_per_second": 20
+      },
+      {
+        "epoch": 5,
+        "val_cross_entropy": 5.45,
+        "val_bpb_estimate": 7.8500000000000005,
+        "vram_max_bytes": 1000,
+        "samples_per_second": 20
+      }
+    ],
+    "local_checkpoint_validation": {
+      "checkpoint_load": true,
+      "finite_parameters": true,
+      "finite_optimizer_state": true,
+      "deterministic_inference": true,
+      "lossless_sha256": true,
+      "roundtrips": [],
+      "checkpoint_size": 19,
+      "checkpoint_sha256": "test",
+      "checkpoint_epoch": 5,
+      "parameter_tensor_count": 1,
+      "optimizer_tensor_count": 1,
+      "parameter_abs_max": 1.0,
+      "optimizer_state_abs_max": 1.0
+    }
+  },
+  "checkpoint_manifest": {
+    "candidate_id": "lr-0-0003-427431d37c",
+    "checkpoint": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_ingestion_reuses_existing0\\project\\checkpoints\\model_search\\lr-0-0003-427431d37c\\best.pt",
+    "size": 19,
+    "sha256": "baec090b0b6d0bdb264b0598f925693fa7f95b0f0679a5aa399119c216685e62",
+    "created_at": "2026-09-02T10:46:32.468352+00:00"
+  },
+  "delivery_milestone": "FIRST_VALIDATED_TRANSFORMER"
+}

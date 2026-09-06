@@ -1,0 +1,4 @@
+category,origin,original_bytes,sha256,size_bucket,source_id,source_path,split
+binary,real,3,ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad,lt_16KiB,a,C:\Users\ss\Desktop\XAI\XAI\engines\XAI-Compress\results\hybrid_v3\tmp\pytest-of-ss\pytest-2\test_select_held_out_keeps_val0\first.bin,test
+binary,real,5,383395a769131d15c1c6fc57c6abdb759ace9809c1ad20d1f491d90f7f02650e,lt_16KiB,b,C:\Users\ss\Desktop\XAI\XAI\engines\XAI-Compress\results\hybrid_v3\tmp\pytest-of-ss\pytest-2\test_select_held_out_keeps_val0\second.bin,test
+logs,real,8,d2789a29f48befe96a70ef3e3eaf57975f692165155e96880b310c82ac012ebf,lt_16KiB,c,C:\Users\ss\Desktop\XAI\XAI\engines\XAI-Compress\results\hybrid_v3\tmp\pytest-of-ss\pytest-2\test_select_held_out_keeps_val0\third.bin,test

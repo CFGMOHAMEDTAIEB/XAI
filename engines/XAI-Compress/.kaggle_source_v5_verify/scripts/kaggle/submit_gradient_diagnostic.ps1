@@ -1,0 +1,5 @@
+$ErrorActionPreference='Stop';$Project=(Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path;$K=Join-Path $Project '.venv\Scripts\kaggle.exe'
+if(-not $env:KAGGLE_USERNAME){throw 'Set KAGGLE_USERNAME first.'};$S=Join-Path $Project '.kaggle_kernel_lossless_v2_gradient_diagnostic';New-Item -ItemType Directory $S -Force|Out-Null
+Copy-Item (Join-Path $PSScriptRoot 'run_lossless_v2_gradient_diagnostic.py') (Join-Path $S 'run.py') -Force
+$M=@{id="$($env:KAGGLE_USERNAME)/xai-compress-v2-gradient-diagnostic";title='XAI Compress V2 Gradient Diagnostic';code_file='run.py';language='python';kernel_type='script';is_private=$true;enable_gpu=$true;machine_shape='NvidiaTeslaT4';enable_internet=$false;dataset_sources=@("$($env:KAGGLE_USERNAME)/xai-compress-source",'xdxd003/ff-c23');competition_sources=@();kernel_sources=@()}|ConvertTo-Json -Depth 4
+[IO.File]::WriteAllText((Join-Path $S 'kernel-metadata.json'),$M,[Text.UTF8Encoding]::new($false));&$K kernels push -p $S;if($LASTEXITCODE){throw 'gradient diagnostic submission failed'}

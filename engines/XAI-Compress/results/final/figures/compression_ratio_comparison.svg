@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="620">
+<rect width="100%" height="100%" fill="white"/>
+<text x="550.0" y="32" text-anchor="middle" font-size="22" font-family="sans-serif">Compression ratio</text>
+<text x="20" y="55" font-size="13" font-family="sans-serif" fill="#276749">MEASURED — deterministic paired 4 KiB corpus</text>
+<line x1="90" y1="465" x2="1060" y2="465" stroke="black"/>
+<text transform="translate(22 275.0) rotate(-90)" text-anchor="middle" font-size="15" font-family="sans-serif">Original / compressed</text>
+<rect x="112.17" y="338.92" width="94.23" height="126.08" fill="#2563eb"/>
+<text x="159.29" y="331.92" text-anchor="middle" font-size="12" font-family="sans-serif">0.6578</text>
+<text transform="translate(159.29 477) rotate(45)" text-anchor="start" font-size="12" font-family="sans-serif">XAI Transformer V2 + rANS</text>
+<rect x="250.74" y="333.69" width="94.23" height="131.31" fill="#7c3aed"/>
+<text x="297.86" y="326.69" text-anchor="middle" font-size="12" font-family="sans-serif">0.6851</text>
+<text transform="translate(297.86 477) rotate(45)" text-anchor="start" font-size="12" font-family="sans-serif">XAI GRU V1 + rANS</text>
+<rect x="389.31" y="290.19" width="94.23" height="174.81" fill="#059669"/>
+<text x="436.43" y="283.19" text-anchor="middle" font-size="12" font-family="sans-serif">0.912</text>
+<text transform="translate(436.43 477) rotate(45)" text-anchor="start" font-size="12" font-family="sans-serif">XAI static</text>
+<rect x="527.89" y="85.00" width="94.23" height="380.00" fill="#dc2626"/>
+<text x="575.00" y="78.00" text-anchor="middle" font-size="12" font-family="sans-serif">1.983</text>
+<text transform="translate(575.00 477) rotate(45)" text-anchor="start" font-size="12" font-family="sans-serif">Brotli-6</text>
+<rect x="666.46" y="105.53" width="94.23" height="359.47" fill="#d97706"/>
+<text x="713.57" y="98.53" text-anchor="middle" font-size="12" font-family="sans-serif">1.875</text>
+<text transform="translate(713.57 477) rotate(45)" text-anchor="start" font-size="12" font-family="sans-serif">Zstd-3</text>
+<rect x="805.03" y="105.86" width="94.23" height="359.14" fill="#0891b2"/>
+<text x="852.14" y="98.86" text-anchor="middle" font-size="12" font-family="sans-serif">1.874</text>
+<text transform="translate(852.14 477) rotate(45)" text-anchor="start" font-size="12" font-family="sans-serif">gzip-9</text>
+<rect x="943.60" y="140.05" width="94.23" height="324.95" fill="#475569"/>
+<text x="990.71" y="133.05" text-anchor="middle" font-size="12" font-family="sans-serif">1.695</text>
+<text transform="translate(990.71 477) rotate(45)" text-anchor="start" font-size="12" font-family="sans-serif">LZMA-6</text>
+</svg>

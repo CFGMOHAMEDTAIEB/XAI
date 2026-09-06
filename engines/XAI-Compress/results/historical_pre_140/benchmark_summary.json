@@ -1,0 +1,107 @@
+{
+  "held_out_real_files": 26,
+  "available_categories": [
+    "archive",
+    "binary",
+    "csv",
+    "executable",
+    "image",
+    "json",
+    "logs",
+    "markdown",
+    "model",
+    "source_code",
+    "text",
+    "video"
+  ],
+  "unavailable_required_categories": [
+    "audio",
+    "pdf",
+    "high_entropy",
+    "repetitive"
+  ],
+  "size_buckets": {
+    "lt_16KiB": 17,
+    "gt_10MiB": 1,
+    "16_64KiB": 4,
+    "64KiB_1MiB": 2,
+    "1_10MiB": 2
+  },
+  "fixed_methods": [
+    "raw",
+    "gzip-1",
+    "gzip-6",
+    "gzip-9",
+    "deflate-1",
+    "deflate-6",
+    "deflate-9",
+    "zstd-1",
+    "zstd-3",
+    "zstd-6",
+    "zstd-9",
+    "brotli-1",
+    "brotli-4",
+    "brotli-6",
+    "brotli-9",
+    "brotli-11",
+    "lzma2-0",
+    "lzma2-3",
+    "lzma2-6",
+    "bzip2-1",
+    "bzip2-9"
+  ],
+  "best_single_fixed_method": "brotli-11",
+  "aggregates": [
+    {
+      "method": "hybrid_v1",
+      "files": 29,
+      "original_bytes": 14316618,
+      "compressed_bytes": 14128703,
+      "actual_bpb": 7.894994753649221,
+      "compression_MiB_s": 1.1159721443132147,
+      "decompression_MiB_s": 1.936689236305086,
+      "mean_metadata_bytes": 954.2413793103449,
+      "mean_selection_ms": 241.0353551757249,
+      "SHA_PASS": true
+    },
+    {
+      "method": "hybrid_v2",
+      "files": 29,
+      "original_bytes": 14316618,
+      "compressed_bytes": 14137322,
+      "actual_bpb": 7.899810974910415,
+      "compression_MiB_s": 0.629755866208382,
+      "decompression_MiB_s": 1.7388677359959148,
+      "mean_metadata_bytes": 67.79310344827586,
+      "mean_selection_ms": 602.302231034565,
+      "SHA_PASS": true
+    },
+    {
+      "method": "best_fixed",
+      "files": 104,
+      "original_bytes": 57001454,
+      "compressed_bytes": 54910219,
+      "actual_bpb": 7.7065008201369745,
+      "compression_MiB_s": 0.034877966160179394,
+      "decompression_MiB_s": 18.979637411040144,
+      "mean_metadata_bytes": 0.0,
+      "mean_selection_ms": 0.0,
+      "SHA_PASS": true
+    },
+    {
+      "method": "oracle_balanced",
+      "files": 100,
+      "original_bytes": 13491318,
+      "compressed_bytes": 12740478,
+      "actual_bpb": 7.5547714463479405,
+      "compression_MiB_s": 1.9559023175178578,
+      "decompression_MiB_s": 1.0061837509522706,
+      "mean_metadata_bytes": 0.0,
+      "mean_selection_ms": 0.0,
+      "SHA_PASS": true
+    }
+  ],
+  "oracle_scope": "all cost-allowed classical strategies from candidate_catalog, actual v6 artifacts, files <=10 MiB; pure-Python xai-static allowed through 4 KiB",
+  "oracle_candidate_count_max": 27,
+  "sha_pass": true
+}

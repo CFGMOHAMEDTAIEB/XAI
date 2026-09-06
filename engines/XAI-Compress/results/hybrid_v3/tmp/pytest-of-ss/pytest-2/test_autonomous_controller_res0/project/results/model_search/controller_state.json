@@ -1,0 +1,10 @@
+{
+  "pid": 7548,
+  "phase": "MONITOR",
+  "candidate": "lr-0-0002-13e50e3524",
+  "updated_at": "2026-09-02T10:46:43.873623+00:00",
+  "result": {
+    "kernel": "owner/lr-0-0002-13e50e3524",
+    "version": 2
+  }
+}

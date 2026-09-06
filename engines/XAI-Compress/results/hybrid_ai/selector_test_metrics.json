@@ -1,0 +1,100 @@
+{
+  "training_samples": 18,
+  "validation_samples": 2,
+  "test_samples": 9,
+  "split_unit": "source_group",
+  "profiles": {
+    "smallest": "gradient_boosted_stumps",
+    "fastest": "random_forest",
+    "balanced": "gradient_boosted_stumps"
+  },
+  "top_1_accuracy": 0.7037037037037037,
+  "top_3_recall": 0.8148148148148148,
+  "mean_regret": 0.005558571008526661,
+  "median_regret": 0.0,
+  "p95_regret": 0.0294731490563029,
+  "mean_inference_ms": 1.2371444452717832,
+  "profile_metrics": [
+    {
+      "model": "rule_based",
+      "profile": "smallest",
+      "samples": 9,
+      "top_1_accuracy": 0.4444444444444444,
+      "top_3_recall": 0.4444444444444444,
+      "mean_regret": 0.02037250951349522,
+      "median_regret": 1.4563930207627128e-07,
+      "p95_regret": 0.09913699948639629,
+      "mean_size_regret_percent": 176.75050546303976,
+      "p95_size_regret_percent": 954.0523621823951,
+      "mean_inference_ms": 0.012822219610421194
+    },
+    {
+      "model": "gradient_boosted_stumps",
+      "profile": "smallest",
+      "samples": 9,
+      "top_1_accuracy": 0.7777777777777778,
+      "top_3_recall": 0.8888888888888888,
+      "mean_regret": 0.015086222656320054,
+      "median_regret": 0.0,
+      "p95_regret": 0.08019434970928127,
+      "mean_size_regret_percent": 176.73165658646602,
+      "p95_size_regret_percent": 954.0561052720756,
+      "mean_inference_ms": 1.7106888925708417,
+      "selected_for_profile": true
+    },
+    {
+      "model": "rule_based",
+      "profile": "fastest",
+      "samples": 9,
+      "top_1_accuracy": 0.2222222222222222,
+      "top_3_recall": 0.3333333333333333,
+      "mean_regret": 0.0008154469120960342,
+      "median_regret": 0.00029036356391925404,
+      "p95_regret": 0.002404309405500266,
+      "mean_size_regret_percent": 7.321210779994173,
+      "p95_size_regret_percent": 23.18076534107591,
+      "mean_inference_ms": 0.007611112475084762
+    },
+    {
+      "model": "random_forest",
+      "profile": "fastest",
+      "samples": 9,
+      "top_1_accuracy": 0.6666666666666666,
+      "top_3_recall": 0.7777777777777778,
+      "mean_regret": 0.00027312486903011303,
+      "median_regret": 0.0,
+      "p95_regret": 0.001320674505140614,
+      "mean_size_regret_percent": 3.484287415617427,
+      "p95_size_regret_percent": 18.12070282658517,
+      "mean_inference_ms": 0.3012666646908555,
+      "selected_for_profile": true
+    },
+    {
+      "model": "rule_based",
+      "profile": "balanced",
+      "samples": 9,
+      "top_1_accuracy": 0.3333333333333333,
+      "top_3_recall": 0.3333333333333333,
+      "mean_regret": 0.0076005220026703,
+      "median_regret": 1.0855583905075075e-05,
+      "p95_regret": 0.03890638566655635,
+      "mean_size_regret_percent": 176.60577922020016,
+      "p95_size_regret_percent": 953.5640809323951,
+      "mean_inference_ms": 0.007488889322202239
+    },
+    {
+      "model": "gradient_boosted_stumps",
+      "profile": "balanced",
+      "samples": 9,
+      "top_1_accuracy": 0.6666666666666666,
+      "top_3_recall": 0.7777777777777778,
+      "mean_regret": 0.0013163655002298167,
+      "median_regret": 0.0,
+      "p95_regret": 0.0069044229544868215,
+      "mean_size_regret_percent": 176.60377083467873,
+      "p95_size_regret_percent": 953.3779307217212,
+      "mean_inference_ms": 1.6994777785536523,
+      "selected_for_profile": true
+    }
+  ]
+}

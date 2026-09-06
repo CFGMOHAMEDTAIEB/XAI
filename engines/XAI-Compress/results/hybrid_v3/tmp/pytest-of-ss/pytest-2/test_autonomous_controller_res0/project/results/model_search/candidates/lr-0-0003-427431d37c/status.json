@@ -1,0 +1,82 @@
+{
+  "candidate_id": "lr-0-0003-427431d37c",
+  "candidate_key": "lr_0_0003",
+  "fingerprint": "427431d37ced66a2f92edfcc27c49e471a3e204162ec25c602fc67ae604a0e00",
+  "parent": "base",
+  "change": {
+    "lr": 0.0003
+  },
+  "change_label": "LR 0.0003",
+  "activation_rule": "always",
+  "resolved_config": {
+    "architecture": "causal-byte-transformer-v2",
+    "lr": 0.0003,
+    "context_length": 256,
+    "embedding_dim": 12,
+    "hidden_dim": 12,
+    "num_layers": 1,
+    "n_heads": 3,
+    "ff_dim": 24,
+    "dropout": 0.0
+  },
+  "status": "MULTI_EPOCH_STABILITY_FAILED",
+  "phase": 2,
+  "created_at": "2026-09-02T10:46:42.196187+00:00",
+  "updated_at": "2026-09-02T10:46:42.994971+00:00",
+  "checkpoint_dir": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_autonomous_controller_res0\\project\\checkpoints\\model_search\\lr-0-0003-427431d37c",
+  "candidate_dir": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_autonomous_controller_res0\\project\\results\\model_search\\candidates\\lr-0-0003-427431d37c",
+  "source_hashes": {
+    "xai_compress/train.py": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "metrics": {},
+  "decision": "REJECT",
+  "infrastructure_retries": 0,
+  "kernel_code_sha256": "5affef3e99f9a5e20b92bc102c83a69f36be24dff141205f71eeb8a172646a95",
+  "kaggle_kernel": "owner/lr-0-0003-427431d37c",
+  "kaggle_version": 1,
+  "failure_history": [],
+  "failure_classification": "GRADIENT_INSTABILITY",
+  "failure": {
+    "candidate_id": "lr-0-0003-427431d37c",
+    "candidate_key": "lr_0_0003",
+    "parent_candidate": "base",
+    "timestamp": "2026-09-02T10:46:42.994861+00:00",
+    "stage": "MULTI_EPOCH_STABILITY",
+    "classification": "GRADIENT_INSTABILITY",
+    "exception": "FIRST NON-FINITE STAGE = gradient:output.weight; epoch=5; step=15",
+    "epoch": 5,
+    "step": 15,
+    "tensor_name": "output.weight",
+    "dtype": null,
+    "shape": null,
+    "min": null,
+    "max": null,
+    "mean": null,
+    "std": null,
+    "activation_maxima": null,
+    "grad_scaler_scale": null,
+    "grad_norm": null,
+    "learning_rate": 0.0003,
+    "source_hashes": {
+      "xai_compress/train.py": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "traceback": "FIRST NON-FINITE STAGE = gradient:output.weight; epoch=5; step=15",
+    "status": "MULTI_EPOCH_STABILITY_FAILED",
+    "evidence": {
+      "status": "FAIL",
+      "learning_rate": 0.0003,
+      "exception": "FIRST NON-FINITE STAGE = gradient:output.weight; epoch=5; step=15",
+      "traceback": "FIRST NON-FINITE STAGE = gradient:output.weight; epoch=5; step=15",
+      "duration_seconds": 10.0,
+      "first_non_finite_stage": "gradient:output.weight",
+      "tensor_name": "output.weight",
+      "epoch": 5,
+      "step": 15,
+      "primary_exception": "FIRST NON-FINITE STAGE = gradient:output.weight; epoch=5; step=15",
+      "telemetry_masked_primary_failure": false
+    },
+    "attempt": 1,
+    "evidence_path": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_autonomous_controller_res0\\project\\results\\model_search\\failures\\lr-0-0003-427431d37c.json"
+  },
+  "gpu_hours_accounted": 0.002777777777777778
+}

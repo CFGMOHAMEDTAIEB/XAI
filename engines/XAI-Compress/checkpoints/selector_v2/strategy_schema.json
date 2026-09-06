@@ -1,0 +1,8 @@
+{
+  "strategy": "codec|level|transform",
+  "profiles": [
+    "smallest",
+    "fastest",
+    "balanced"
+  ]
+}

@@ -1,0 +1,4 @@
+model,architecture,checkpoint,parameters,checkpoint_bytes,validation_CE,validation_BPB,actual_BPB,ratio,compression_MB_s,decompression_MB_s,SHA256
+OLD NEURAL LOSSLESS,causal-byte-gru-v1,checkpoints/kaggle/best.pt,1700800,20423284,5.523487623098652,7.968708202255994,8.886,0.9002925950934053,0.0009401053064717075,0.0009238793908388763,PASS
+NEW NEURAL LOSSLESS V2,causal-byte-transformer-v2,N/A — not trained,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,SMOKE PASS; trained checkpoint N/A
+NEURAL LOSSY V1,conv-image-autoencoder-v1,N/A — not trained,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,NOT APPLICABLE — explicitly lossy

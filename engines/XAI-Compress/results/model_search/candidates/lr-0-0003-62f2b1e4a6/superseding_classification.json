@@ -1,0 +1,17 @@
+{
+  "classification_id": "9369cabf3276f058fc748b7483e3d7ba25f5bf6dc10661707c82ec7175943048",
+  "candidate_id": "lr-0-0003-62f2b1e4a6",
+  "timestamp": "2026-08-30T16:44:27.565068+00:00",
+  "status": "INFRASTRUCTURE_FAILED_RETRY_ELIGIBLE",
+  "failure_class": "TELEMETRY_INFRASTRUCTURE_ERROR",
+  "reason": "POST_VALIDATION_TELEMETRY_DEVICE_MISMATCH",
+  "retry_eligible": true,
+  "retry_count": 0,
+  "max_retries": 1,
+  "supersedes_failure_id": "c2d895ede915fbd1d88968703bfb5a1a858d201621238714a4f9a10b46082a59",
+  "model_evidence_valid": false,
+  "infrastructure_evidence_valid": true,
+  "scientific_status": "UNRESOLVED",
+  "numerical_instability_established": false,
+  "original_failure_preserved_at": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\model_search\\failures\\lr-0-0003-62f2b1e4a6.json"
+}

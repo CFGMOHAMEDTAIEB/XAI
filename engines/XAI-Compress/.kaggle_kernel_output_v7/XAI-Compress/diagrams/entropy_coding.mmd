@@ -1,0 +1,8 @@
+sequenceDiagram
+ participant M as Probability model
+ participant E as Encoder
+ participant D as Decoder
+ M->>E: identical integer CDF
+ E->>D: coded state/interval
+ D->>M: decoded previous byte
+ M->>D: identical next CDF

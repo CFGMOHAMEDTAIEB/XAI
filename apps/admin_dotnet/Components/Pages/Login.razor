@@ -1,0 +1,20 @@
+@page "/login"
+@inject PlatformApiClient Api
+@inject NavigationManager Navigation
+
+<PageTitle>Admin sign in</PageTitle>
+<div class="page-heading"><div><h1>Admin sign in</h1><p>Use the same XAI platform account as the other applications.</p></div></div>
+<section class="panel">
+    <form @onsubmit="SignIn" @onsubmit:preventDefault>
+        <label>Email<input type="email" @bind="_email" required /></label>
+        <label>Password<input type="password" @bind="_password" required /></label>
+        <label>MFA code (when enabled)<input inputmode="numeric" @bind="_totp" /></label>
+        <button class="button" type="submit" disabled="@_busy">@(_busy ? "Signing in..." : "Sign in")</button>
+        @if (!string.IsNullOrWhiteSpace(_error)) { <p class="notice">@_error</p> }
+    </form>
+</section>
+
+@code {
+    private string _email = ""; private string _password = ""; private string _totp = ""; private string _error = ""; private bool _busy;
+    private async Task SignIn(){_busy=true;_error="";try{await Api.LoginAsync(_email,_password,string.IsNullOrWhiteSpace(_totp)?null:_totp);Navigation.NavigateTo("/");}catch(AdminApiAuthorizationException){_error="Sign-in failed or this account lacks admin access.";}catch(HttpRequestException){_error="The backend is unavailable. Try again shortly.";}finally{_busy=false;}}
+}

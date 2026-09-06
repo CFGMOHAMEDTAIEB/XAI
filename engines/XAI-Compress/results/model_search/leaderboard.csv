@@ -1,0 +1,5 @@
+candidate_id,candidate_key,change,status,best_val_bpb,actual_bpb,ratio,sha256,max_activation,compression_MB_s,decompression_MB_s,peak_RSS_MB,vram_bytes,checkpoint_size,decision,pareto
+lr-0-0003-62f2b1e4a6,lr_0_0003,LR 0.0005 -> 0.0003,MULTI_EPOCH_STABILITY_FAILED,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,REJECT,N/A
+lr-0-0002-f316e33308,lr_0_0002,LR 0.0005 -> 0.0002,INFRASTRUCTURE_FAILED,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,REJECT,N/A
+residual-scale-depth-3c28504154,residual_scale_depth,Residual branches scaled by 1/sqrt(2L),MULTI_EPOCH_STABILITY_FAILED,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,REJECT,N/A
+residual-scale-conservative-b1d826fd14,residual_scale_conservative,Conservative residual branch scale 0.25,SUPERSEDED_UNSUBMITTED,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,INCONCLUSIVE,N/A

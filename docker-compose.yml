@@ -1,30 +1,77 @@
 services:
-  postgres:
-    image: postgres:17
-    environment: {POSTGRES_USER: xai, POSTGRES_PASSWORD: change-me, POSTGRES_DB: xai}
-    ports: ["5432:5432"]
-    volumes: ["postgres_data:/var/lib/postgresql/data"]
-  redis:
-    image: redis:7-alpine
-    ports: ["6379:6379"]
-  minio:
-    image: minio/minio
-    command: server /data --console-address :9001
-    environment: {MINIO_ROOT_USER: xaiadmin, MINIO_ROOT_PASSWORD: change-me-now}
-    ports: ["9000:9000", "9001:9001"]
-    volumes: ["minio_data:/data"]
-  keycloak:
-    image: quay.io/keycloak/keycloak:26.3
-    command: start-dev --import-realm
-    environment: {KC_BOOTSTRAP_ADMIN_USERNAME: admin, KC_BOOTSTRAP_ADMIN_PASSWORD: change-me-now}
-    ports: ["8080:8080"]
-    volumes: ["./infrastructure/keycloak:/opt/keycloak/data/import"]
-  api:
-    build: ./services/api_fastapi
-    environment: {DATABASE_URL: postgresql+psycopg://xai:change-me@postgres:5432/xai, JWT_SECRET: replace-this-secret}
-    ports: ["8000:8000"]
-    depends_on: [postgres, redis]
-  clamav:
-    image: clamav/clamav:stable
-    ports: ["3310:3310"]
-volumes: {postgres_data: {}, minio_data: {}}
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-xai}
+      POSTGRES_USER: ${POSTGRES_USER:-xai}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me-local}
+    volumes: [db-data:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+    networks: [xai-network]
+  backend:
+    build: {context: ., dockerfile: services/api_fastapi/Dockerfile}
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-xai}:${POSTGRES_PASSWORD:-change-me-local}@db:5432/${POSTGRES_DB:-xai}
+      JWT_SECRET: ${JWT_SECRET:-development-only-change-me-at-least-32-chars}
+      ACCESS_TOKEN_MINUTES: ${ACCESS_TOKEN_MINUTES:-15}
+      REFRESH_TOKEN_DAYS: ${REFRESH_TOKEN_DAYS:-30}
+      STORAGE_PATH: /data
+      SELECTOR_MODEL_PATH: /opt/xai-compress/checkpoints/selector_v2/best.json
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:4200,http://localhost:3000,http://localhost:5050}
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+      SMTP_SECURITY: ${SMTP_SECURITY:-starttls}
+    volumes: [xai-storage:/data]
+    ports: ["${API_PORT:-8000}:8000"]
+    depends_on:
+      db: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+    networks: [xai-network]
+  angular:
+    build: ./apps/web_angular
+    ports: ["${ANGULAR_PORT:-4200}:80"]
+    depends_on:
+      backend: {condition: service_healthy}
+    restart: unless-stopped
+    networks: [xai-network]
+  nextjs:
+    build: ./apps/public_nextjs
+    environment:
+      INTERNAL_API_URL: http://backend:8000
+      NEXT_PUBLIC_API_URL: ${PUBLIC_API_URL:-http://localhost:8000}
+    ports: ["${NEXTJS_PORT:-3000}:3000"]
+    depends_on:
+      backend: {condition: service_healthy}
+    restart: unless-stopped
+    networks: [xai-network]
+  admin:
+    build: ./apps/admin_dotnet
+    environment:
+      PlatformApi__BaseUrl: http://backend:8000
+      PlatformApi__UseDemoFallback: "false"
+      Authentication__OidcEnabled: "false"
+      ASPNETCORE_URLS: http://+:8080
+    ports: ["${ADMIN_PORT:-5050}:8080"]
+    depends_on:
+      backend: {condition: service_healthy}
+    restart: unless-stopped
+    networks: [xai-network]
+volumes:
+  db-data:
+  xai-storage:
+networks:
+  xai-network: {name: xai-network}

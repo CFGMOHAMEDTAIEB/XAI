@@ -1,0 +1,40 @@
+{
+  "assignments": {
+    "compression-py": "train",
+    "compression-py-expanded": "test",
+    "ff-c23-video": "train",
+    "gzip-random": "test",
+    "gzip-readme": "train",
+    "json-lines": "train",
+    "kaggle-log": "train",
+    "lorem": "train",
+    "model-search-config": "test",
+    "neural-binary": "train",
+    "neural-text": "test",
+    "numeric-csv": "test",
+    "numeric-delta": "test",
+    "numeric-float": "train",
+    "pdf-fragment": "train",
+    "phase-i-csv": "train",
+    "protected-gru-fragment": "train",
+    "python-executable": "train",
+    "random-16k": "train",
+    "random-4k": "test",
+    "readme": "validation",
+    "readme-expanded": "test",
+    "repeat-4k": "train",
+    "repeat-64k": "test",
+    "sine-wave": "train",
+    "sqlite-fragment": "train",
+    "validation-image": "train",
+    "xml-records": "train",
+    "zeros": "validation"
+  },
+  "counts": {
+    "test": 9,
+    "train": 18,
+    "validation": 2
+  },
+  "seed": 20260901,
+  "split_unit": "source_group"
+}

@@ -1,0 +1,17 @@
+{
+  "checkpoint": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\results\\hybrid_v3\\tmp\\pytest-of-ss\\pytest-2\\test_lossy_training_smoke_writ0\\checkpoints\\neural_lossy_v1\\best.pt",
+  "best_val_objective": 0.04855551943182945,
+  "quality": "medium",
+  "lambda": 0.01,
+  "model_config": {
+    "embedding_dim": 4,
+    "hidden_dim": 4,
+    "num_layers": 1,
+    "context_length": 1,
+    "dropout": 0,
+    "architecture_id": "conv-image-autoencoder-v1",
+    "n_heads": 4,
+    "ff_dim": 256,
+    "residual_scale": 1.0
+  }
+}
