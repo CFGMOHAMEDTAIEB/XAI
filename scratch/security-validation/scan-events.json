@@ -1,0 +1,72 @@
+[
+  {
+    "clamav_matches": [],
+    "clamav_status": "clean",
+    "clean": true,
+    "error": null,
+    "sha256": "2aeac16b1ec1cd6d3c273fd353d2acfe97ed326108e337e6151e9d8245854939",
+    "stage": "upload",
+    "status": "clean",
+    "yara_matches": [],
+    "yara_status": "clean"
+  },
+  {
+    "clamav_matches": [],
+    "clamav_status": "clean",
+    "clean": true,
+    "error": null,
+    "sha256": "2aeac16b1ec1cd6d3c273fd353d2acfe97ed326108e337e6151e9d8245854939",
+    "stage": "decompressed_output",
+    "status": "clean",
+    "yara_matches": [],
+    "yara_status": "clean"
+  },
+  {
+    "clamav_matches": [],
+    "clamav_status": "clean",
+    "clean": false,
+    "error": null,
+    "sha256": "a005496a0bbd52cf341456c45db2b1635963f63a4191e2ab3977daeb5c4bd89c",
+    "stage": "upload",
+    "status": "blocked",
+    "yara_matches": [
+      "XAI_Synthetic_Security_Test"
+    ],
+    "yara_status": "threat"
+  },
+  {
+    "clamav_matches": [],
+    "clamav_status": "clean",
+    "clean": false,
+    "error": null,
+    "sha256": "a005496a0bbd52cf341456c45db2b1635963f63a4191e2ab3977daeb5c4bd89c",
+    "stage": "decompressed_output",
+    "status": "blocked",
+    "yara_matches": [
+      "XAI_Synthetic_Security_Test"
+    ],
+    "yara_status": "threat"
+  },
+  {
+    "clamav_matches": [],
+    "clamav_status": "unavailable",
+    "clean": false,
+    "error": "clamav_unavailable",
+    "sha256": "0c32fca4e175d378f776e0955f9234adb16da5bc594a0895ff994f91bf039970",
+    "stage": "upload",
+    "status": "unavailable",
+    "yara_matches": [],
+    "yara_status": "clean"
+  },
+  {
+    "clamav_matches": [],
+    "clamav_status": "unavailable",
+    "clean": false,
+    "error": "clamav_unavailable",
+    "sha256": "2aeac16b1ec1cd6d3c273fd353d2acfe97ed326108e337e6151e9d8245854939",
+    "stage": "decompressed_output",
+    "status": "unavailable",
+    "yara_matches": [],
+    "yara_status": "clean"
+  }
+]

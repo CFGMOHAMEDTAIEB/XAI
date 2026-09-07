@@ -1,4 +1,6 @@
+@inject IConfiguration Configuration
 <nav class="nav-menu">
+    @if (!string.IsNullOrWhiteSpace(Configuration["PortalUrl"])) { <a href="@Configuration["PortalUrl"]">Cloud portal</a> }
     <NavLink href="/" Match="NavLinkMatch.All"><span>▦</span> Dashboard</NavLink>
     <NavLink href="/users"><span>♙</span> Users</NavLink>
     <NavLink href="/jobs"><span>⇅</span> Compression jobs</NavLink>

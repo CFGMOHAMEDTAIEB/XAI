@@ -1,9 +1,10 @@
+import 'deployment_config.dart';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  ApiService({String? baseUrl}) : baseUrl = baseUrl ?? const String.fromEnvironment('XAI_API_URL', defaultValue: 'http://10.0.2.2:8000');
+  ApiService({String? baseUrl}) : baseUrl = baseUrl ?? configuredApiUrl();
 
   String baseUrl;
   String? accessToken;

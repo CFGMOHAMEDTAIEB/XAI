@@ -1,4 +1,15 @@
 services:
+  clamav:
+    build: {context: ., dockerfile: services/api_fastapi/security/clamav/Dockerfile}
+    volumes: [clamav-data:/var/lib/clamav]
+    healthcheck:
+      test: ["CMD", "clamdcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      start_period: 180s
+      retries: 30
+    restart: unless-stopped
+    networks: [scanner-network]
   db:
     image: postgres:17-alpine
     environment:
@@ -21,9 +32,15 @@ services:
       ACCESS_TOKEN_MINUTES: ${ACCESS_TOKEN_MINUTES:-15}
       REFRESH_TOKEN_DAYS: ${REFRESH_TOKEN_DAYS:-30}
       STORAGE_PATH: /data
+      CLAMAV_HOST: clamav
+      CLAMAV_PORT: 3310
+      SECURITY_SCAN_REQUIRED: "true"
+      YARA_RULES_PATH: /app/security/yara/test
       SELECTOR_MODEL_PATH: /opt/xai-compress/checkpoints/selector_v2/best.json
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:4200,http://localhost:3000,http://localhost:5050}
       ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+      EMAIL_PROVIDER: ${EMAIL_PROVIDER:-smtp}
+      BREVO_API_KEY: ${BREVO_API_KEY:-}
       SMTP_HOST: ${SMTP_HOST:-}
       SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_USERNAME: ${SMTP_USERNAME:-}
@@ -34,13 +51,14 @@ services:
     ports: ["${API_PORT:-8000}:8000"]
     depends_on:
       db: {condition: service_healthy}
+      clamav: {condition: service_healthy}
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
       interval: 10s
       timeout: 5s
       retries: 20
     restart: unless-stopped
-    networks: [xai-network]
+    networks: [xai-network, scanner-network]
   angular:
     build: ./apps/web_angular
     ports: ["${ANGULAR_PORT:-4200}:80"]
@@ -52,6 +70,8 @@ services:
     build: ./apps/public_nextjs
     environment:
       INTERNAL_API_URL: http://backend:8000
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:4200}
       NEXT_PUBLIC_API_URL: ${PUBLIC_API_URL:-http://localhost:8000}
     ports: ["${NEXTJS_PORT:-3000}:3000"]
     depends_on:
@@ -62,6 +82,7 @@ services:
     build: ./apps/admin_dotnet
     environment:
       PlatformApi__BaseUrl: http://backend:8000
+      PortalUrl: ${NEXT_PUBLIC_APP_URL:-http://localhost:4200}
       PlatformApi__UseDemoFallback: "false"
       Authentication__OidcEnabled: "false"
       ASPNETCORE_URLS: http://+:8080
@@ -71,7 +92,9 @@ services:
     restart: unless-stopped
     networks: [xai-network]
 volumes:
+  clamav-data:
   db-data:
   xai-storage:
 networks:
+  scanner-network:
   xai-network: {name: xai-network}

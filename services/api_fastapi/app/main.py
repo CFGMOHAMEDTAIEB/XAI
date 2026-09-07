@@ -5,7 +5,7 @@ from fastapi import FastAPI, Depends, HTTPException, Header, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from starlette.background import BackgroundTask
-from sqlalchemy import select, func
+from sqlalchemy import select, func, text, update
 from sqlalchemy.orm import Session
 from .config import settings
 from .db import Base, engine, get_db
@@ -13,11 +13,14 @@ from .models import User, FileRecord, ShareCode, AuditEvent, RefreshToken
 from .schemas import RegisterRequest, LoginRequest, TokenResponse, RefreshRequest, FileCreate, ShareCreate, ShareRedeem
 from .security import hash_password, verify_password, create_token, create_refresh_token, hash_refresh_token, decode_token, generate_share_code, hash_share_code
 from .schemas import EmailSend, TotpConfirm
-from .email_service import send_artifact
+from .email_service import send_artifact, configuration_missing
 import smtplib
+from .security_scanner import enforce_scan, scanner_health
+from .resource_guard import ResourceGuard, cleanup_work
 
 Base.metadata.create_all(engine)
 app=FastAPI(title='XAI-Compress Platform API',version='0.1.0')
+app.add_middleware(ResourceGuard)
 app.add_middleware(CORSMiddleware,allow_origins=settings.allowed_origins,allow_credentials=True,allow_methods=['*'],allow_headers=['*'])
 settings.storage_root.mkdir(parents=True,exist_ok=True)
 
@@ -48,6 +51,7 @@ def health():
 
 @app.post('/auth/register',response_model=TokenResponse)
 def register(body:RegisterRequest,db:Session=Depends(get_db)):
+    if settings.app_env=='production' and body.email.lower() in {x.strip().lower() for x in settings.admin_emails.split(',') if x.strip()}: raise HTTPException(403,'Administrator accounts must be provisioned by the operator')
     if db.scalar(select(User).where(User.email==body.email.lower())): raise HTTPException(409,'Email already registered')
     user=User(email=body.email.lower(),password_hash=hash_password(body.password),display_name=body.display_name)
     db.add(user); db.commit(); db.refresh(user); audit(db,user.id,'user.register')
@@ -77,7 +81,7 @@ def logout(body:RefreshRequest,db:Session=Depends(get_db)):
 
 @app.get('/auth/me')
 def me(user:User=Depends(current_user)):
-    return {'id':user.id,'email':user.email,'display_name':user.display_name,'role':user.role,'mfa_enabled':user.totp_enabled}
+    return {'id':user.id,'email':user.email,'display_name':user.display_name,'role':user.role,'mfa_enabled':user.totp_enabled,'is_admin':user.role=='admin' or user.email in {x.strip().lower() for x in settings.admin_emails.split(',') if x.strip()}}
 
 @app.post('/auth/totp/enroll')
 def totp_enroll(user:User=Depends(current_user),db:Session=Depends(get_db)):
@@ -109,19 +113,30 @@ def compress_upload(upload:UploadFile=File(...),user:User=Depends(current_user),
                 if size>settings.max_upload_bytes: raise HTTPException(413,'Upload too large')
                 digest.update(chunk); target.write(chunk)
     except Exception:
-        shutil.rmtree(job_dir); raise
+        cleanup_work(job_dir); raise
     try:
         from xai_compress.compression import compress_file, decompress_file
+        enforce_scan(source, 'upload', digest.hexdigest(), request_id=job_key, user_id=user.id, db=db)
         info=compress_file(source,artifact,mode='hybrid-v2',profile='balanced',selector_model=settings.selector_model_path,overwrite=True)
-        decompress_file(artifact,restored,overwrite=True)
-        verified=digest.hexdigest()==hashlib.sha256(restored.read_bytes()).hexdigest()
+        decompress_file(artifact,restored,overwrite=True,max_output_size=settings.max_decompressed_bytes)
+        with restored.open('rb') as verify_file:
+            verified=digest.hexdigest()==hashlib.file_digest(verify_file,'sha256').hexdigest()
         if not verified: raise RuntimeError('round-trip SHA-256 mismatch')
+    except HTTPException:
+        cleanup_work(job_dir)
+        audit(db,user.id,'security.rejected',job_key,'failure')
+        raise
     except Exception as exc:
-        shutil.rmtree(job_dir)
-        audit(db,user.id,'compression.failed',job_key,'failure',str(exc)); raise HTTPException(500,f'Compression failed: {exc}')
+        cleanup_work(job_dir)
+        audit(db,user.id,'compression.failed',job_key,'failure','engine_error'); raise HTTPException(500,'Compression failed')
     row=FileRecord(owner_id=user.id,name=safe_name,sha256=digest.hexdigest(),original_size=size,compressed_size=artifact.stat().st_size,
         codec='hybrid-v3-top3',source_path=str(source),artifact_path=str(artifact),integrity_verified=True,status='completed')
-    db.add(row); db.commit(); db.refresh(row); restored.unlink(missing_ok=True); audit(db,user.id,'compression.completed',str(row.id))
+    try:
+        source.unlink(); restored.unlink(missing_ok=True); row.source_path=None
+        db.add(row); db.commit(); db.refresh(row); audit(db,user.id,'compression.completed',str(row.id))
+    except Exception:
+        db.rollback(); cleanup_work(job_dir)
+        raise HTTPException(500,'Unable to save compression result')
     return {'id':row.id,'job_id':job_key,'name':row.name,'status':row.status,'codec':row.codec,'original_size':row.original_size,
             'compressed_size':row.compressed_size,'sha256':row.sha256,'integrity_verified':row.integrity_verified,'engine':info}
 
@@ -132,7 +147,7 @@ def download_artifact(file_id:int,user:User=Depends(current_user),db:Session=Dep
     return FileResponse(row.artifact_path,filename=f'{row.name}.xaic',media_type='application/octet-stream')
 
 @app.post('/compression/decompress')
-def decompress_upload(upload:UploadFile=File(...),user:User=Depends(current_user)):
+def decompress_upload(upload:UploadFile=File(...),user:User=Depends(current_user),db:Session=Depends(get_db)):
     work=settings.storage_root/str(user.id)/f'decompress-{secrets.token_hex(8)}'; work.mkdir(parents=True)
     artifact=work/'input.xaic'; restored=work/'restored.bin'
     filename=safe_upload_name(upload.filename)
@@ -153,12 +168,13 @@ def decompress_upload(upload:UploadFile=File(...),user:User=Depends(current_user
         decompress_file(artifact,restored,overwrite=True,max_output_size=settings.max_decompressed_bytes)
         with restored.open('rb') as result_file:
             digest=hashlib.file_digest(result_file,'sha256').hexdigest()
+        enforce_scan(restored, 'decompressed_output', digest, request_id=work.name, user_id=user.id, db=db)
     except HTTPException:
-        shutil.rmtree(work); raise
+        cleanup_work(work); raise
     except Exception:
-        shutil.rmtree(work); raise HTTPException(400,'Invalid XAIC attachment: format, size or integrity validation failed')
+        cleanup_work(work); raise HTTPException(400,'Invalid XAIC attachment: format, size or integrity validation failed')
     return FileResponse(restored,filename=filename,media_type='application/octet-stream',
-                        headers={'X-Content-SHA256':digest},background=BackgroundTask(shutil.rmtree,work))
+                        headers={'X-Content-SHA256':digest},background=BackgroundTask(cleanup_work,work))
 
 def safe_upload_name(filename):
     name=(filename or 'upload.bin').replace('\\','/').rsplit('/',1)[-1]
@@ -174,8 +190,8 @@ def email_artifact(file_id:int,body:EmailSend,user:User=Depends(current_user),db
         result=send_artifact(Path(row.artifact_path),f'{row.name}.xaic',str(body.recipient_email))
     except ValueError as exc: raise HTTPException(503,str(exc))
     except (OSError,smtplib.SMTPException):
-        audit(db,user.id,'email.failed',str(file_id),'failure','SMTP delivery failed')
-        raise HTTPException(502,'SMTP delivery failed; check provider and server configuration')
+        audit(db,user.id,'email.failed',str(file_id),'failure','Email provider submission failed')
+        raise HTTPException(502,'Email submission failed; check provider credentials, sender verification and availability')
     audit(db,user.id,'email.accepted',str(file_id))
     return result
 
@@ -198,7 +214,7 @@ def redeem(body:ShareRedeem,user:User=Depends(current_user),db:Session=Depends(g
     row=db.scalar(select(ShareCode).where(ShareCode.code_hash==hash_share_code(body.code)))
     if not row or row.revoked or row.expires_at<datetime.utcnow() or row.download_count>=row.max_downloads: raise HTTPException(404,'Invalid or expired code')
     if row.recipient_email!=user.email: raise HTTPException(403,'Code is not assigned to this account')
-    file=db.get(FileRecord,row.file_id); row.download_count+=1; db.commit(); audit(db,user.id,'share.redeemed',str(row.id))
+    file=db.get(FileRecord,row.file_id); audit(db,user.id,'share.inspected',str(row.id))
     return {'file':{'id':file.id,'name':file.name,'sha256':file.sha256,'original_size':file.original_size,'compressed_size':file.compressed_size,'codec':file.codec},
             'sender':None if row.anonymous_sender else row.sender_id,'remaining_downloads':row.max_downloads-row.download_count}
 
@@ -213,7 +229,8 @@ def public_share(code:str,db:Session=Depends(get_db)):
 def admin_stats(_:User=Depends(require_admin),db:Session=Depends(get_db)):
     original=db.scalar(select(func.coalesce(func.sum(FileRecord.original_size),0))) or 0; compressed=db.scalar(select(func.coalesce(func.sum(FileRecord.compressed_size),0))) or 0
     return {'activeUsers':db.scalar(select(func.count()).select_from(User)) or 0,'jobsToday':db.scalar(select(func.count()).select_from(FileRecord)) or 0,
-            'bytesSaved':max(0,original-compressed),'openIncidents':0,'quarantinedFiles':0,'losslessSuccessRate':100.0}
+            'bytesSaved':max(0,original-compressed),'openIncidents':0,'quarantinedFiles':0,'losslessSuccessRate':100.0,
+            'security_scanner':scanner_health()}
 
 @app.get('/admin/users')
 def admin_users(_:User=Depends(require_admin),db:Session=Depends(get_db)):
@@ -227,3 +244,44 @@ def admin_jobs(_:User=Depends(require_admin),db:Session=Depends(get_db)):
 @app.get('/admin/audit')
 def admin_audit(_:User=Depends(require_admin),db:Session=Depends(get_db)):
     return [{'id':e.id,'actor':str(e.user_id or 'system'),'action':e.action,'resource':e.resource,'result':e.result,'ipAddress':'','createdAt':e.created_at} for e in db.scalars(select(AuditEvent).order_by(AuditEvent.created_at.desc()).limit(500)).all()]
+
+
+@app.get('/public/status')
+def public_status():
+    # Read-only local readiness probes, not fabricated third-party uptime.
+    services = {'api': 'operational', 'identity': 'unknown', 'compression': 'unknown',
+                'storage': 'unknown', 'notifications': 'unknown'}
+    try:
+        with engine.connect() as connection: connection.execute(text('SELECT 1'))
+        services['identity'] = 'operational'
+    except Exception: services['identity'] = 'unavailable'
+    try:
+        import xai_compress
+        root = Path(xai_compress.__file__).resolve().parent.parent
+        services['compression'] = 'operational' if Path(settings.selector_model_path).is_file() and (root/'configs/hybrid_profiles.json').is_file() else 'unavailable'
+    except Exception: services['compression'] = 'unavailable'
+    services['storage'] = 'operational' if settings.storage_root.is_dir() and os.access(settings.storage_root, os.R_OK | os.W_OK) else 'unavailable'
+    # Configured credentials are NOT evidence of provider delivery or availability.
+    services['notifications'] = 'degraded' if configuration_missing() else 'unknown'
+    services['security_scanner'] = scanner_health()['status']
+    status = 'degraded' if any(v in ('degraded', 'unavailable') for v in services.values()) else 'unknown'
+    return {'status': status, 'services': services}
+
+@app.get('/admin/email/configuration')
+def email_configuration(_:User=Depends(require_admin)):
+    return {'provider':settings.email_provider, 'configured':not configuration_missing(),
+            'missing':configuration_missing(), 'delivery_verified':False,'xaic_supported':settings.email_provider!='brevo'}
+
+
+@app.post('/shares/download')
+def download_share(body:ShareRedeem,user:User=Depends(current_user),db:Session=Depends(get_db)):
+    row=db.scalar(select(ShareCode).where(ShareCode.code_hash==hash_share_code(body.code)))
+    if not row or row.recipient_email!=user.email: raise HTTPException(404,'Share not found')
+    file=db.get(FileRecord,row.file_id)
+    if not file or not file.artifact_path or not Path(file.artifact_path).is_file(): raise HTTPException(404,'Artifact not found')
+    result=db.execute(update(ShareCode).where(ShareCode.id==row.id,ShareCode.revoked==False,
+        ShareCode.expires_at>datetime.utcnow(),ShareCode.download_count<ShareCode.max_downloads)
+        .values(download_count=ShareCode.download_count+1))
+    if result.rowcount!=1: db.rollback(); raise HTTPException(404,'Invalid or exhausted share')
+    db.commit(); audit(db,user.id,'share.downloaded',str(row.id))
+    return FileResponse(file.artifact_path,filename=f'{file.name}.xaic',media_type='application/octet-stream')

@@ -1,0 +1,36 @@
+{
+  "Status": "healthy",
+  "FailingStreak": 0,
+  "Log": [
+    {
+      "Start": "2026-09-07T22:11:56.812487317Z",
+      "End": "2026-09-07T22:11:56.937332908Z",
+      "ExitCode": 0,
+      "Output": "Clamd is up\n"
+    },
+    {
+      "Start": "2026-09-07T22:12:06.936728248Z",
+      "End": "2026-09-07T22:12:07.116575813Z",
+      "ExitCode": 0,
+      "Output": "Clamd is up\n"
+    },
+    {
+      "Start": "2026-09-07T22:12:17.118413686Z",
+      "End": "2026-09-07T22:12:17.317632562Z",
+      "ExitCode": 0,
+      "Output": "Clamd is up\n"
+    },
+    {
+      "Start": "2026-09-07T22:12:27.31980839Z",
+      "End": "2026-09-07T22:12:27.517477318Z",
+      "ExitCode": 0,
+      "Output": "Clamd is up\n"
+    },
+    {
+      "Start": "2026-09-07T22:12:37.514190067Z",
+      "End": "2026-09-07T22:12:37.704251639Z",
+      "ExitCode": 0,
+      "Output": "Clamd is up\n"
+    }
+  ]
+}

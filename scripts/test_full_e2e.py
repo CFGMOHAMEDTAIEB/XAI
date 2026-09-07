@@ -115,7 +115,7 @@ def main():
         (args.output / 'report.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
         stage = 'email sending'
         delivery = api.call(f"/files/{job['id']}/email", {'recipient_email': args.recipient})
-        require(delivery['email_delivery'] == 'accepted_by_smtp', 'SMTP did not accept message')
+        require(delivery['email_delivery'] in ('accepted_by_smtp', 'accepted_by_provider'), 'Email provider did not accept message')
         require(delivery['sha256'] == sha(artifact), 'SMTP attachment hash mismatch')
         report['email'] = delivery
         stage = 'email receipt/import'

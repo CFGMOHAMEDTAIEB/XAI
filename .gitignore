@@ -14,3 +14,9 @@ infrastructure/data/
 *.db
 *.tsbuildinfo
 .flutter-plugins-dependencies
+
+# Deployment credentials: commit templates only.
+.env.*
+!.env.example
+!.env.*.example
+apps/web_angular/src/environments/environment.vercel.ts

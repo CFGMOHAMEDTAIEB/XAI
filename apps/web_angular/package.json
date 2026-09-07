@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "build:vercel": "node scripts/configure-vercel.mjs && ng build --configuration production,vercel"
   },
   "dependencies": {
     "@angular/animations": "20.3.28",

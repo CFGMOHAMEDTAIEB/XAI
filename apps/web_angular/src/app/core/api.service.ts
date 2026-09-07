@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';import {HttpClient} from '@angular/common/http';import {Observable,of} from 'rxjs';import {environment} from '../../environments/environment';import {FileItem,ShareResult} from '../models/models';
-@Injectable({providedIn:'root'})export class ApiService{constructor(private http:HttpClient){}download(fileId:number){return this.http.get(`${environment.apiUrl}/files/${fileId}/download`,{responseType:'blob'})}
+@Injectable({providedIn:'root'})export class ApiService{constructor(private http:HttpClient){}downloadShare(code:string){return this.http.post(`${environment.apiUrl}/shares/download`,{code},{responseType:'blob'})}me(){return this.http.get<{email:string;display_name:string;mfa_enabled:boolean;is_admin:boolean}>(`${environment.apiUrl}/auth/me`)}download(fileId:number){return this.http.get(`${environment.apiUrl}/files/${fileId}/download`,{responseType:'blob'})}
 email(fileId:number,recipient_email:string){return this.http.post<{email_delivery:string}>(`${environment.apiUrl}/files/${fileId}/email`,{recipient_email})}
 decompress(file:File){const body=new FormData();body.append('upload',file,file.name);return this.http.post(`${environment.apiUrl}/compression/decompress`,body,{responseType:'blob'})}
 enroll(){return this.http.post<{secret:string;qr_png_base64:string}>(`${environment.apiUrl}/auth/totp/enroll`,{})}

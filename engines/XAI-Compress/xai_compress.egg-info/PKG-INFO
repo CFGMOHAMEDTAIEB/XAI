@@ -1,7 +1,7 @@
 Metadata-Version: 2.4
 Name: xai-compress
-Version: 0.1.0
-Summary: Causal neural lossless compression with arithmetic coding
+Version: 0.2.0
+Summary: Hybrid neural/classical lossless compression with arithmetic and rANS coding
 Requires-Python: >=3.10
 Requires-Dist: torch>=2.2
 Requires-Dist: numpy>=1.26

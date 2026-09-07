@@ -1,4 +1,8 @@
 """SMTP attachment delivery. A successful return means provider acceptance, not receipt."""
+import base64
+import json
+import urllib.request
+import urllib.error
 import hashlib
 import smtplib
 import ssl
@@ -9,7 +13,7 @@ from pathlib import Path
 from .config import settings
 
 
-def send_artifact(path: Path, filename: str, recipient: str) -> dict:
+def send_smtp_artifact(path: Path, filename: str, recipient: str) -> dict:
     missing = [name for name in ('smtp_host', 'smtp_from') if not getattr(settings, name)]
     if settings.smtp_username and not settings.smtp_password:
         missing.append('smtp_password')
@@ -46,3 +50,45 @@ def send_artifact(path: Path, filename: str, recipient: str) -> dict:
     return {'email_delivery': 'accepted_by_smtp', 'message_id': message['Message-ID'],
             'recipient_email': recipient, 'filename': filename, 'size': len(payload),
             'mime_type': 'application/octet-stream', 'sha256': hashlib.sha256(payload).hexdigest()}
+
+
+def configuration_missing():
+    def present(value):
+        return bool(value and 'REPLACE_' not in value)
+    if settings.email_provider == 'brevo':
+        return [key for key, value in [('BREVO_API_KEY', settings.brevo_api_key), ('SMTP_FROM', settings.smtp_from)] if not present(value)]
+    if settings.email_provider == 'smtp':
+        result = [key for key, value in [('SMTP_HOST', settings.smtp_host), ('SMTP_FROM', settings.smtp_from)] if not present(value)]
+        if settings.smtp_username and not present(settings.smtp_password): result.append('SMTP_PASSWORD')
+        if settings.smtp_security not in ('starttls', 'ssl'): result.append('SMTP_SECURITY')
+        return result
+    return ['EMAIL_PROVIDER']
+
+
+def send_artifact(path: Path, filename: str, recipient: str) -> dict:
+    missing = configuration_missing()
+    if missing: raise ValueError('Missing email configuration: ' + ', '.join(missing))
+    if settings.email_provider == 'smtp': return send_smtp_artifact(path, filename, recipient)
+    if filename.lower().endswith('.xaic'):
+        raise ValueError('Brevo HTTPS attachment allowlist does not support .xaic; provider format support is required. The artifact was not renamed or sent.')
+    if path.stat().st_size > settings.smtp_max_attachment_bytes:
+        raise ValueError('Artifact exceeds SMTP_MAX_ATTACHMENT_BYTES')
+    payload = path.read_bytes()
+    digest = hashlib.sha256(payload).hexdigest()
+    body = {'sender': {'email': settings.smtp_from}, 'to': [{'email': recipient}],
+            'subject': 'XAI E2E Compressed Artifact Test',
+            'textContent': 'XAI compressed attachment. Treat it as untrusted and validate before use. SHA-256: ' + digest,
+            'attachment': [{'name': filename, 'content': base64.b64encode(payload).decode('ascii')}]}
+    request = urllib.request.Request('https://api.brevo.com/v3/smtp/email', data=json.dumps(body).encode(),
+                                    headers={'api-key': settings.brevo_api_key, 'Content-Type': 'application/json', 'Accept': 'application/json'})
+    try:
+        with urllib.request.urlopen(request, timeout=settings.smtp_timeout_seconds) as response:
+            result = json.loads(response.read())
+            if response.status != 201 or not isinstance(result.get('messageId'), str):
+                raise OSError('Brevo did not acknowledge a message ID')
+    except (urllib.error.URLError, ValueError):
+        # Provider response bodies may contain account details; never expose them.
+        raise OSError('Brevo submission failed; check credentials, sender verification and provider availability') from None
+    return {'email_delivery': 'accepted_by_provider', 'provider': 'brevo', 'message_id': result['messageId'],
+            'recipient_email': recipient, 'filename': filename, 'size': len(payload),
+            'mime_type': 'application/octet-stream', 'sha256': digest}

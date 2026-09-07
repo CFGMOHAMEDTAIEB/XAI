@@ -1,1 +1,2 @@
-import type{MetadataRoute}from'next';export default function sitemap():MetadataRoute.Sitemap{const base=process.env.NEXT_PUBLIC_SITE_URL??'http://localhost:3000';return['','security','architecture','downloads','pricing','docs','status','contact','privacy','terms'].map(x=>({url:`${base}/${x}`,lastModified:new Date()}))}
+import {siteUrl} from '@/lib/deployment';
+import type{MetadataRoute}from'next';export default function sitemap():MetadataRoute.Sitemap{const base=siteUrl;return['','security','architecture','downloads','pricing','docs','status','contact','privacy','terms'].map(x=>({url:`${base}/${x}`,lastModified:new Date()}))}

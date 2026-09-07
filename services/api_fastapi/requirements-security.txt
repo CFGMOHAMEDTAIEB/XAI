@@ -1,0 +1,2 @@
+# Install alongside requirements.txt for non-Docker backend environments.
+yara-python==4.5.4
