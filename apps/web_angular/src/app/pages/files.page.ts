@@ -8,7 +8,7 @@ import {FileItem} from '../models/models';
 @if(loading()){<p>Loading history...</p>}@if(message()){<p role="status">{{message()}}</p>}
 <article class="panel table-wrap"><table><thead><tr><th>Name</th><th>Codec</th><th>Original</th><th>Output</th><th>Saving</th><th>Status</th><th>Date</th><th>Download</th></tr></thead><tbody>
 @for(f of files();track f.id){<tr><td><b>{{f.name}}</b></td><td>{{f.codec}}</td><td>{{f.original_size/1024|number:'1.0-1'}} KiB</td><td>{{f.compressed_size/1024|number:'1.0-1'}} KiB</td><td>{{saving(f)|number:'1.1-1'}}%</td><td>{{f.status}}</td><td>{{f.created_at|date:'medium'}}</td><td><button [disabled]="downloading()!==null" (click)="download(f)">Download</button></td></tr>}
-</tbody></table>@if(!loading()&&!files().length){<p>No cloud files to display.</p>}</article>`})
+</tbody></table>@if(!loading()&&!files().length&&!message()){<p>No cloud files to display.</p>}</article>`})
 export class FilesPage implements OnInit {
   files=signal<FileItem[]>([]);loading=signal(false);message=signal('');downloading=signal<number|null>(null);
   constructor(private api:ApiService){}

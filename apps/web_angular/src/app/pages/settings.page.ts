@@ -4,5 +4,5 @@ import {ApiService} from '../core/api.service';
 export class SettingsPage {
  email=signal('');mfa=signal('Unknown');message=signal('');busy=signal(false);
  constructor(private api:ApiService){this.load()}
- load(){if(this.busy())return;this.busy.set(true);this.api.me().subscribe({next:u=>{this.busy.set(false);this.email.set(u.email);this.mfa.set(u.mfa_enabled?'Enabled':'Not enabled');this.message.set('')},error:()=>{this.busy.set(false);this.message.set('Account unavailable. Retry when connected.')}})}
+ load(){if(this.busy())return;this.busy.set(true);this.api.me().subscribe({next:u=>{this.busy.set(false);this.email.set(u.email);this.mfa.set(u.mfa_enabled?'Enabled':'Not enabled');this.message.set('')},error:()=>{this.busy.set(false);this.email.set('');this.mfa.set('Unknown');this.message.set('Account unavailable. Retry when connected.')}})}
 }

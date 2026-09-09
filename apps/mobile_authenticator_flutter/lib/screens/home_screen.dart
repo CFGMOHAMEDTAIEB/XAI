@@ -15,6 +15,7 @@ class HomeScreen extends StatelessWidget {
         IconButton(onPressed: state.lock, icon: const Icon(Icons.lock_outline), tooltip: 'Lock'),
       ]),
       body: ListView(padding: const EdgeInsets.all(16), children: [
+        const ExpansionTile(title: Text('Privacy and data use — draft'), children: [Padding(padding: EdgeInsets.all(12), child: Text('TOTP secrets and account names are stored in device secure storage. Enrollment sends account credentials and verification codes to the configured backend; email verification uses its email provider. Removing a local account does not delete the server account or disable server MFA. Operator contact, retention and deletion procedures are not finalized.'))]),
         const MfaSetup(),
         const SizedBox(height: 16),
         if (state.accounts.isEmpty) const Text('No accounts enrolled'),

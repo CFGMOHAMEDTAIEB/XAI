@@ -27,7 +27,6 @@ export class AuthService {
     this.save(r.access_token,r.refresh_token);
   }
   async login(email:string,password:string,totp?:string){
-    if(environment.demoMode&&email==='demo@xai.local'){this.save('demo-token');return;}
     const r=await firstValueFrom(this.http.post<AuthToken>(`${environment.apiUrl}/auth/login`,{email,password,totp_code:totp||null}));
     this.save(r.access_token,r.refresh_token);
   }

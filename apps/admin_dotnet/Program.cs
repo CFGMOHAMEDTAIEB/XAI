@@ -11,7 +11,6 @@ builder.Services.AddRazorComponents()
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<AdminSession>();
-builder.Services.AddSingleton<DemoAdminData>();
 
 builder.Services.AddHttpClient<PlatformApiClient>((services, client) =>
 {

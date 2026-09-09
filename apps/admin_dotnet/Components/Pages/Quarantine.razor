@@ -2,7 +2,7 @@
 @inject PlatformApiClient Api
 <PageTitle>Quarantine</PageTitle>
 <p>Live quarantine reporting is not available from this backend. An empty list does not establish that no files are quarantined.</p>
-<div class="page-heading"><div><h1>Quarantined files</h1><p>Files remain isolated until a security analyst makes a reviewed decision.</p></div></div>
+<div class="page-heading"><div><h1>Quarantined files</h1><p>Quarantine review and release actions are not implemented.</p></div></div>
 <section class="panel"><table><thead><tr><th>File</th><th>Owner</th><th>ClamAV</th><th>YARA</th><th>SHA-256</th><th>Date</th></tr></thead><tbody>
 @foreach(var file in _files){<tr><td><strong>@file.FileName</strong><small>@file.Id</small></td><td>@file.OwnerEmail</td><td>@file.ClamAvResult</td><td>@(file.YaraMatches.Count==0?"No matches":string.Join(", ",file.YaraMatches))</td><td class="mono">@file.Sha256[..12]…</td><td>@file.QuarantinedAt.LocalDateTime</td></tr>}
 </tbody></table></section>

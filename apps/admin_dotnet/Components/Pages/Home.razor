@@ -27,12 +27,12 @@ else if (_stats is null)
 else
 {
     <div class="stat-grid">
-        <MetricCard Label="Active users" Value="@_stats.ActiveUsers.ToString()" Detail="Registered and enabled" Tone="blue" />
-        <MetricCard Label="Jobs today" Value="@_stats.JobsToday.ToString()" Detail="Static, neural and cloud" Tone="purple" />
-        <MetricCard Label="Data saved" Value="@FormatBytes(_stats.BytesSaved)" Detail="Cumulative sample metric" Tone="green" />
-        <MetricCard Label="Open incidents" Value="@_stats.OpenIncidents.ToString()" Detail="Requires security review" Tone="red" />
-        <MetricCard Label="Quarantined" Value="@_stats.QuarantinedFiles.ToString()" Detail="Files isolated from users" Tone="orange" />
-        <MetricCard Label="Lossless success" Value="@($"{_stats.LosslessSuccessRate:F1}%")" Detail="Verified reconstruction" Tone="teal" />
+        <MetricCard Label="Registered users" Value="@_stats.ActiveUsers.ToString()" Detail="Stored accounts; not active sessions" Tone="blue" />
+        <MetricCard Label="Files created today" Value="@_stats.JobsToday.ToString()" Detail="Since midnight UTC" Tone="purple" />
+        <MetricCard Label="Net bytes saved" Value="@FormatBytes(_stats.BytesSaved)" Detail="Original minus artifact sizes in stored records" Tone="green" />
+        <MetricCard Label="Open incidents" Value="Unknown" Detail="Incident reporting is not implemented" Tone="red" />
+        <MetricCard Label="Quarantined" Value="Unknown" Detail="Quarantine reporting is not implemented" Tone="orange" />
+        <MetricCard Label="Verified file records" Value="@(_stats.LosslessSuccessRate is double rate ? $"{rate:F1}%" : "No file records")" Detail="Integrity flags among stored files; not all attempted jobs" Tone="teal" />
     </div>
 
     <div class="two-column">
@@ -41,6 +41,7 @@ else
             <table>
                 <thead><tr><th>File</th><th>Mode</th><th>Status</th><th>Saving</th></tr></thead>
                 <tbody>
+                    @if (_jobs.Count == 0) { <tr><td colspan="4">No compression file records yet.</td></tr> }
                     @foreach (var job in _jobs.Take(4))
                     {
                         <tr>
@@ -56,6 +57,7 @@ else
         <section class="panel">
             <div class="panel-header"><h2>Security incidents</h2><a href="/incidents">Review</a></div>
             <div class="incident-list">
+                <p>Incident reporting is unavailable. This does not establish that no incidents exist.</p>
                 @foreach (var incident in _incidents)
                 {
                     <div class="incident-item">

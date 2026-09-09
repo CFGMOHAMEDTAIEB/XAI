@@ -1,10 +1,12 @@
-﻿import {Download,Monitor,ShieldCheck,Terminal} from 'lucide-react';
-import {SectionHeading} from '@/components/section-heading';
+﻿import {SectionHeading} from '@/components/section-heading';
+import manifest from '@/lib/releases.json';
+import {productionReleases} from '@/lib/releases.mjs';
 export const metadata={title:'Downloads'};
-const downloads=[
- {i:ShieldCheck,t:'Android Authenticator',p:'Android · 0.1.0+1',d:'Local test builds only. Public distribution is pending release signing and validation on the target phone.',status:'Test build — not publicly hosted'},
- {i:Monitor,t:'Windows desktop',p:'Windows · 0.1.0+1',d:'Local unsigned builds support cloud compression and decompression. Public distribution is pending signing and validation.',status:'Unsigned test build — not publicly hosted'},
- {i:ShieldCheck,t:'iOS Authenticator',p:'iOS',d:'No distributable iOS build is available. Apple signing and the macOS/Xcode distribution workflow are required.',status:'Coming soon'},
- {i:Terminal,t:'Command-line engine',p:'Python · Rust extension',d:'Source-based compression, decompression and reproducible benchmarks. No verified public binary package is published.',status:'Release pending'},
-];
-export default function Downloads(){return <section className="page-hero"><div className="container"><SectionHeading eyebrow="Applications" title="Choose the interface for each workflow" body="Public downloads are pending release validation and signing. Local test builds are not production releases."/><div className="download-grid">{downloads.map(({i:I,t,p,d,status})=><article key={t}><I/><h2>{t}</h2><b>{p}</b><p>{d}</p><p>{status}</p><button className="button" disabled><Download size={17}/>Download unavailable</button></article>)}</div><div className="notice-box"><b>No public production binary yet</b><p>Download links will appear when hosted artifacts, checksums and release signing have been verified. There is currently no public macOS or Linux desktop package.</p></div></div></section>}
+const platforms=[['android','Android Authenticator'],['windows','Windows desktop'],['ios','iOS Authenticator'],['macos','macOS desktop'],['linux','Linux desktop'],['cli','Command-line engine']];
+export default function Downloads(){
+ const releases=productionReleases(manifest);
+ return <section className="page-hero"><div className="container"><SectionHeading eyebrow="Application availability" title="Production releases" body="Only reviewed, signed and installation-tested production releases are listed for download. Source code and local test builds are not production distribution."/><div className="download-grid">{platforms.map(([platform,label])=>{
+ const release=releases.find(r=>r.platform===platform);
+ return <article key={platform}><h2>{label}</h2>{release?<><p>{release.version} · {release.architecture}</p><p>{release.sizeBytes.toLocaleString()} bytes · {release.releasedAt}</p><p>{release.releaseNotes}</p><p style={{overflowWrap:'anywhere'}}>SHA-256: {release.sha256}</p><a className="button" href={release.url}>Download {release.filename}</a></>:<><p>{label} release is not available yet.</p><button className="button" disabled>Download unavailable</button></>}</article>;
+ })}</div><p>Historical Android builds used debug signing and Windows builds were unsigned. These are test artifacts, not public production releases.</p></div></section>;
+}

@@ -1,0 +1,72 @@
+[
+  {
+    "route": "/",
+    "status": "PASS",
+    "scope": "HTTP content and link checks, not browser interaction"
+  },
+  {
+    "route": "/architecture",
+    "status": "PASS",
+    "scope": "HTTP content and link checks, not browser interaction"
+  },
+  {
+    "route": "/contact",
+    "status": "PASS",
+    "scope": "HTTP content and link checks, not browser interaction"
+  },
+  {
+    "route": "/docs",
+    "status": "PASS",
+    "scope": "HTTP content and link checks, not browser interaction"
+  },
+  {
+    "route": "/downloads",
+    "status": "PASS",
+    "scope": "HTTP content and link checks, not browser interaction"
+  },
+  {
+    "route": "/pricing",
+    "status": "PASS",
+    "scope": "HTTP content and link checks, not browser interaction"
+  },
+  {
+    "route": "/privacy",
+    "status": "PASS",
+    "scope": "HTTP content and link checks, not browser interaction"
+  },
+  {
+    "route": "/security",
+    "status": "PASS",
+    "scope": "HTTP content and link checks, not browser interaction"
+  },
+  {
+    "route": "/status",
+    "status": "PASS",
+    "scope": "HTTP content and link checks, not browser interaction"
+  },
+  {
+    "route": "/terms",
+    "status": "PASS",
+    "scope": "HTTP content and link checks, not browser interaction"
+  },
+  {
+    "route": "/robots.txt",
+    "status": "PASS",
+    "scope": "HTTP content and link checks, not browser interaction"
+  },
+  {
+    "route": "/sitemap.xml",
+    "status": "PASS",
+    "scope": "HTTP content and link checks, not browser interaction"
+  },
+  {
+    "route": "/download",
+    "status": "PASS",
+    "scope": "Redirect to /downloads"
+  },
+  {
+    "route": "/share/audit-invalid-code",
+    "status": "PASS",
+    "scope": "Error state for invalid/unverifiable share"
+  }
+]

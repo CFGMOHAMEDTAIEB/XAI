@@ -21,7 +21,7 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
  Future<void> login() async {
   final client=api;final secret=password.text;password.clear();
   if(registering){await client.register(email.text.trim(),secret);}else{await client.login(email.text.trim(),secret,totp:totp.text.trim());}
-  if(mounted){totp.clear();result='Signed in. Cloud compression, decompression and history are available.';}
+  if(mounted){totp.clear();result='Signed in. Cloud processing depends on backend and scanner readiness.';}
  }
  Future<void> download() async {
   final client=api;final share=code.text.trim();

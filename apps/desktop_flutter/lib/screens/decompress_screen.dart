@@ -36,15 +36,16 @@ class DecompressScreen extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           if (state.processing) ...[
-            LinearProgressIndicator(value: state.progress),
+            const LinearProgressIndicator(),
             Text(state.status),
-            TextButton(onPressed: state.cancel, child: const Text('Cancel')),
+            if (state.mode != 'cloud') TextButton(onPressed: state.cancel, child: const Text('Cancel')),
           ] else
             FilledButton.icon(
               onPressed: state.inputPath != null && state.outputPath != null ? state.decompress : null,
               icon: const Icon(Icons.unarchive),
               label: const Text('Decompress and verify'),
             ),
+          if (!state.processing && state.status != 'Ready') Text(state.status),
           if (state.lastResult != null) ...[
             const SizedBox(height: 24),
             ResultCard(result: state.lastResult!),

@@ -224,19 +224,21 @@ def redeem(body:ShareRedeem,user:User=Depends(current_user),db:Session=Depends(g
 def public_share(code:str,db:Session=Depends(get_db)):
     row=db.scalar(select(ShareCode).where(ShareCode.code_hash==hash_share_code(code)))
     if not row or row.revoked or row.expires_at<datetime.utcnow() or row.download_count>=row.max_downloads: raise HTTPException(404,'Invalid or expired code')
-    file=db.get(FileRecord,row.file_id)
-    return {'code':code,'file_name':file.name,'original_size':file.original_size,'compressed_size':file.compressed_size,'codec':file.codec,'expires_at':row.expires_at,'authentication_required':True}
+    # A bearer link does not authorize disclosure of recipient file metadata.
+    return {'authentication_required':True}
 
 @app.get('/admin/stats')
 def admin_stats(_:User=Depends(require_admin),db:Session=Depends(get_db)):
     original=db.scalar(select(func.coalesce(func.sum(FileRecord.original_size),0))) or 0; compressed=db.scalar(select(func.coalesce(func.sum(FileRecord.compressed_size),0))) or 0
-    return {'activeUsers':db.scalar(select(func.count()).select_from(User)) or 0,'jobsToday':db.scalar(select(func.count()).select_from(FileRecord)) or 0,
-            'bytesSaved':max(0,original-compressed),'openIncidents':0,'quarantinedFiles':0,'losslessSuccessRate':100.0,
+    total=db.scalar(select(func.count()).select_from(FileRecord)) or 0
+    verified=db.scalar(select(func.count()).select_from(FileRecord).where(FileRecord.integrity_verified.is_(True))) or 0
+    return {'activeUsers':db.scalar(select(func.count()).select_from(User)) or 0,'jobsToday':db.scalar(select(func.count()).select_from(FileRecord).where(FileRecord.created_at >= datetime.utcnow().replace(hour=0,minute=0,second=0,microsecond=0))) or 0,
+            'bytesSaved':original-compressed,'openIncidents':None,'quarantinedFiles':None,'losslessSuccessRate':100.0*verified/total if total else None,
             'security_scanner':scanner_health()}
 
 @app.get('/admin/users')
 def admin_users(_:User=Depends(require_admin),db:Session=Depends(get_db)):
-    return [{'id':u.id,'email':u.email,'displayName':u.display_name,'role':u.role,'status':'active','mfaEnabled':u.totp_enabled,'createdAt':u.created_at,'lastLogin':None} for u in db.scalars(select(User).order_by(User.created_at.desc())).all()]
+    return [{'id':u.id,'email':u.email,'displayName':u.display_name,'role':u.role,'status':'registered','mfaEnabled':u.totp_enabled,'createdAt':u.created_at,'lastLogin':None} for u in db.scalars(select(User).order_by(User.created_at.desc())).all()]
 
 @app.get('/admin/jobs')
 def admin_jobs(_:User=Depends(require_admin),db:Session=Depends(get_db)):

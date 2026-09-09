@@ -16,15 +16,11 @@ public sealed class PlatformApiClient
 {
     private readonly HttpClient _http;
     private readonly AdminSession _session;
-    private readonly DemoAdminData _demo;
-    private readonly bool _demoEnabled;
 
-    public PlatformApiClient(HttpClient http, AdminSession session, DemoAdminData demo, IConfiguration configuration, IWebHostEnvironment environment)
+    public PlatformApiClient(HttpClient http, AdminSession session)
     {
         _http = http;
         _session = session;
-        _demo = demo;
-        _demoEnabled = environment.IsDevelopment() && configuration.GetValue<bool>("PlatformApi:UseDemoFallback");
     }
 
     public async Task LoginAsync(string email, string password, string? totpCode = null)
@@ -76,17 +72,18 @@ public sealed class PlatformApiClient
     public async Task<IReadOnlyList<UserSummary>> GetUsersAsync() => await GetProtectedAsync<List<UserSummary>>("/admin/users");
     public async Task<IReadOnlyList<CompressionJob>> GetJobsAsync() => await GetProtectedAsync<List<CompressionJob>>("/admin/jobs");
     public async Task<IReadOnlyList<AuditEvent>> GetAuditAsync() => await GetProtectedAsync<List<AuditEvent>>("/admin/audit");
-    public Task<IReadOnlyList<SecurityIncident>> GetIncidentsAsync() => Task.FromResult<IReadOnlyList<SecurityIncident>>(_demoEnabled ? _demo.Incidents : []);
-    public Task<IReadOnlyList<QuarantinedFile>> GetQuarantineAsync() => Task.FromResult<IReadOnlyList<QuarantinedFile>>(_demoEnabled ? _demo.Quarantine : []);
+    public Task<IReadOnlyList<SecurityIncident>> GetIncidentsAsync() => Task.FromResult<IReadOnlyList<SecurityIncident>>([]);
+    public Task<IReadOnlyList<QuarantinedFile>> GetQuarantineAsync() => Task.FromResult<IReadOnlyList<QuarantinedFile>>([]);
 
     public async Task<IReadOnlyList<ServiceHealth>> GetHealthAsync()
     {
-        var apiHealthy = await IsHealthyAsync();
-        return _demo.Health
-            .Select(service => service.Name == "FastAPI"
-                ? service with { Status = apiHealthy ? "Healthy" : "Unavailable", CheckedAt = DateTimeOffset.UtcNow }
-                : _demoEnabled ? service : service with { Status = "Unknown", Version = "Unverified", LatencyMs = 0, CheckedAt = DateTimeOffset.UtcNow })
-            .ToList();
+        var labels = new Dictionary<string, string> { ["api"]="API", ["identity"]="Database connectivity", ["compression"]="Compression prerequisites", ["storage"]="Storage readiness", ["notifications"]="Notifications", ["security_scanner"]="Security scanner" };
+        var allowed = new[] { "operational", "degraded", "unavailable", "unknown" };
+        var status = await _http.GetFromJsonAsync<PublicStatus>("/public/status")
+            ?? throw new InvalidOperationException("Status response is empty.");
+        return labels.Select(pair => new ServiceHealth(pair.Value,
+            status.Services is not null && status.Services.TryGetValue(pair.Key, out var value) && allowed.Contains(value) ? value : "unknown",
+            0, "Unverified", DateTimeOffset.UtcNow)).ToList();
     }
 
     private async Task<T> GetProtectedAsync<T>(string path)
@@ -113,6 +110,8 @@ public sealed class PlatformApiClient
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         return request;
     }
+
+    private sealed record PublicStatus(Dictionary<string, string>? Services);
 
     private sealed record TokenEnvelope([property: JsonPropertyName("access_token")] string AccessToken,
         [property: JsonPropertyName("refresh_token")] string? RefreshToken);

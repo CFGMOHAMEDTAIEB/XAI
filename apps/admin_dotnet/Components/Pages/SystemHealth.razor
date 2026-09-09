@@ -1,6 +1,21 @@
-@page "/system"
+﻿@page "/system"
 @inject PlatformApiClient Api
-<PageTitle>System health</PageTitle>
-<div class="page-heading"><div><h1>System health</h1><p>Live view of platform dependencies and security services.</p></div><button class="button" @onclick="Load">Refresh</button></div>
-<div class="health-grid">@foreach(var service in _services){<article class="health-card"><div><strong>@service.Name</strong><small>Version @service.Version</small></div><StatusBadge Value="@service.Status" /><dl><dt>Latency</dt><dd>@service.LatencyMs.ToString("F1") ms</dd><dt>Checked</dt><dd>@service.CheckedAt.LocalDateTime.ToLongTimeString()</dd></dl></article>}</div>
-@code {private IReadOnlyList<ServiceHealth> _services=[];protected override Task OnInitializedAsync()=>Load();private async Task Load()=>_services=await Api.GetHealthAsync();}
+<PageTitle>System readiness</PageTitle>
+<div class="page-heading"><div><h1>System readiness</h1><p>Read-only backend prerequisite checks. These do not verify end-to-end processing or email delivery.</p></div><button class="button" disabled="@_loading" @onclick="Load">Refresh</button></div>
+@if(_loading){<p role="status">Checking services...</p>}
+@if(_error is not null){<p role="alert">@_error</p>}
+<div class="health-grid">@foreach(var service in _services){<article class="health-card"><strong>@service.Name</strong><StatusBadge Value="@service.Status" /><p>Response received: @service.CheckedAt.ToString("u")</p></article>}</div>
+<p>Historical uptime, service versions and individual service latency are not measured.</p>
+@code {
+ private IReadOnlyList<ServiceHealth> _services=[];
+ private bool _loading;
+ private string? _error;
+ protected override Task OnInitializedAsync()=>Load();
+ private async Task Load(){
+  if(_loading)return;
+  _loading=true;_error=null;_services=[];
+  try{_services=await Api.GetHealthAsync();}
+  catch(Exception){_error="Service status unavailable. Current dependency states are unknown. Retry when connected.";}
+  finally{_loading=false;}
+ }
+}

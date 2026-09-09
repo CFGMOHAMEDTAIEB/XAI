@@ -7,7 +7,7 @@ import {ApiService} from '../core/api.service';
 export class CompressPage{
   file=signal<File|null>(null);running=signal(false);message=signal('');mode='hybrid-v3';integrity=true;jobId=signal<number|null>(null);artifactName='';
   constructor(private api:ApiService){}
-  pick(e:Event){this.file.set((e.target as HTMLInputElement).files?.[0]??null)}
+  pick(e:Event){this.jobId.set(null);this.message.set('');this.file.set((e.target as HTMLInputElement).files?.[0]??null)}
   download(){const id=this.jobId();if(id)this.api.download(id).subscribe({next:b=>saveBlob(b,this.artifactName),error:()=>this.message.set('Download failed.')})}
-  start(){const selected=this.file();if(!selected||this.running())return;this.running.set(true);this.message.set('');this.jobId.set(null);this.api.compress(selected).subscribe({next:(result)=>{this.jobId.set((result as {id:number}).id);this.artifactName=selected.name+'.xaic';this.running.set(false);this.message.set('Compression completed and SHA-256 round-trip verified.')},error:e=>{this.running.set(false);this.message.set('Compression failed. Check the file and service status before retrying.')}})}
+  start(){const selected=this.file();if(!selected||this.running())return;this.running.set(true);this.message.set('');this.jobId.set(null);this.api.compress(selected).subscribe({next:(result)=>{this.jobId.set((result as {id:number}).id);this.artifactName=selected.name+'.xaic';this.running.set(false);this.message.set('Compression completed and SHA-256 round-trip verified.')},error:e=>{this.running.set(false);this.message.set(e.status===503?'File processing is temporarily unavailable. Check service status.':'Compression failed. Check the file and service status before retrying.')}})}
 }

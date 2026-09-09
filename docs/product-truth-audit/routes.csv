@@ -1,0 +1,55 @@
+app,route,purpose,data_source,auth_required,currently_functional,production_url,issues,source_file
+Next.js,/architecture,architecture,Maintained static source,No,PARTIAL,https://xai-compress.vercel.app/architecture,Local source reviewed; live interactions unverified,apps\public_nextjs\app\architecture\page.tsx
+Next.js,/contact,contact,Maintained static source,No,PARTIAL,https://xai-compress.vercel.app/contact,Support endpoint absent; form disabled,apps\public_nextjs\app\contact\page.tsx
+Next.js,/docs,docs,Maintained static source,No,PARTIAL,https://xai-compress.vercel.app/docs,Resource overview; no hosted full manuals,apps\public_nextjs\app\docs\page.tsx
+Next.js,/download,download,Maintained static source,No,PARTIAL,https://xai-compress.vercel.app/download,Redirect added locally; live 404,apps\public_nextjs\app\download\page.tsx
+Next.js,/downloads,downloads,Reviewed release manifest,No,PARTIAL,https://xai-compress.vercel.app/downloads,No production artifacts,apps\public_nextjs\app\downloads\page.tsx
+Next.js,/,Home,Maintained static source,No,PARTIAL,https://xai-compress.vercel.app/,Local source reviewed; live interactions unverified,apps\public_nextjs\app\page.tsx
+Next.js,/pricing,pricing,Maintained static source,No,PARTIAL,https://xai-compress.vercel.app/pricing,No billing; plans removed,apps\public_nextjs\app\pricing\page.tsx
+Next.js,/privacy,privacy,Maintained static source,No,PARTIAL,https://xai-compress.vercel.app/privacy,Policy draft; operator/contact/retention unresolved,apps\public_nextjs\app\privacy\page.tsx
+Next.js,/security,security,Maintained static source,No,PARTIAL,https://xai-compress.vercel.app/security,Local source reviewed; live interactions unverified,apps\public_nextjs\app\security\page.tsx
+Next.js,/share/[code],[code],/public/shares/{code},No,PARTIAL,https://xai-compress.vercel.app/share/[code],Local source reviewed; live interactions unverified,apps\public_nextjs\app\share\[code]\page.tsx
+Next.js,/status,status,/public/status,No,PARTIAL,https://xai-compress.vercel.app/status,Prerequisites only; no history; live API probe timed out,apps\public_nextjs\app\status\page.tsx
+Next.js,/terms,terms,Maintained static source,No,PARTIAL,https://xai-compress.vercel.app/terms,Legal draft; not final,apps\public_nextjs\app\terms\page.tsx
+Next.js,/robots.txt,Crawler rules,Static/framework,No,PARTIAL,https://xai-compress.vercel.app/robots.txt,Live interaction not verified,apps\public_nextjs\app\robots.ts
+Next.js,/sitemap.xml,Public route discovery,Static/framework,No,PARTIAL,https://xai-compress.vercel.app/sitemap.xml,Live interaction not verified,apps\public_nextjs\app\sitemap.ts
+Next.js,/_not-found,Framework not-found fallback,Static/framework,No,PARTIAL,https://xai-compress.vercel.app/_not-found,Live interaction not verified,apps\public_nextjs\app\layout.tsx
+Angular,/compress,compress,POST /compression/jobs,Yes,PARTIAL,https://portal-xai.vercel.app/compress,Live interaction not verified,apps\web_angular\src\app\pages\compress.page.ts
+Angular,/dashboard,dashboard,GET /history,Yes,PARTIAL,https://portal-xai.vercel.app/dashboard,Live interaction not verified,apps\web_angular\src\app\pages\dashboard.page.ts
+Angular,/files,files,GET /history; GET /files/{id}/download,Yes,PARTIAL,https://portal-xai.vercel.app/files,Live interaction not verified,apps\web_angular\src\app\pages\files.page.ts
+Angular,/inbox,inbox,POST /shares/redeem; POST /shares/download; POST /compression/decompress,Yes,PARTIAL,https://portal-xai.vercel.app/inbox,Live interaction not verified,apps\web_angular\src\app\pages\inbox.page.ts
+Angular,/login,login,POST /auth/login,No,PARTIAL,https://portal-xai.vercel.app/login,Live interaction not verified,apps\web_angular\src\app\pages\login.page.ts
+Angular,/register,register,POST /auth/register,No,PARTIAL,https://portal-xai.vercel.app/register,Live interaction not verified,apps\web_angular\src\app\pages\register.page.ts
+Angular,/security,security,GET /auth/me; mobile setup instructions,Yes,PARTIAL,https://portal-xai.vercel.app/security,Live interaction not verified,apps\web_angular\src\app\pages\security.page.ts
+Angular,/settings,settings,GET /auth/me,Yes,PARTIAL,https://portal-xai.vercel.app/settings,Live interaction not verified,apps\web_angular\src\app\pages\settings.page.ts
+Angular,/shares,shares,POST /shares; POST /files/{id}/email,Yes,PARTIAL,https://portal-xai.vercel.app/shares,Live interaction not verified,apps\web_angular\src\app\pages\shares.page.ts
+Angular,/,Redirect to dashboard behind guard,Router,Guard on root,PARTIAL,https://portal-xai.vercel.app/,Live interaction not verified,apps\web_angular\src\app\app.routes.ts
+Angular,/**,Wildcard redirect to root,Router,Guard on root,PARTIAL,https://portal-xai.vercel.app/**,Live interaction not verified,apps\web_angular\src\app\app.routes.ts
+Admin .NET,/audit,Audit,/admin/audit,Admin API authorization,PARTIAL,https://admin-dotnet.onrender.com/audit,Browser interaction not verified,apps\admin_dotnet\Components\Pages\Audit.razor
+Admin .NET,/error,Error,Framework error,No protected data,PARTIAL,https://admin-dotnet.onrender.com/error,Browser interaction not verified,apps\admin_dotnet\Components\Pages\Error.razor
+Admin .NET,/,Home,/admin/stats; /admin/jobs,Admin API authorization,PARTIAL,https://admin-dotnet.onrender.com/,Browser interaction not verified,apps\admin_dotnet\Components\Pages\Home.razor
+Admin .NET,/incidents,Incidents,No endpoint,No protected data,NOT_IMPLEMENTED,https://admin-dotnet.onrender.com/incidents,Reporting unavailable,apps\admin_dotnet\Components\Pages\Incidents.razor
+Admin .NET,/jobs,Jobs,/admin/jobs,Admin API authorization,PARTIAL,https://admin-dotnet.onrender.com/jobs,Browser interaction not verified,apps\admin_dotnet\Components\Pages\Jobs.razor
+Admin .NET,/login,Login,/auth/login then /admin/stats,No protected data,PARTIAL,https://admin-dotnet.onrender.com/login,Browser interaction not verified,apps\admin_dotnet\Components\Pages\Login.razor
+Admin .NET,/privacy,Privacy,Policy draft,No protected data,PARTIAL,https://admin-dotnet.onrender.com/privacy,Browser interaction not verified,apps\admin_dotnet\Components\Pages\Privacy.razor
+Admin .NET,/quarantine,Quarantine,No endpoint,No protected data,NOT_IMPLEMENTED,https://admin-dotnet.onrender.com/quarantine,Reporting unavailable,apps\admin_dotnet\Components\Pages\Quarantine.razor
+Admin .NET,/system,SystemHealth,/public/status,No protected data,PARTIAL,https://admin-dotnet.onrender.com/system,Browser interaction not verified,apps\admin_dotnet\Components\Pages\SystemHealth.razor
+Admin .NET,/users,Users,/admin/users,Admin API authorization,PARTIAL,https://admin-dotnet.onrender.com/users,Browser interaction not verified,apps\admin_dotnet\Components\Pages\Users.razor
+Admin .NET,/health,Liveness,Runtime clock and liveness,No,PARTIAL,https://admin-dotnet.onrender.com/health,Live interaction not verified,apps\admin_dotnet\Program.cs
+Mobile,home,Native screen: home,Local secure storage / device authentication / backend enrollment,Device unlock,PARTIAL,Not distributed,Live interaction not verified,apps\mobile_authenticator_flutter\lib\screens\home_screen.dart
+Mobile,lock,Native screen: lock,Local secure storage / device authentication / backend enrollment,Device unlock,PARTIAL,Not distributed,Live interaction not verified,apps\mobile_authenticator_flutter\lib\screens\lock_screen.dart
+Mobile,MFA/not_configured,Enrollment state,/auth/totp endpoints + secure storage,Yes,PARTIAL,Not distributed,Live interaction not verified,apps\mobile_authenticator_flutter\lib\widgets\mfa_setup.dart
+Mobile,MFA/awaiting_email,Enrollment state,/auth/totp endpoints + secure storage,Yes,PARTIAL,Not distributed,Live interaction not verified,apps\mobile_authenticator_flutter\lib\widgets\mfa_setup.dart
+Mobile,MFA/saving,Enrollment state,/auth/totp endpoints + secure storage,Yes,PARTIAL,Not distributed,Live interaction not verified,apps\mobile_authenticator_flutter\lib\widgets\mfa_setup.dart
+Mobile,MFA/awaiting_totp,Enrollment state,/auth/totp endpoints + secure storage,Yes,PARTIAL,Not distributed,Live interaction not verified,apps\mobile_authenticator_flutter\lib\widgets\mfa_setup.dart
+Mobile,MFA/expired,Enrollment state,/auth/totp endpoints + secure storage,Yes,PARTIAL,Not distributed,Live interaction not verified,apps\mobile_authenticator_flutter\lib\widgets\mfa_setup.dart
+Mobile,MFA/enabled,Enrollment state,/auth/totp endpoints + secure storage,Yes,PARTIAL,Not distributed,Live interaction not verified,apps\mobile_authenticator_flutter\lib\widgets\mfa_setup.dart
+Mobile,account/delete-confirmation,Delete local factor; does not disable server MFA,Secure storage,Device unlock,PARTIAL,Not distributed,Live interaction not verified,apps\mobile_authenticator_flutter\lib\widgets\account_code_card.dart
+Mobile,startup-error,Retry storage initialization,Secure storage,No,PARTIAL,Not distributed,Live interaction not verified,apps\mobile_authenticator_flutter\lib\main.dart
+Desktop,app_shell,Native screen: app_shell,Local settings/history or configured API and Python engine,Cloud actions require account; local actions do not,PARTIAL,Not distributed,Live interaction not verified,apps\desktop_flutter\lib\screens\app_shell.dart
+Desktop,compress,Native screen: compress,Local settings/history or configured API and Python engine,Cloud actions require account; local actions do not,PARTIAL,Not distributed,Live interaction not verified,apps\desktop_flutter\lib\screens\compress_screen.dart
+Desktop,decompress,Native screen: decompress,Local settings/history or configured API and Python engine,Cloud actions require account; local actions do not,PARTIAL,Not distributed,Live interaction not verified,apps\desktop_flutter\lib\screens\decompress_screen.dart
+Desktop,history,Native screen: history,Local settings/history or configured API and Python engine,Cloud actions require account; local actions do not,PARTIAL,Not distributed,Live interaction not verified,apps\desktop_flutter\lib\screens\history_screen.dart
+Desktop,receive,Native screen: receive,Local settings/history or configured API and Python engine,Cloud actions require account; local actions do not,PARTIAL,Not distributed,Live interaction not verified,apps\desktop_flutter\lib\screens\receive_screen.dart
+Desktop,settings,Native screen: settings,Local settings/history or configured API and Python engine,Cloud actions require account; local actions do not,PARTIAL,Not distributed,Live interaction not verified,apps\desktop_flutter\lib\screens\settings_screen.dart
+Desktop,Account/register-login,Register/login/TOTP/logout; redeem/download/history,FastAPI auth/history/shares,Per action,PARTIAL,Not distributed,Live interaction not verified,apps\desktop_flutter\lib\screens\receive_screen.dart

@@ -1,0 +1,137 @@
+[
+  {
+    "method": "GET",
+    "path": "/health",
+    "file": "services\\api_fastapi\\app\\main.py"
+  },
+  {
+    "method": "POST",
+    "path": "/auth/register",
+    "file": "services\\api_fastapi\\app\\main.py"
+  },
+  {
+    "method": "POST",
+    "path": "/auth/login",
+    "file": "services\\api_fastapi\\app\\main.py"
+  },
+  {
+    "method": "POST",
+    "path": "/auth/refresh",
+    "file": "services\\api_fastapi\\app\\main.py"
+  },
+  {
+    "method": "POST",
+    "path": "/auth/logout",
+    "file": "services\\api_fastapi\\app\\main.py"
+  },
+  {
+    "method": "GET",
+    "path": "/auth/me",
+    "file": "services\\api_fastapi\\app\\main.py"
+  },
+  {
+    "method": "POST",
+    "path": "/files",
+    "file": "services\\api_fastapi\\app\\main.py"
+  },
+  {
+    "method": "POST",
+    "path": "/compression/jobs",
+    "file": "services\\api_fastapi\\app\\main.py"
+  },
+  {
+    "method": "GET",
+    "path": "/files/{file_id}/download",
+    "file": "services\\api_fastapi\\app\\main.py"
+  },
+  {
+    "method": "POST",
+    "path": "/compression/decompress",
+    "file": "services\\api_fastapi\\app\\main.py"
+  },
+  {
+    "method": "POST",
+    "path": "/files/{file_id}/email",
+    "file": "services\\api_fastapi\\app\\main.py"
+  },
+  {
+    "method": "GET",
+    "path": "/history",
+    "file": "services\\api_fastapi\\app\\main.py"
+  },
+  {
+    "method": "POST",
+    "path": "/shares",
+    "file": "services\\api_fastapi\\app\\main.py"
+  },
+  {
+    "method": "POST",
+    "path": "/shares/redeem",
+    "file": "services\\api_fastapi\\app\\main.py"
+  },
+  {
+    "method": "GET",
+    "path": "/public/shares/{code}",
+    "file": "services\\api_fastapi\\app\\main.py"
+  },
+  {
+    "method": "GET",
+    "path": "/admin/stats",
+    "file": "services\\api_fastapi\\app\\main.py"
+  },
+  {
+    "method": "GET",
+    "path": "/admin/users",
+    "file": "services\\api_fastapi\\app\\main.py"
+  },
+  {
+    "method": "GET",
+    "path": "/admin/jobs",
+    "file": "services\\api_fastapi\\app\\main.py"
+  },
+  {
+    "method": "GET",
+    "path": "/admin/audit",
+    "file": "services\\api_fastapi\\app\\main.py"
+  },
+  {
+    "method": "GET",
+    "path": "/public/status",
+    "file": "services\\api_fastapi\\app\\main.py"
+  },
+  {
+    "method": "GET",
+    "path": "/admin/email/configuration",
+    "file": "services\\api_fastapi\\app\\main.py"
+  },
+  {
+    "method": "POST",
+    "path": "/shares/download",
+    "file": "services\\api_fastapi\\app\\main.py"
+  },
+  {
+    "method": "GET",
+    "path": "/auth/totp/status",
+    "file": "services\\api_fastapi\\app\\mfa.py"
+  },
+  {
+    "method": "POST",
+    "path": "/auth/totp/enroll",
+    "file": "services\\api_fastapi\\app\\mfa.py"
+  },
+  {
+    "method": "POST",
+    "path": "/auth/totp/resend",
+    "file": "services\\api_fastapi\\app\\mfa.py"
+  },
+  {
+    "method": "POST",
+    "path": "/auth/totp/email/confirm",
+    "file": "services\\api_fastapi\\app\\mfa.py"
+  },
+  {
+    "method": "POST",
+    "path": "/auth/totp/confirm",
+    "file": "services\\api_fastapi\\app\\mfa.py"
+  }
+]

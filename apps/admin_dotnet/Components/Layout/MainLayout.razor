@@ -2,6 +2,7 @@
 @inject PlatformApiClient Api
 @inject AdminSession Session
 @inject NavigationManager Navigation
+@inject IWebHostEnvironment HostEnvironment
 
 <div class="app-shell">
     <aside class="sidebar">
@@ -16,8 +17,8 @@
         <div class="sidebar-footer">
             <div class="environment-dot"></div>
             <div>
-                <strong>Development</strong>
-                <small>Local platform</small>
+                <strong>@HostEnvironment.EnvironmentName</strong>
+                <small>Server environment; readiness checked separately</small>
             </div>
         </div>
     </aside>
@@ -29,8 +30,7 @@
             </div>
             <div class="admin-profile">
                 @if (Session.IsAuthenticated) { <button disabled="@_signingOut" @onclick="Logout">Logout</button> }
-                <div class="avatar">AD</div>
-                <div><strong>Administrator</strong><small>Security role</small></div>
+                <div><strong>@(Session.IsAuthenticated ? "Admin session" : "Not signed in")</strong><small>API authorization required for protected data</small></div>
             </div>
         </header>
         <section class="page-content">

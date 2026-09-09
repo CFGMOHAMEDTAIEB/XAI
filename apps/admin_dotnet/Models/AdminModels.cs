@@ -4,9 +4,9 @@ public sealed record DashboardStats(
     int ActiveUsers,
     int JobsToday,
     long BytesSaved,
-    int OpenIncidents,
-    int QuarantinedFiles,
-    double LosslessSuccessRate);
+    int? OpenIncidents,
+    int? QuarantinedFiles,
+    double? LosslessSuccessRate);
 
 public sealed record UserSummary(
     int Id,
