@@ -1,0 +1,9 @@
+--------- beginning of main
+09-09 10:04:45.331  8260  8260 I flutter : [XAI startup] Unlock pressed; authentication begin
+09-09 10:04:45.333  8260  8260 I flutter : [XAI startup] local_auth supported=true
+09-09 10:04:47.734  8260  8260 I flutter : [XAI startup] local_auth failed: LocalAuthException(code userCanceled, null, null)
+09-09 10:04:47.734  8260  8260 I flutter : [XAI startup] authentication complete; unlocked=false
+09-09 10:04:55.851  8260  8260 I flutter : [XAI startup] Unlock pressed; authentication begin
+09-09 10:04:55.853  8260  8260 I flutter : [XAI startup] local_auth supported=true
+09-09 10:07:15.647  8260  8260 I flutter : [XAI startup] local_auth failed: LocalAuthException(code userCanceled, null, null)
+09-09 10:07:15.647  8260  8260 I flutter : [XAI startup] authentication complete; unlocked=false

@@ -1,21 +1,22 @@
 # Production prerequisites and operational bounds
 
-Production deployment remains blocked until a real backend HTTPS URL, the Angular
-portal URL, PostgreSQL, durable storage, private scanner hosting and a reviewed
-production YARA rule set are supplied. The only supplied public frontend origin is
-https://xai-usg.vercel.app. Add the exact portal origin once it exists. Development
-Compose retains separate localhost origins and test rules.
+Web/client endpoint deployment is complete. Scanner readiness still requires
+verified private ClamAV hosting and deployment of the reviewed production rules.
+See SCANNER_RECOVERY.md for the remaining checks. Development Compose retains
+separate localhost origins and test rules.
 
-The Render API environment template requires scanning and a private `clamav` DNS
-service; it does not provision that service. Supply private service discovery on
+The Render API environment template requires scanning and the actual private
+ClamAV service hostname; it does not provision that service. Supply discovery on
 the chosen host, permit backend-to-daemon traffic only, and never publish 3310.
 ClamAV needs persistent signatures, outbound signature-update access and sufficient
 memory for initialization/reload. Compose waits on PONG health; a backend started
 independently still rejects protected requests while scanners initialize.
 
 Production YARA rules are administrator-provisioned in security/yara/production.
-The shipped directory deliberately has no rules and therefore fails closed. Test
-rules are separate and explicitly rejected in production. Syntax errors, duplicate
+The shipped directory contains two narrow PHP request-execution detections and a
+private helper; see its README for coverage and limitations. Empty rulesets still
+fail closed. Test rules are separate and explicitly rejected in production.
+Syntax errors, duplicate
 names and empty rule sets are errors; restart backend after approved rule changes.
 
 The backend runs as UID/GID 10001. Provision /data with that ownership. Existing

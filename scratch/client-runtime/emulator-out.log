@@ -1,0 +1,104 @@
+INFO         | Android emulator version 37.1.11.0 (build_id 15917651) (CL:N/A)
+INFO         | Graphics backend: gfxstream
+INFO         | Found systemPath C:\Users\ss\AppData\Local\Android\sdk\system-images\android-37.1\google_apis_ps16k\x86_64\
+INFO         | Guest usage of host flag 'VulkanVirtualQueue' will be ignored.
+INFO         | IPv4 server found: 192.168.1.1
+INFO         | Ignore IPv6 address: 80ec:9c65:bc01:0:80ec:9c65:bc01:0
+INFO         | Ignore IPv6 address: 80ec:9c65:bc01:0:80ec:9c65:bc01:0
+INFO         | Ignore IPv6 address: 80ec:9c65:bc01:0:80ec:9c65:bc01:0
+INFO         | Ignore IPv6 address: f0f2:9c65:bc01:0:80ec:9c65:bc01:0
+INFO         | Ignore IPv6 address: f0f2:9c65:bc01:0:80ec:9c65:bc01:0
+INFO         | Ignore IPv6 address: f0f2:9c65:bc01:0:80ec:9c65:bc01:0
+INFO         | Ignore IPv6 address: 70fa:9c65:bc01:0:80ec:9c65:bc01:0
+INFO         | Ignore IPv6 address: 70fa:9c65:bc01:0:80ec:9c65:bc01:0
+INFO         | Ignore IPv6 address: 70fa:9c65:bc01:0:80ec:9c65:bc01:0
+INFO         | Ignore IPv6 address: 6002:9d65:bc01:0:80ec:9c65:bc01:0
+INFO         | Ignore IPv6 address: 6002:9d65:bc01:0:80ec:9c65:bc01:0
+INFO         | Ignore IPv6 address: 6002:9d65:bc01:0:80ec:9c65:bc01:0
+INFO         | Ignore IPv6 address: 8808:9d65:bc01:0:80ec:9c65:bc01:0
+INFO         | Ignore IPv6 address: 8808:9d65:bc01:0:80ec:9c65:bc01:0
+INFO         | Ignore IPv6 address: 8808:9d65:bc01:0:80ec:9c65:bc01:0
+INFO         | Ignore IPv6 address: 5016:9d65:bc01:0:80ec:9c65:bc01:0
+INFO         | Ignore IPv6 address: 5016:9d65:bc01:0:80ec:9c65:bc01:0
+INFO         | Ignore IPv6 address: 5016:9d65:bc01:0:80ec:9c65:bc01:0
+INFO         | Guest GLES Driver: Auto (ext controls)
+INFO         | emuglConfig_init: vulkan_mode_selected:lavapipe gles_mode_selected:swiftshader
+INFO         | Checking system compatibility:
+INFO         |   Checking: hasCompatibleHypervisor
+INFO         |      Ok: Hypervisor compatibility to run avd: `pixel_emulator` are met
+INFO         |   Checking: hasSufficientSystem
+INFO         |      Ok: System requirements to run avd: `pixel_emulator` are met
+INFO         |   Checking: hasSufficientHwGpu
+INFO         |      Ok: Hardware GPU compatibility checks are not required
+INFO         |   Checking: hasSufficientDiskSpace
+INFO         |      Ok: Disk space requirements to run avd: `pixel_emulator` are met
+WARNING      | Not all modern X86 virtualization features supported, which introduces problems with slowdown when running Android on multicore vCPUs. Setting AVD to run with 1 vCPU core only.
+INFO         | Storing crashdata in: C:\Users\ss\AppData\Local\Temp\\AndroidEmulator\emu-crash-37.1.11.db, detection is enabled for process: 16844
+INFO         | Initializing gfxstream backend
+INFO         | startOpenglesRendererImpl: gpu info
+INFO         | GPU #1
+  Make: 8086
+  Model: Intel(R) UHD Graphics 620
+  Device ID: 3ea0
+
+INFO         | Vulkan 1.4 is not supported for the guest and won't be enabled
+INFO         | Disabling implicit Vulkan layers to avoid compatibility issues. Set VK_LOADER_LAYERS_DISABLE manually to disable this behavior.
+INFO         | initIcdPaths: ICD set to 'lavapipe', using Lavapipe ICD
+INFO         | Setting ICD filenames for the loader = C:\Users\ss\AppData\Local\Android\sdk\emulator\lib64\vulkan\lvp_icd.json
+INFO         | SharedLibrary::open for [C:\Users\ss\AppData\Local\Android\sdk\emulator\qemu\windows-x86_64\lib64\vulkan\vulkan-1.dll]
+INFO         | SharedLibrary::open for [C:\Users\ss\AppData\Local\Android\sdk\emulator\lib64\vulkan\vulkan-1.dll]
+INFO         | Added library: C:\Users\ss\AppData\Local\Android\sdk\emulator\lib64\vulkan\vulkan-1.dll
+INFO         | Selecting Vulkan device: llvmpipe (LLVM 21.1.2, 256 bits), Version: 1.4.318
+INFO         | Using Vulkan externalMemoryMode: HostAllocation for VkEmulation
+INFO         | Initializing VkEmulation features:
+INFO         |     glInteropSupported: false
+INFO         |     useDeferredCommands: true
+INFO         |     createResourceWithRequirements: true
+INFO         |     useVulkanComposition: false
+INFO         |     useVulkanNativeSwapchain: false
+INFO         |     enable guestRenderDoc: false
+INFO         |     ASTC LDR emulation mode: Gpu
+INFO         |     enable ETC2 emulation: true
+INFO         |     enable Ycbcr emulation: false
+INFO         |     guestVulkanOnly: false
+INFO         |     useDedicatedAllocations: false
+INFO         |     guestVulkanMaxApiVersion: 1.3.0
+INFO         |     enableProtectedMemoryEmulation: false
+INFO         | Graphics Adapter Vendor Google (Google Inc.)
+INFO         | Graphics Adapter Android Emulator OpenGL ES Translator (Google SwiftShader)
+INFO         | Graphics API Version OpenGL ES 3.0 (OpenGL ES 3.0 SwiftShader 4.0.0.1)
+INFO         | Graphics API Extensions GL_OES_EGL_sync GL_OES_EGL_image GL_OES_EGL_image_external GL_OES_depth24 GL_OES_depth32 GL_OES_element_index_uint GL_OES_texture_float GL_OES_texture_float_linear GL_OES_compressed_paletted_texture GL_OES_compressed_ETC1_RGB8_texture GL_OES_depth_texture GL_OES_texture_half_float GL_OES_texture_half_float_linear GL_OES_packed_depth_stencil GL_OES_vertex_half_float GL_OES_standard_derivatives GL_OES_texture_npot GL_OES_rgb8_rgba8 GL_EXT_color_buffer_float GL_EXT_color_buffer_half_float GL_EXT_texture_format_BGRA8888 GL_APPLE_texture_format_BGRA8888 
+INFO         | Graphics Device Extensions N/A
+INFO         | Disabling sparse binding feature support
+INFO         | Sending adb public key [QAAAAO34unwb2wkZuhYGmgEiVXWCV1JL7uXe98BRlDheujkXtRRbiaJ5AbzmvHW7N7I6nDfAUq7DVMea7iXKlXti/PPBIrBV6QZ3EnEfhsquszjxnbCLCYb7grEEkd+X2g1HvNa8b5qZNmznQintXL7Wus8Mf844EjcQrfLl+sLVBQl1cH4gtBjAC9BfYc6UdTY7G0ohIJ7O84pTzk8wMcHdaT+Q/FD6Ah14Xl7PJPVDp+sAsYYHxgKjAo+/jOeavGhDbXMYwdwKpTpxaly8RcNRr0HnfwTfTFgjhbBBHqJmKzHIlpR3PhQN5WICFi6GxHpUy58bWNgBrUYsnwoudE8Qkuhp1lC/G9c26W1EjFSV8y2zZXkDPnsK6s1REj0t1QWHYbQwyZozwdYkHX7XuYKNZlo6mu5N7NvFDACctCDJKUfS3YrFAc+VPHt9jSqz4KKJRYGpN1ZJWQsbFTI7PFrz5w9DmEox4aUm8FDXrJXwerB+ZqgRBQVGlQ1aeeoUGZXsh+y2YqQDY+FXJLEAYGnlLXceR9Z6nNPhZ5mBN+1rmh3XAuXlz3nJqsPxGNTl+S7S0CPsOThi5wBeO5tKlcdqqo9CGALwHa/zhJrxO6Nhhsu5ZhE+DmqvIKWX9c13vO7yPks19eGGWZUUHgTMRNeAvt4BHin4aZooktC0tVQmx+ytYWaqYwEAAQA= @unknown]
+INFO         | Userspace boot properties:
+INFO         |   androidboot.boot_devices=pci0000:00/0000:00:03.0 pci0000:00/0000:00:06.0
+INFO         |   androidboot.dalvik.vm.heapsize=576m
+INFO         |   androidboot.debug.hwui.renderer=skiagl
+INFO         |   androidboot.hardware=ranchu
+INFO         |   androidboot.hardware.gltransport=pipe
+INFO         |   androidboot.hardware.vulkan=ranchu
+INFO         |   androidboot.logcat=*:V
+INFO         |   androidboot.opengles.version=196608
+INFO         |   androidboot.qemu=1
+INFO         |   androidboot.qemu.adb.pubkey=QAAAAO34unwb2wkZuhYGmgEiVXWCV1JL7uXe98BRlDheujkXtRRbiaJ5AbzmvHW7N7I6nDfAUq7DVMea7iXKlXti/PPBIrBV6QZ3EnEfhsquszjxnbCLCYb7grEEkd+X2g1HvNa8b5qZNmznQintXL7Wus8Mf844EjcQrfLl+sLVBQl1cH4gtBjAC9BfYc6UdTY7G0ohIJ7O84pTzk8wMcHdaT+Q/FD6Ah14Xl7PJPVDp+sAsYYHxgKjAo+/jOeavGhDbXMYwdwKpTpxaly8RcNRr0HnfwTfTFgjhbBBHqJmKzHIlpR3PhQN5WICFi6GxHpUy58bWNgBrUYsnwoudE8Qkuhp1lC/G9c26W1EjFSV8y2zZXkDPnsK6s1REj0t1QWHYbQwyZozwdYkHX7XuYKNZlo6mu5N7NvFDACctCDJKUfS3YrFAc+VPHt9jSqz4KKJRYGpN1ZJWQsbFTI7PFrz5w9DmEox4aUm8FDXrJXwerB+ZqgRBQVGlQ1aeeoUGZXsh+y2YqQDY+FXJLEAYGnlLXceR9Z6nNPhZ5mBN+1rmh3XAuXlz3nJqsPxGNTl+S7S0CPsOThi5wBeO5tKlcdqqo9CGALwHa/zhJrxO6Nhhsu5ZhE+DmqvIKWX9c13vO7yPks19eGGWZUUHgTMRNeAvt4BHin4aZooktC0tVQmx+ytYWaqYwEAAQA= @unknown
+INFO         |   androidboot.qemu.avd_name=pixel_emulator
+INFO         |   androidboot.qemu.camera_hq_edge_processing=0
+INFO         |   androidboot.qemu.camera_protocol_ver=1
+INFO         |   androidboot.qemu.cpuvulkan.version=4210688
+INFO         |   androidboot.qemu.gltransport.drawFlushInterval=800
+INFO         |   androidboot.qemu.gltransport.name=pipe
+INFO         |   androidboot.qemu.hwcodec.avcdec=2
+INFO         |   androidboot.qemu.hwcodec.hevcdec=2
+INFO         |   androidboot.qemu.hwcodec.vpxdec=2
+INFO         |   androidboot.qemu.settings.system.screen_off_timeout=2147483647
+INFO         |   androidboot.qemu.skin=320x640
+INFO         |   androidboot.qemu.virtiowifi=1
+INFO         |   androidboot.qemu.vsync=60
+INFO         |   androidboot.serialno=EMULATOR37X1X11X0
+INFO         |   androidboot.vbmeta.digest=65e2823ee7cbab06657128c19d2f596688372a65c840b7d694ae60b8b0d00404
+INFO         |   androidboot.vbmeta.hash_alg=sha256
+INFO         |   androidboot.vbmeta.size=6848
+INFO         |   androidboot.veritymode=enforcing
+WHPX on Windows 10.0.19045 detected.
+Windows Hypervisor Platform accelerator is operational

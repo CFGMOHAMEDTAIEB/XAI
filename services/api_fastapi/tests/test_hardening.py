@@ -35,10 +35,14 @@ def test_production_rejects_unsafe_config(overrides):
     config.update(overrides)
     with pytest.raises(ValueError): Settings(_env_file=None, **config)
 
-def test_production_defaults_empty_rules_directory():
+def test_production_defaults_defensive_rules_directory():
     config = Settings(_env_file=None, app_env='production', jwt_secret='a'*48, database_url='postgresql+psycopg://u:p@db/xai', cors_origins='https://xai-usg.vercel.app', yara_rules_path='')
     assert config.security_scan_required and Path(config.yara_rules_path).name == 'production'
-    with pytest.raises(ValueError, match='No YARA'): scanner.load_yara_rules(config.yara_rules_path)
+    rules = scanner.load_yara_rules(config.yara_rules_path)
+    assert {rule.identifier for rule in rules} == {
+        'XAI_PHP_Source', 'XAI_PHP_Direct_Request_Eval',
+        'XAI_PHP_Direct_Request_Command',
+    }
 
 @pytest.mark.parametrize('payload', [b'', b'fake', b'XAIC\x04bad', b'XAIC\x06broken'])
 def test_malformed_container_cleanup(client, staged, payload):

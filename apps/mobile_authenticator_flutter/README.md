@@ -52,11 +52,29 @@ For Android emulator, the default backend URL is:
 http://10.0.2.2:8000
 ```
 
-For a physical phone, replace the URL in `lib/services/api_service.dart` with the computer's LAN IP, for example:
+For a physical phone in development, use the existing Dart define with the computer's LAN IP:
 
 ```text
-http://192.168.1.20:8000
+flutter run --dart-define=XAI_API_URL=http://192.168.1.20:8000
 ```
+
+## Android release configuration
+
+Release builds default to `https://xai-1-be9s.onrender.com`. The existing
+`--dart-define=XAI_API_URL=...` overrides this default; release mode rejects
+empty, non-HTTPS, and known local backend URLs. Debug builds retain the emulator
+default above. TLS verification and release cleartext restrictions remain enabled.
+
+From the repository root, use the existing checked build workflow:
+
+```powershell
+.\scripts\build_production.ps1 -Target android -ApiUrl https://xai-1-be9s.onrender.com
+```
+
+This requires the existing `XAI_ANDROID_KEYSTORE`, `XAI_ANDROID_STORE_PASSWORD`,
+`XAI_ANDROID_KEY_ALIAS`, and `XAI_ANDROID_KEY_PASSWORD` signing configuration.
+For test distribution only, the script supports `-AllowDebugSigning` explicitly.
+An APK signed with the debug key is not a production release.
 
 ## Backend enrollment flow
 

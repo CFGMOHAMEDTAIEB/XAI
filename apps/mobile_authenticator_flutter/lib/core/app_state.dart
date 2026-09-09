@@ -28,8 +28,11 @@ class AppState extends ChangeNotifier {
   Timer? _timer;
 
   Future<void> initialize() async {
+    if (kDebugMode) debugPrint('[XAI startup] storage read begin; API=${apiService.baseUrl}');
     accounts = await accountStore.loadAccounts();
+    if (kDebugMode) debugPrint('[XAI startup] storage read complete');
     loading = false;
+    if (kDebugMode) debugPrint('[XAI startup] loading=false; showing LockScreen');
     notifyListeners();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       now = DateTime.now();
@@ -38,7 +41,9 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> unlock() async {
+    if (kDebugMode) debugPrint('[XAI startup] Unlock pressed; authentication begin');
     unlocked = await biometricService.authenticate();
+    if (kDebugMode) debugPrint('[XAI startup] authentication complete; unlocked=$unlocked');
     notifyListeners();
   }
 
