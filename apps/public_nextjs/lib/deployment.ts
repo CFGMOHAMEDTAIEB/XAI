@@ -9,6 +9,6 @@ function configured(name: string, value: string | undefined, fallback: string): 
   }
   return url.origin;
 }
-export const siteUrl = configured('NEXT_PUBLIC_SITE_URL', process.env.NEXT_PUBLIC_SITE_URL, 'http://localhost:3000');
-export const portalUrl = configured('NEXT_PUBLIC_APP_URL', process.env.NEXT_PUBLIC_APP_URL, 'http://localhost:4200');
-export const apiUrl = configured('INTERNAL_API_URL', process.env.INTERNAL_API_URL, 'http://localhost:8000');
+export const siteUrl = configured('NEXT_PUBLIC_SITE_URL', process.env.NEXT_PUBLIC_SITE_URL, process.env.NODE_ENV === 'production' ? 'https://xai-compress.vercel.app' : 'http://localhost:3000');
+export const portalUrl = configured('NEXT_PUBLIC_APP_URL', process.env.NEXT_PUBLIC_APP_URL, process.env.NODE_ENV === 'production' ? 'https://portal-xai.vercel.app' : 'http://localhost:4200');
+export const apiUrl = configured('INTERNAL_API_URL', process.env.INTERNAL_API_URL, process.env.NODE_ENV === 'production' ? 'https://xai-1-be9s.onrender.com' : 'http://localhost:8000');

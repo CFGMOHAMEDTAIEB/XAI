@@ -33,4 +33,10 @@ class EmailSend(BaseModel):
     recipient_email: EmailStr
 
 class TotpConfirm(BaseModel):
-    code: str = Field(pattern=r'^\d{6}$')
+    model_config = {'extra': 'forbid', 'hide_input_in_errors': True}
+    code: str = Field(pattern=r'^[0-9]{6}$')
+    enrollment_id: str = Field(pattern=r'^[0-9a-f]{32}$')
+
+class TotpStart(BaseModel):
+    model_config = {'extra': 'forbid', 'hide_input_in_errors': True}
+    restart: bool = False

@@ -96,7 +96,7 @@ else
             _stats = null;
             _requiresLogin = true;
         }
-        catch (HttpRequestException)
+        catch (Exception)
         {
             _error = "The backend is currently unavailable. Try again shortly.";
         }
@@ -106,7 +106,7 @@ else
         ? $"{bytes / 1_073_741_824d:F1} GiB"
         : $"{bytes / 1_048_576d:F1} MiB";
 
-    private static string FormatSaving(CompressionJob job) => job.CompressedSize <= 0
+    private static string FormatSaving(CompressionJob job) => job.CompressedSize <= 0 || job.OriginalSize <= 0
         ? "In progress"
         : $"{100 * (1 - (double)job.CompressedSize / job.OriginalSize):F1}%";
 }

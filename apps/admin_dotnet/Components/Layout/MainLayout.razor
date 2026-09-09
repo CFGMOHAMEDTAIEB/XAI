@@ -1,4 +1,7 @@
 @inherits LayoutComponentBase
+@inject PlatformApiClient Api
+@inject AdminSession Session
+@inject NavigationManager Navigation
 
 <div class="app-shell">
     <aside class="sidebar">
@@ -25,6 +28,7 @@
                 <span>Monitor users, security, files and compression jobs</span>
             </div>
             <div class="admin-profile">
+                @if (Session.IsAuthenticated) { <button disabled="@_signingOut" @onclick="Logout">Logout</button> }
                 <div class="avatar">AD</div>
                 <div><strong>Administrator</strong><small>Security role</small></div>
             </div>
@@ -34,3 +38,13 @@
         </section>
     </main>
 </div>
+
+@code {
+    private bool _signingOut;
+    private async Task Logout() {
+        if (_signingOut) return;
+        _signingOut = true;
+        try { await Api.LogoutAsync(); Navigation.NavigateTo("/login"); }
+        finally { _signingOut = false; }
+    }
+}

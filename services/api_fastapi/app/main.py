@@ -1,9 +1,12 @@
 from datetime import datetime, timedelta
 from pathlib import Path
-import base64, hashlib, io, os, shutil, pyotp, qrcode, secrets
+import hashlib, os, shutil, secrets
 from fastapi import FastAPI, Depends, HTTPException, Header, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from fastapi.exceptions import RequestValidationError
+from fastapi.exception_handlers import request_validation_exception_handler
+from fastapi.responses import JSONResponse
 from starlette.background import BackgroundTask
 from sqlalchemy import select, func, text, update
 from sqlalchemy.orm import Session
@@ -12,7 +15,8 @@ from .db import Base, engine, get_db
 from .models import User, FileRecord, ShareCode, AuditEvent, RefreshToken
 from .schemas import RegisterRequest, LoginRequest, TokenResponse, RefreshRequest, FileCreate, ShareCreate, ShareRedeem
 from .security import hash_password, verify_password, create_token, create_refresh_token, hash_refresh_token, decode_token, generate_share_code, hash_share_code
-from .schemas import EmailSend, TotpConfirm
+from .schemas import EmailSend
+from .mfa import register_mfa_routes, verify_totp
 from .email_service import send_artifact, configuration_missing
 import smtplib
 from .security_scanner import enforce_scan, scanner_health
@@ -23,6 +27,12 @@ app=FastAPI(title='XAI-Compress Platform API',version='0.1.0')
 app.add_middleware(ResourceGuard)
 app.add_middleware(CORSMiddleware,allow_origins=settings.allowed_origins,allow_credentials=True,allow_methods=['*'],allow_headers=['*'])
 settings.storage_root.mkdir(parents=True,exist_ok=True)
+
+@app.exception_handler(RequestValidationError)
+async def validation_error(request, exc):
+    if request.url.path.startswith('/auth/'):
+        return JSONResponse(status_code=422, content={'detail': 'Invalid authentication request'})
+    return await request_validation_exception_handler(request, exc)
 
 def token_pair(db:Session,user:User):
     raw=create_refresh_token()
@@ -61,15 +71,18 @@ def register(body:RegisterRequest,db:Session=Depends(get_db)):
 def login(body:LoginRequest,db:Session=Depends(get_db)):
     user=db.scalar(select(User).where(User.email==body.email.lower()))
     if not user or not verify_password(body.password,user.password_hash): raise HTTPException(401,'Invalid credentials')
-    if user.totp_enabled and (not body.totp_code or not pyotp.TOTP(user.totp_secret).verify(body.totp_code,valid_window=1)):
+    if user.totp_enabled and not verify_totp(user.totp_secret, body.totp_code):
         raise HTTPException(401,'Valid TOTP code required')
     audit(db,user.id,'user.login'); return token_pair(db,user)
 
 @app.post('/auth/refresh',response_model=TokenResponse)
 def refresh(body:RefreshRequest,db:Session=Depends(get_db)):
     row=db.scalar(select(RefreshToken).where(RefreshToken.token_hash==hash_refresh_token(body.refresh_token)))
-    if not row or row.revoked or row.expires_at<datetime.utcnow(): raise HTTPException(401,'Invalid refresh token')
-    row.revoked=True; user=db.get(User,row.user_id); db.commit()
+    if not row: raise HTTPException(401,'Invalid refresh token')
+    consumed=db.execute(update(RefreshToken).where(RefreshToken.id==row.id,
+        RefreshToken.revoked.is_(False),RefreshToken.expires_at>=datetime.utcnow()).values(revoked=True))
+    if consumed.rowcount != 1: raise HTTPException(401,'Invalid refresh token')
+    user=db.get(User,row.user_id)
     if not user: raise HTTPException(401,'User not found')
     return token_pair(db,user)
 
@@ -83,18 +96,7 @@ def logout(body:RefreshRequest,db:Session=Depends(get_db)):
 def me(user:User=Depends(current_user)):
     return {'id':user.id,'email':user.email,'display_name':user.display_name,'role':user.role,'mfa_enabled':user.totp_enabled,'is_admin':user.role=='admin' or user.email in {x.strip().lower() for x in settings.admin_emails.split(',') if x.strip()}}
 
-@app.post('/auth/totp/enroll')
-def totp_enroll(user:User=Depends(current_user),db:Session=Depends(get_db)):
-    if user.totp_enabled: raise HTTPException(409,'TOTP is already enabled; enrollment cannot replace an active factor')
-    secret=pyotp.random_base32(); user.totp_secret=secret; user.totp_enabled=False; db.commit()
-    uri=pyotp.TOTP(secret).provisioning_uri(name=user.email,issuer_name='XAI-Compress')
-    img=qrcode.make(uri); buf=io.BytesIO(); img.save(buf,format='PNG')
-    return {'secret':secret,'otpauth_uri':uri,'qr_png_base64':base64.b64encode(buf.getvalue()).decode()}
-
-@app.post('/auth/totp/confirm')
-def totp_confirm(body:TotpConfirm,user:User=Depends(current_user),db:Session=Depends(get_db)):
-    if not user.totp_secret or not pyotp.TOTP(user.totp_secret).verify(body.code,valid_window=1): raise HTTPException(400,'Invalid TOTP code')
-    user.totp_enabled=True; db.commit(); audit(db,user.id,'totp.enabled'); return {'enabled':True}
+register_mfa_routes(app, current_user)
 
 @app.post('/files')
 def create_file(body:FileCreate,user:User=Depends(current_user),db:Session=Depends(get_db)):

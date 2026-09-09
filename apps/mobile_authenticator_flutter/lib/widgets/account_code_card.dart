@@ -38,8 +38,23 @@ class AccountCodeCard extends StatelessWidget {
                   ),
                 ),
                 PopupMenuButton<String>(
-                  onSelected: (value) {
-                    if (value == 'delete') context.read<AppState>().remove(account.id);
+                  onSelected: (value) async {
+                    if (value != 'delete') return;
+                    final state = context.read<AppState>();
+                    final confirmed = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
+                      title: const Text('Delete local authenticator?'),
+                      content: const Text('This does not disable MFA on XAI. Without another copy you may lose access to your account.'),
+                      actions: [TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                        TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete'))],
+                    ));
+                    if (confirmed != true) return;
+                    try { await state.remove(account.id); }
+                    catch (_) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Secure storage could not be updated. Retry deletion.')));
+                      }
+                    }
                   },
                   itemBuilder: (_) => const [
                     PopupMenuItem(value: 'delete', child: Text('Delete account')),

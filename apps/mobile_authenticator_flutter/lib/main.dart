@@ -50,6 +50,13 @@ class XaiAuthenticatorApp extends StatelessWidget {
             );
           }
           if (!state.unlocked) {
+            if (state.startupError != null) {
+              return Scaffold(body: Center(child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [Text(state.startupError!),
+                  FilledButton(onPressed: state.initialize, child: const Text('Retry secure storage'))],
+              )));
+            }
             return const LockScreen();
           }
           return const HomeScreen();

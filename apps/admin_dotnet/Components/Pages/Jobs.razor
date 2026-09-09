@@ -1,9 +1,10 @@
 @page "/jobs"
 @inject PlatformApiClient Api
 @inject AdminSession Session
+@if(!string.IsNullOrEmpty(_error)){<p role="alert">@_error</p>}
 <PageTitle>Compression jobs</PageTitle>
 <div class="page-heading"><div><h1>Compression jobs</h1><p>Inspect modes, output sizes and lossless integrity status.</p></div></div>
 @if(_requiresLogin){<a class="button primary" href="/login">Sign in to view jobs</a>}else{<section class="panel"><table><thead><tr><th>Job</th><th>File</th><th>User</th><th>Mode</th><th>Status</th><th>Sizes</th><th>Integrity</th></tr></thead><tbody>
 @foreach(var job in _jobs){<tr><td>@job.Id</td><td><strong>@job.FileName</strong><small>@job.CreatedAt.LocalDateTime</small></td><td>@job.UserEmail</td><td>@job.Mode</td><td><StatusBadge Value="@job.Status" /></td><td>@Format(job.OriginalSize) → @(job.CompressedSize>0?Format(job.CompressedSize):"-")</td><td>@(job.IntegrityVerified?"Verified":"Pending")</td></tr>}
 </tbody></table></section>}
-@code {private IReadOnlyList<CompressionJob> _jobs=[];private bool _requiresLogin;protected override async Task OnInitializedAsync(){_requiresLogin=!Session.IsAuthenticated;if(_requiresLogin)return;try{_jobs=await Api.GetJobsAsync();}catch(AdminApiAuthorizationException){_requiresLogin=true;}}private static string Format(long x)=>$"{x/1024d:F1} KiB";}
+@code { private string _error="";private IReadOnlyList<CompressionJob> _jobs=[];private bool _requiresLogin;protected override async Task OnInitializedAsync(){_requiresLogin=!Session.IsAuthenticated;if(_requiresLogin)return;try{_jobs=await Api.GetJobsAsync();}catch(AdminApiAuthorizationException){_requiresLogin=true;}catch(Exception){_error="Backend unavailable. Reload this page to retry.";}}private static string Format(long x)=>$"{x/1024d:F1} KiB";}

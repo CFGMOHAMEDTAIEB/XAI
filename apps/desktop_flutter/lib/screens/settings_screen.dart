@@ -12,10 +12,13 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   late TextEditingController python, engine, checkpoint, output, api;
+  bool initialized = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    if (initialized) return;
+    initialized = true;
     final config = context.read<AppState>().config;
     python = TextEditingController(text: config.python);
     engine = TextEditingController(text: config.engineDirectory);
@@ -69,6 +72,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    for (final controller in [python, engine, checkpoint, output, api]) { controller.dispose(); }
+    super.dispose();
   }
 
   Widget field(TextEditingController controller, String label, {VoidCallback? pick}) => Padding(

@@ -1,14 +1,26 @@
-import {Component,signal} from '@angular/core';
-import {FormsModule} from '@angular/forms';
+import {Component, signal} from '@angular/core';
+import {finalize, timeout} from 'rxjs';
 import {ApiService} from '../core/api.service';
-@Component({standalone:true,imports:[FormsModule],template:`
-<div class="heading"><div><h1>Security center</h1><p>Enroll your XAI mobile authenticator.</p></div></div>
-<article class="panel form-panel"><button class="primary" (click)="enroll()">Set up TOTP</button>
-@if(enrollment();as item){<p>Scan this QR in XAI Authenticator, or use Add account, then Enter secret. Keep the enrollment secret private.</p><img [src]="'data:image/png;base64,'+item.qr_png_base64" alt="Private TOTP enrollment QR"><p>Manual secret: <code>{{item.secret}}</code></p><label>Code from mobile<input [(ngModel)]="code" maxlength="6" inputmode="numeric"></label><button class="primary" [disabled]="code.length!==6" (click)="confirm()">Confirm enrollment</button>}
-@if(message()){<p>{{message()}}</p>}</article>`})
-export class SecurityPage{
-  enrollment=signal<{secret:string;qr_png_base64:string}|null>(null);message=signal('');code='';
-  constructor(private api:ApiService){}
-  enroll(){this.api.enroll().subscribe({next:r=>{this.enrollment.set(r);this.message.set('')},error:e=>this.message.set(e?.error?.detail??'Enrollment failed')})}
-  confirm(){this.api.confirm(this.code).subscribe({next:()=>{this.enrollment.set(null);this.code='';this.message.set('TOTP enabled. Use a mobile code at your next sign-in.')},error:e=>this.message.set(e?.error?.detail??'Confirmation failed')})}
+
+@Component({standalone: true, template: `
+<div class="heading"><div><h1>Security center</h1><p>Set up MFA in XAI Authenticator.</p></div></div>
+<article class="panel form-panel">
+  <p>Open the XAI Authenticator mobile app, unlock it, and sign in to the same XAI account.</p>
+  <p>Choose Setup Authenticator, verify the code sent to your registered email, then confirm the generated TOTP. The app securely provisions the server-generated secret. Never invent a secret.</p>
+  <p>MFA becomes active only after that final confirmation. Until then, sign in with email and password. Once enabled, sign in with your current authenticator code as well.</p>
+  <button class="primary" [disabled]="busy()" (click)="refresh()">{{busy() ? 'Checking...' : 'Refresh MFA status'}}</button>
+  @if(message()){<p>{{message()}}</p>}
+</article>`})
+export class SecurityPage {
+  busy = signal(false);
+  message = signal('');
+  constructor(private api: ApiService) {}
+  refresh() {
+    if (this.busy()) return;
+    this.busy.set(true);
+    this.api.me().pipe(timeout(15000), finalize(() => this.busy.set(false))).subscribe({
+      next: user => this.message.set(user.mfa_enabled ? 'MFA is enabled.' : 'MFA is not enabled. Complete setup in the mobile app.'),
+      error: () => this.message.set('Could not check MFA status. Retry or sign in again.')
+    });
+  }
 }

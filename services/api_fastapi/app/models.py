@@ -14,6 +14,21 @@ class User(Base):
     role: Mapped[str] = mapped_column(String(32), default='user')
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
+class TotpEnrollment(Base):
+    __tablename__ = 'totp_enrollments'
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'), primary_key=True)
+    enrollment_id: Mapped[str] = mapped_column(String(32), unique=True)
+    secret: Mapped[str|None] = mapped_column(String(128), nullable=True)
+    code_hash: Mapped[str|None] = mapped_column(String(64), nullable=True)
+    expires_at: Mapped[datetime] = mapped_column(DateTime)
+    code_expires_at: Mapped[datetime] = mapped_column(DateTime)
+    disclosed: Mapped[bool] = mapped_column(Boolean, default=False)
+    attempts: Mapped[int] = mapped_column(Integer, default=0)
+    totp_attempts: Mapped[int] = mapped_column(Integer, default=0)
+    last_sent_at: Mapped[datetime] = mapped_column(DateTime)
+    send_window_at: Mapped[datetime] = mapped_column(DateTime)
+    send_count: Mapped[int] = mapped_column(Integer, default=0)
+
 class FileRecord(Base):
     __tablename__='files'
     id: Mapped[int] = mapped_column(primary_key=True)

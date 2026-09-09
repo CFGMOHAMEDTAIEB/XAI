@@ -66,6 +66,12 @@ def test_clamd_protocol(monkeypatch, staged, reply, status, matches):
 
 @pytest.fixture
 def client(monkeypatch, staged):
+    # These fixtures contain tiny files. Do not require the production 9 GiB
+    # admission reserve from a developer machine; dedicated guard tests below
+    # still exercise disk exhaustion, upload bounds, concurrency and timeout.
+    monkeypatch.setattr(settings, 'max_upload_bytes', 1048576)
+    monkeypatch.setattr(settings, 'max_decompressed_bytes', 1048576)
+    monkeypatch.setattr(settings, 'min_free_disk_bytes', 16777216)
     engine = create_engine('sqlite://', connect_args={'check_same_thread':False}, poolclass=StaticPool)
     Base.metadata.create_all(engine)
     def db():

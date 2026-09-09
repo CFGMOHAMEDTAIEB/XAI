@@ -16,5 +16,5 @@
 
 @code {
     private string _email = ""; private string _password = ""; private string _totp = ""; private string _error = ""; private bool _busy;
-    private async Task SignIn(){_busy=true;_error="";try{await Api.LoginAsync(_email,_password,string.IsNullOrWhiteSpace(_totp)?null:_totp);Navigation.NavigateTo("/");}catch(AdminApiAuthorizationException){_error="Sign-in failed or this account lacks admin access.";}catch(HttpRequestException){_error="The backend is unavailable. Try again shortly.";}finally{_busy=false;}}
+    private async Task SignIn(){if(_busy)return;_busy=true;_error="";try{await Api.LoginAsync(_email,_password,string.IsNullOrWhiteSpace(_totp)?null:_totp);Navigation.NavigateTo("/");}catch(AdminApiAuthorizationException){_error="Sign-in failed or this account lacks admin access.";}catch(HttpRequestException){_error="The backend is unavailable. Try again shortly.";}catch(OperationCanceledException){_error="Request timed out. Retry shortly.";}catch(System.Text.Json.JsonException){_error="The backend returned an invalid response.";}finally{_password="";_totp="";_busy=false;}}
 }

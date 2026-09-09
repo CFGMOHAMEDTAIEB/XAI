@@ -16,9 +16,9 @@ builder.Services.AddSingleton<DemoAdminData>();
 builder.Services.AddHttpClient<PlatformApiClient>((services, client) =>
 {
     var configuration = services.GetRequiredService<IConfiguration>();
-    client.BaseAddress = new Uri(configuration["PlatformApi:BaseUrl"] ?? "http://localhost:8000");
+    client.BaseAddress = new Uri(configuration["PlatformApi:BaseUrl"] ?? "https://xai-1-be9s.onrender.com");
     client.Timeout = TimeSpan.FromSeconds(30);
-}).AddStandardResilienceHandler();
+});
 
 var oidcEnabled = builder.Configuration.GetValue<bool>("Authentication:OidcEnabled");
 if (oidcEnabled)

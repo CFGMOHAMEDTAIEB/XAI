@@ -1,0 +1,14 @@
+[
+  {
+    "path": "apps\\mobile_authenticator_flutter\\build\\app\\outputs\\flutter-apk\\app-debug.apk",
+    "size": 205111069,
+    "sha256": "8a4102b95bb11987a31e79edaeef102d3c02143039af6e96305f8ffff529f422",
+    "classification": "test only"
+  },
+  {
+    "path": "apps\\desktop_flutter\\build\\windows\\x64\\runner\\Release\\xai_compress_desktop.exe",
+    "size": 93184,
+    "sha256": "70857a7fe570843bef4b0262a99a27f4293286d7b7831c71ef691c32e0f74732",
+    "classification": "test only"
+  }
+]

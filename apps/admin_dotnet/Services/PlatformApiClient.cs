@@ -17,12 +17,14 @@ public sealed class PlatformApiClient
     private readonly HttpClient _http;
     private readonly AdminSession _session;
     private readonly DemoAdminData _demo;
+    private readonly bool _demoEnabled;
 
-    public PlatformApiClient(HttpClient http, AdminSession session, DemoAdminData demo)
+    public PlatformApiClient(HttpClient http, AdminSession session, DemoAdminData demo, IConfiguration configuration, IWebHostEnvironment environment)
     {
         _http = http;
         _session = session;
         _demo = demo;
+        _demoEnabled = environment.IsDevelopment() && configuration.GetValue<bool>("PlatformApi:UseDemoFallback");
     }
 
     public async Task LoginAsync(string email, string password, string? totpCode = null)
@@ -44,7 +46,17 @@ public sealed class PlatformApiClient
             throw new AdminApiAuthorizationException(validationResponse.StatusCode);
         validationResponse.EnsureSuccessStatusCode();
 
-        _session.SetToken(token.AccessToken);
+        _session.SetToken(token.AccessToken, token.RefreshToken);
+    }
+
+    public async Task LogoutAsync()
+    {
+        var refreshToken = _session.RefreshToken;
+        _session.Clear();
+        if (string.IsNullOrEmpty(refreshToken)) return;
+        try { using var response = await _http.PostAsJsonAsync("/auth/logout", new { refresh_token = refreshToken }); }
+        catch (HttpRequestException) { /* Local session has already been cleared. */ }
+        catch (OperationCanceledException) { /* Finite timeout; local logout remains complete. */ }
     }
 
     public async Task<bool> IsHealthyAsync(CancellationToken cancellationToken = default)
@@ -64,8 +76,8 @@ public sealed class PlatformApiClient
     public async Task<IReadOnlyList<UserSummary>> GetUsersAsync() => await GetProtectedAsync<List<UserSummary>>("/admin/users");
     public async Task<IReadOnlyList<CompressionJob>> GetJobsAsync() => await GetProtectedAsync<List<CompressionJob>>("/admin/jobs");
     public async Task<IReadOnlyList<AuditEvent>> GetAuditAsync() => await GetProtectedAsync<List<AuditEvent>>("/admin/audit");
-    public Task<IReadOnlyList<SecurityIncident>> GetIncidentsAsync() => Task.FromResult(_demo.Incidents);
-    public Task<IReadOnlyList<QuarantinedFile>> GetQuarantineAsync() => Task.FromResult(_demo.Quarantine);
+    public Task<IReadOnlyList<SecurityIncident>> GetIncidentsAsync() => Task.FromResult<IReadOnlyList<SecurityIncident>>(_demoEnabled ? _demo.Incidents : []);
+    public Task<IReadOnlyList<QuarantinedFile>> GetQuarantineAsync() => Task.FromResult<IReadOnlyList<QuarantinedFile>>(_demoEnabled ? _demo.Quarantine : []);
 
     public async Task<IReadOnlyList<ServiceHealth>> GetHealthAsync()
     {
@@ -73,7 +85,7 @@ public sealed class PlatformApiClient
         return _demo.Health
             .Select(service => service.Name == "FastAPI"
                 ? service with { Status = apiHealthy ? "Healthy" : "Unavailable", CheckedAt = DateTimeOffset.UtcNow }
-                : service)
+                : _demoEnabled ? service : service with { Status = "Unknown", Version = "Unverified", LatencyMs = 0, CheckedAt = DateTimeOffset.UtcNow })
             .ToList();
     }
 
@@ -102,5 +114,6 @@ public sealed class PlatformApiClient
         return request;
     }
 
-    private sealed record TokenEnvelope([property: JsonPropertyName("access_token")] string AccessToken);
+    private sealed record TokenEnvelope([property: JsonPropertyName("access_token")] string AccessToken,
+        [property: JsonPropertyName("refresh_token")] string? RefreshToken);
 }

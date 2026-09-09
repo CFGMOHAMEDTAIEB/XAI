@@ -20,12 +20,12 @@ def test_brevo_missing_key_never_sends(monkeypatch,tmp_path):
         email_service.send_artifact(tmp_path/'unused','original.xaic','recipient@example.com')
 
 def test_brevo_xaic_restriction_is_not_bypassed(monkeypatch,tmp_path):
-    monkeypatch.setattr(settings,'email_provider','brevo');monkeypatch.setattr(settings,'brevo_api_key','test-key');monkeypatch.setattr(settings,'smtp_from','sender@example.com')
+    monkeypatch.setattr(settings,'email_provider','brevo');monkeypatch.setattr(settings,'brevo_api_key','test-key');monkeypatch.setattr(settings,'brevo_sender_email','sender@example.com')
     with pytest.raises(ValueError,match='allowlist'):
         email_service.send_artifact(tmp_path/'unused','original.xaic','recipient@example.com')
 
 def test_brevo_https_payload_and_acknowledgement(monkeypatch,tmp_path):
-    monkeypatch.setattr(settings,'email_provider','brevo');monkeypatch.setattr(settings,'brevo_api_key','test-key');monkeypatch.setattr(settings,'smtp_from','sender@example.com')
+    monkeypatch.setattr(settings,'email_provider','brevo');monkeypatch.setattr(settings,'brevo_api_key','test-key');monkeypatch.setattr(settings,'brevo_sender_email','sender@example.com')
     payload=b'Unit test text';path=tmp_path/'test.txt';path.write_bytes(payload)
     class Response:
         status=201

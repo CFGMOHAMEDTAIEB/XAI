@@ -1,118 +1,47 @@
-# XAI-Compress Mobile Authenticator
+# XAI Authenticator
 
-Flutter MVP inspired by common authenticator workflows:
+Unlock the app with device authentication, then sign in or create an XAI account.
+Choose **Setup Authenticator**, enter the verification code sent to your registered
+email, and enter the TOTP displayed for that enrollment. The backend creates the
+only authoritative secret. The app provisions it directly into platform secure
+storage; users do not invent or manually enter Base32 secrets.
 
-- TOTP codes refreshed every 30 seconds
-- QR enrollment using `otpauth://totp/...`
-- manual Base32 enrollment
-- platform secure storage
-- biometric/device-credential lock
-- multiple accounts
-- copy code
-- delete account
-- FastAPI client for login, TOTP enrollment, and confirmation
+Email confirmation releases the pending secret once. MFA becomes enabled only
+after TOTP confirmation. Existing saved codes remain available without a backend
+session, so they can be used to sign in when MFA is already enabled. Passwords and
+access tokens are not persisted; locking or signing out clears the access token.
 
-## Important security scope
+## Debug validation
 
-This is a development MVP. Before production, add threat modeling, certificate pinning, hardened device registration, encrypted backups/recovery, root/jailbreak policy, push approval with number matching, secure screenshots policy, privacy review, and an external security assessment.
-
-## Install Flutter
-
-Verify:
-
-```bat
-flutter --version
-flutter doctor
-```
-
-## Integrate into the monorepo
-
-Copy the extracted folder to:
-
-```text
-XAI-COMPRESS-PLATFORM\apps\mobile_authenticator_flutter
-```
-
-If that folder already exists, rename the old folder first.
-
-## Generate Android and iOS platform files
-
-From the mobile folder:
-
-```bat
-flutter create .
-flutter pub get
-flutter test
-flutter run
-```
-
-For Android emulator, the default backend URL is:
-
-```text
-http://10.0.2.2:8000
-```
-
-For a physical phone in development, use the existing Dart define with the computer's LAN IP:
-
-```text
-flutter run --dart-define=XAI_API_URL=http://192.168.1.20:8000
-```
-
-## Android release configuration
-
-Release builds default to `https://xai-1-be9s.onrender.com`. The existing
-`--dart-define=XAI_API_URL=...` overrides this default; release mode rejects
-empty, non-HTTPS, and known local backend URLs. Debug builds retain the emulator
-default above. TLS verification and release cleartext restrictions remain enabled.
-
-From the repository root, use the existing checked build workflow:
+The actual configuration key is `String.fromEnvironment('XAI_API_URL')` in
+`lib/services/deployment_config.dart`. Both debug and release defaults are
+`https://xai-1-be9s.onrender.com`. Release validation still requires public HTTPS.
 
 ```powershell
-.\scripts\build_production.ps1 -Target android -ApiUrl https://xai-1-be9s.onrender.com
+flutter analyze
+flutter test
+flutter run -d 816f7f5f --dart-define=XAI_API_URL=https://xai-1-be9s.onrender.com
 ```
 
-This requires the existing `XAI_ANDROID_KEYSTORE`, `XAI_ANDROID_STORE_PASSWORD`,
-`XAI_ANDROID_KEY_ALIAS`, and `XAI_ANDROID_KEY_PASSWORD` signing configuration.
-For test distribution only, the script supports `-AllowDebugSigning` explicitly.
-An APK signed with the debug key is not a production release.
+Keep `MainActivity : FlutterFragmentActivity()`; local_auth requires it.
+Do not regenerate Android platform files over this integration.
+No production release should be built until the complete debug flow passes on
+the physical phone. Production signing and scanner/email availability must also
+be verified separately.
 
-## Backend enrollment flow
+## Recovery
 
-1. Register or login through FastAPI.
-2. Call `POST /auth/totp/enroll` with the Bearer token.
-3. Display the returned QR image or `otpauth_uri`.
-4. Scan the QR with this application.
-5. Enter the generated 6-digit code into `POST /auth/totp/confirm` with JSON body `{"code":"..."}`.
-6. Future logins require password plus the current TOTP code.
+- Storage read failure: retry after unlocking the phone. Existing data is not erased.
+- Storage write failure after email verification: retry secure storage; the
+  one-time response remains in memory until saved or the page is closed.
+- Lost response or app restart before saving: refresh status and explicitly restart
+  setup. The previous pending secret becomes invalid. Active MFA is never replaced.
+- Wrong/expired email code: resend after 60 seconds. At most five emails per hour.
+- Wrong TOTP: use the displayed current code and automatic device time. After five
+  incorrect attempts, restart setup. Enrollment expires after 20 minutes.
+- Network failure: finite timeout, retry and refresh status. A timed-out request
+  may have completed on the backend, so check status before restarting.
+- Deleting a local account does not disable backend MFA and may lose account access.
 
-## Android permissions
-
-After `flutter create .`, ensure `android/app/src/main/AndroidManifest.xml` contains:
-
-```xml
-<uses-permission android:name="android.permission.CAMERA" />
-<uses-permission android:name="android.permission.USE_BIOMETRIC" />
-```
-
-## iOS permissions
-
-Add to `ios/Runner/Info.plist`:
-
-```xml
-<key>NSCameraUsageDescription</key>
-<string>Scan an XAI-Compress TOTP enrollment QR code.</string>
-<key>NSFaceIDUsageDescription</key>
-<string>Unlock the XAI-Compress Authenticator.</string>
-```
-
-## Next development sprint
-
-- push login approval
-- number matching
-- recovery codes
-- device registration and revocation
-- account export/import with encryption
-- settings and language selection
-- security notifications
-- deep links
-- Keycloak OIDC integration
+See `services/api_fastapi/MFA_FLOW.md` for the API contract, migration, configuration,
+test evidence, and live-validation blockers. No Resend key belongs in Flutter.

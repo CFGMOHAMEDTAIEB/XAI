@@ -14,8 +14,8 @@ class BiometricService {
         biometricOnly: false,
         persistAcrossBackgrounding: true,
       );
-    } catch (error) {
-      if (kDebugMode) debugPrint('[XAI startup] local_auth failed: $error');
+    } catch (_) {
+      if (kDebugMode) debugPrint('[XAI startup] local_auth failed; retry device authentication');
       return false;
     }
   }

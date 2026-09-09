@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 String configuredApiUrl() {
   const defined = String.fromEnvironment(
     'XAI_API_URL',
-    defaultValue: kReleaseMode ? 'https://xai-1-be9s.onrender.com' : '',
+    defaultValue: 'https://xai-1-be9s.onrender.com',
   );
   if (kReleaseMode) {
     final uri = Uri.tryParse(defined);
@@ -11,5 +11,5 @@ String configuredApiUrl() {
       throw StateError('Production build requires a deployed HTTPS XAI_API_URL.');
     }
   }
-  return defined.isEmpty ? 'http://10.0.2.2:8000' : defined;
+  return defined.isEmpty ? 'https://xai-1-be9s.onrender.com' : defined;
 }

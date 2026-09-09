@@ -18,6 +18,10 @@ class Settings(BaseSettings):
     max_decompressed_bytes: int = 1073741824
     email_provider: str = 'smtp'
     brevo_api_key: str = ''
+    brevo_sender_email: str = ''
+    brevo_sender_name: str = 'XAI Compress'
+    resend_api_key: str = ''
+    resend_from_email: str = ''
     smtp_host: str = ''
     smtp_port: int = 587
     smtp_username: str = ''
@@ -59,6 +63,10 @@ class Settings(BaseSettings):
 
     @model_validator(mode='after')
     def validate_production(self):
+        if self.email_provider not in ('smtp', 'resend', 'brevo'):
+            raise ValueError('EMAIL_PROVIDER must be smtp, resend or brevo')
+        if self.smtp_timeout_seconds <= 0:
+            raise ValueError('SMTP_TIMEOUT_SECONDS must be positive')
         if any(value <= 0 for value in (self.max_upload_bytes, self.max_decompressed_bytes,
                self.max_heavy_requests, self.min_free_disk_bytes, self.upload_idle_timeout,
                self.upload_total_timeout, self.security_scan_timeout)):

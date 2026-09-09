@@ -2,7 +2,7 @@ import {SectionHeading} from '@/components/section-heading';
 import {apiUrl} from '@/lib/deployment';
 export const dynamic = 'force-dynamic';
 export const metadata = {title:'Status'};
-const labels: Record<string,string> = {api:'API',identity:'Account authentication',compression:'Compression readiness',storage:'File storage readiness',notifications:'Notifications'};
+const labels: Record<string,string> = {api:'API',identity:'Account authentication',compression:'Compression readiness',storage:'File storage readiness',notifications:'Notifications',security_scanner:'Security scanner readiness'};
 const allowed = ['operational','degraded','unavailable','unknown'];
 export default async function Status(){
   let overall = 'unavailable';

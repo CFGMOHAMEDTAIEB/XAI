@@ -8,6 +8,7 @@ class LockScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final state = context.watch<AppState>();
     return Scaffold(
       body: Center(
         child: ConstrainedBox(
@@ -32,10 +33,12 @@ class LockScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
                   FilledButton.icon(
-                    onPressed: context.read<AppState>().unlock,
+                    onPressed: state.unlocking ? null : state.unlock,
                     icon: const Icon(Icons.fingerprint),
                     label: const Text('Unlock'),
                   ),
+                  if (state.unlocking) const Text('Complete authentication on your phone.'),
+                  if (state.unlockError != null) Text(state.unlockError!),
                 ],
               ),
             ),

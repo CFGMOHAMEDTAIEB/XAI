@@ -9,5 +9,5 @@ export class CompressPage{
   constructor(private api:ApiService){}
   pick(e:Event){this.file.set((e.target as HTMLInputElement).files?.[0]??null)}
   download(){const id=this.jobId();if(id)this.api.download(id).subscribe({next:b=>saveBlob(b,this.artifactName),error:()=>this.message.set('Download failed.')})}
-  start(){const selected=this.file();if(!selected)return;this.running.set(true);this.message.set('');this.jobId.set(null);this.api.compress(selected).subscribe({next:(result)=>{this.jobId.set((result as {id:number}).id);this.artifactName=selected.name+'.xaic';this.running.set(false);this.message.set('Compression completed and SHA-256 round-trip verified.')},error:e=>{this.running.set(false);this.message.set(e?.error?.detail??'Compression failed.')}})}
+  start(){const selected=this.file();if(!selected||this.running())return;this.running.set(true);this.message.set('');this.jobId.set(null);this.api.compress(selected).subscribe({next:(result)=>{this.jobId.set((result as {id:number}).id);this.artifactName=selected.name+'.xaic';this.running.set(false);this.message.set('Compression completed and SHA-256 round-trip verified.')},error:e=>{this.running.set(false);this.message.set('Compression failed. Check the file and service status before retrying.')}})}
 }
