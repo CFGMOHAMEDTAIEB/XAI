@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import String, Integer, DateTime, Boolean, ForeignKey, Text
+from sqlalchemy import String, Integer, DateTime, Boolean, ForeignKey, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 from .db import Base
 
@@ -75,3 +75,61 @@ class RefreshToken(Base):
     expires_at: Mapped[datetime] = mapped_column(DateTime)
     revoked: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+class AuthenticatorDevice(Base):
+    __tablename__='authenticator_devices'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    device_id: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'), index=True)
+    public_key: Mapped[str] = mapped_column(Text)
+    platform: Mapped[str] = mapped_column(String(32))
+    app_version: Mapped[str] = mapped_column(String(32))
+    status: Mapped[str] = mapped_column(String(24), default='active', index=True)
+    registered_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    last_activity_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+class AuthChallenge(Base):
+    __tablename__='auth_challenges'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    challenge_id: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'), index=True)
+    device_id: Mapped[int] = mapped_column(ForeignKey('authenticator_devices.id'), index=True)
+    nonce: Mapped[str] = mapped_column(String(96))
+    number_hash: Mapped[str] = mapped_column(String(64))
+    application: Mapped[str] = mapped_column(String(120), default='XAI')
+    request_context: Mapped[str] = mapped_column(Text, default='{}')
+    status: Mapped[str] = mapped_column(String(24), default='pending', index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    expires_at: Mapped[datetime] = mapped_column(DateTime)
+    completed_at: Mapped[datetime|None] = mapped_column(DateTime, nullable=True)
+
+class AuthEvent(Base):
+    __tablename__='auth_events'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'), index=True)
+    device_id: Mapped[int|None] = mapped_column(ForeignKey('authenticator_devices.id'), nullable=True, index=True)
+    event_type: Mapped[str] = mapped_column(String(48), index=True)
+    result: Mapped[str] = mapped_column(String(24))
+    application: Mapped[str] = mapped_column(String(120), default='XAI')
+    details: Mapped[str] = mapped_column(Text, default='{}')
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
+
+class RecoveryCode(Base):
+    __tablename__='recovery_codes'
+    __table_args__=(UniqueConstraint('user_id','code_hash',name='uq_recovery_user_code'),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'), index=True)
+    code_hash: Mapped[str] = mapped_column(String(64))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    used_at: Mapped[datetime|None] = mapped_column(DateTime, nullable=True)
+
+class AuthPolicy(Base):
+    __tablename__='auth_policies'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    scope: Mapped[str] = mapped_column(String(32), unique=True, default='global')
+    mfa_required: Mapped[bool] = mapped_column(Boolean, default=False)
+    totp_allowed: Mapped[bool] = mapped_column(Boolean, default=True)
+    push_allowed: Mapped[bool] = mapped_column(Boolean, default=False)
+    number_matching_required: Mapped[bool] = mapped_column(Boolean, default=True)
+    challenge_seconds: Mapped[int] = mapped_column(Integer, default=120)
+    session_minutes: Mapped[int] = mapped_column(Integer, default=15)

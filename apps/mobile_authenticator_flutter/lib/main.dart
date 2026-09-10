@@ -28,7 +28,7 @@ class XaiAuthenticatorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'XAI-Compress Authenticator',
+      title: 'XAI',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF4054D6)),

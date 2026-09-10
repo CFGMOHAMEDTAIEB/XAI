@@ -7,6 +7,11 @@ class AuthenticatorAccount {
     this.algorithm = 'SHA1',
     this.digits = 6,
     this.period = 30,
+    this.enrolledAt,
+    this.lastUsedAt,
+    this.status = 'active',
+    this.managed = false,
+    this.backendDeviceId,
   });
 
   final String id;
@@ -16,6 +21,11 @@ class AuthenticatorAccount {
   final String algorithm;
   final int digits;
   final int period;
+  final DateTime? enrolledAt;
+  final DateTime? lastUsedAt;
+  final String status;
+  final bool managed;
+  final String? backendDeviceId;
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -25,6 +35,11 @@ class AuthenticatorAccount {
         'algorithm': algorithm,
         'digits': digits,
         'period': period,
+        'enrolledAt': enrolledAt?.toIso8601String(),
+        'lastUsedAt': lastUsedAt?.toIso8601String(),
+        'status': status,
+        'managed': managed,
+        'backendDeviceId': backendDeviceId,
       };
 
   factory AuthenticatorAccount.fromJson(Map<String, dynamic> json) {
@@ -36,6 +51,11 @@ class AuthenticatorAccount {
       algorithm: json['algorithm'] as String? ?? 'SHA1',
       digits: json['digits'] as int? ?? 6,
       period: json['period'] as int? ?? 30,
+      enrolledAt: DateTime.tryParse(json['enrolledAt'] as String? ?? ''),
+      lastUsedAt: DateTime.tryParse(json['lastUsedAt'] as String? ?? ''),
+      status: json['status'] as String? ?? 'active',
+      managed: json['managed'] as bool? ?? false,
+      backendDeviceId: json['backendDeviceId'] as String?,
     );
   }
 }

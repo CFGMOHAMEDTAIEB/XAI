@@ -71,6 +71,9 @@ class AppState extends ChangeNotifier {
 
   Future<void> addFromUri(String uri) async {
     final enrollment = TotpEnrollment.parse(uri);
+    if(accounts.any((a)=>a.issuer.toLowerCase()==enrollment.issuer.toLowerCase()&&a.accountName.toLowerCase()==enrollment.accountName.toLowerCase())){
+      throw const FormatException('This account is already enrolled.');
+    }
     final id = DateTime.now().microsecondsSinceEpoch.toString();
     final updated = [...accounts, enrollment.toAccount(id)];
     await accountStore.saveAccounts(updated).timeout(const Duration(seconds: 15));

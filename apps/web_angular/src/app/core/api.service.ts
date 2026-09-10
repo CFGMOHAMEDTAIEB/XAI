@@ -1,6 +1,11 @@
 import {Injectable} from '@angular/core';import {HttpClient} from '@angular/common/http';import {Observable} from 'rxjs';import {environment} from '../../environments/environment';import {FileItem,ShareResult} from '../models/models';
 @Injectable({providedIn:'root'})export class ApiService{constructor(private http:HttpClient){}downloadShare(code:string){return this.http.post(`${environment.apiUrl}/shares/download`,{code},{responseType:'blob'})}me(){return this.http.get<{email:string;display_name:string;mfa_enabled:boolean;is_admin:boolean}>(`${environment.apiUrl}/auth/me`)}download(fileId:number){return this.http.get(`${environment.apiUrl}/files/${fileId}/download`,{responseType:'blob'})}
 totpStatus(){return this.http.get<{state:string;email:string;enrollment_id:string|null}>(`${environment.apiUrl}/auth/totp/status`)}
+startAuthenticator(){return this.http.post<{enrollment_id:string;otpauth_uri:string;qr_data_uri:string;expires_in_seconds:number}>(`${environment.apiUrl}/auth/authenticator/enroll/start`,{})}
+confirmAuthenticator(enrollment_id:string,code:string){return this.http.post<{enabled:boolean}>(`${environment.apiUrl}/auth/authenticator/enroll/confirm`,{enrollment_id,code})}
+authDevices(){return this.http.get<Array<{device_id:string;platform:string;app_version:string;status:string;registered_at:string;last_activity:string}>>(`${environment.apiUrl}/auth/devices`)}
+authHistory(){return this.http.get<Array<{type:string;result:string;application:string;created_at:string}>>(`${environment.apiUrl}/auth/history`)}
+recoveryCodes(){return this.http.post<{codes:string[];shown_once:boolean}>(`${environment.apiUrl}/auth/recovery-codes`,{})}
 enrollTotp(restart=false){return this.http.post<{state:string;enrollment_id:string}>(`${environment.apiUrl}/auth/totp/enroll`,{restart})}
 resendTotp(){return this.http.post<{state:string;enrollment_id:string}>(`${environment.apiUrl}/auth/totp/resend`,{})}
 confirmEmail(enrollment_id:string,code:string){return this.http.post<{secret:string;otpauth_uri:string}>(`${environment.apiUrl}/auth/totp/email/confirm`,{enrollment_id,code})}

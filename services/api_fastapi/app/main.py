@@ -21,6 +21,7 @@ from .email_service import send_artifact, configuration_missing
 import smtplib
 from .security_scanner import enforce_scan, scanner_health
 from .resource_guard import ResourceGuard, cleanup_work
+from .authenticator import register_authenticator_routes
 
 if settings.app_env == 'development':
     Base.metadata.create_all(engine)
@@ -98,6 +99,7 @@ def me(user:User=Depends(current_user)):
     return {'id':user.id,'email':user.email,'display_name':user.display_name,'role':user.role,'mfa_enabled':user.totp_enabled,'is_admin':user.role=='admin'}
 
 register_mfa_routes(app, current_user)
+register_authenticator_routes(app, current_user, require_admin)
 
 @app.post('/files')
 def create_file(body:FileCreate,user:User=Depends(current_user),db:Session=Depends(get_db)):
