@@ -1,10 +1,11 @@
-@page "/audit"
-@inject PlatformApiClient Api
-@inject AdminSession Session
-@if(!string.IsNullOrEmpty(_error)){<p role="alert">@_error</p>}
+﻿@page "/audit"
+@inherits AdminReadPage<IReadOnlyList<AuditEvent>>
 <PageTitle>Audit logs</PageTitle>
-<div class="page-heading"><div><h1>Audit trail</h1><p>Trace administrative, authentication, sharing and file events.</p></div></div>
-@if(_requiresLogin){<a class="button primary" href="/login">Sign in to view audit logs</a>}else{<section class="panel"><table><thead><tr><th>Time</th><th>Actor</th><th>Action</th><th>Resource</th><th>Result</th><th>Source</th></tr></thead><tbody>
-@foreach(var item in _items){<tr><td>@item.CreatedAt.LocalDateTime</td><td>@item.Actor</td><td class="mono">@item.Action</td><td>@item.Resource</td><td><StatusBadge Value="@item.Result" /></td><td>@item.IpAddress</td></tr>}
+<div class="page-heading"><div><h1>Audit trail</h1><p>Recorded administrative, authentication, sharing and file events. This is not a complete incident feed.</p></div><button disabled="@Loading" @onclick="LoadAsync">Refresh</button></div>
+<AdminDataState RequiresLogin="RequiresLogin" Loading="Loading" Error="Error">
+@if(Data is not null){<section class="panel"><table><thead><tr><th>Time</th><th>Actor</th><th>Action</th><th>Resource</th><th>Result</th><th>Source</th></tr></thead><tbody>
+@if(Data.Count==0){<tr><td colspan="6">No audit events recorded.</td></tr>}
+@foreach(var item in Data){<tr><td>@item.CreatedAt.LocalDateTime</td><td>@item.Actor</td><td class="mono">@item.Action</td><td>@item.Resource</td><td><StatusBadge Value="@item.Result" /></td><td>@item.IpAddress</td></tr>}
 </tbody></table></section>}
-@code { private string _error="";private IReadOnlyList<AuditEvent> _items=[];private bool _requiresLogin;protected override async Task OnInitializedAsync(){_requiresLogin=!Session.IsAuthenticated;if(_requiresLogin)return;try{_items=await Api.GetAuditAsync();}catch(AdminApiAuthorizationException){_requiresLogin=true;}catch(Exception){_error="Backend unavailable. Reload this page to retry.";}}}
+</AdminDataState>
+@code { protected override Task<IReadOnlyList<AuditEvent>> FetchAsync()=>Api.GetAuditAsync(); }

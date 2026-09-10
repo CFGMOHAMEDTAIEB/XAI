@@ -8,6 +8,7 @@ from fastapi.testclient import TestClient
 from app import email_service
 from app.config import settings
 from app.main import app, current_user, safe_upload_name
+from app import resource_guard
 
 
 def test_smtp_missing_configuration_does_not_connect(monkeypatch, tmp_path):
@@ -38,7 +39,7 @@ def test_smtp_attachment_preserves_bytes_and_requires_tls(monkeypatch, tmp_path)
     monkeypatch.setattr(smtplib, 'SMTP', Transport)
     result = email_service.send_artifact(path, 'original.bin.xaic', 'receiver@example.com')
     attachment = list(captured['message'].iter_attachments())[0]
-    assert captured['message']['Subject'] == 'XAI E2E Compressed Artifact Test'
+    assert captured['message']['Subject'] == 'XAI Compress file attachment'
     assert captured['tls'] and captured['timeout'] > 0
     assert attachment.get_payload(decode=True) == payload
     assert attachment.get_filename() == 'original.bin.xaic'
@@ -54,6 +55,8 @@ def test_upload_names_cannot_select_storage_paths(name):
 
 
 def test_untrusted_upload_size_limit_and_cleanup(monkeypatch, tmp_path):
+    # Isolate upload-size handling from the host's current disk capacity.
+    monkeypatch.setattr(resource_guard.shutil, 'disk_usage', lambda _: SimpleNamespace(free=10**15))
     monkeypatch.setattr(settings, 'storage_path', str(tmp_path))
     monkeypatch.setattr(settings, 'max_upload_bytes', 8)
     app.dependency_overrides[current_user] = lambda: SimpleNamespace(id=123)
@@ -69,6 +72,7 @@ def test_untrusted_upload_size_limit_and_cleanup(monkeypatch, tmp_path):
 
 
 def test_compression_upload_limit_cleans_closed_file(monkeypatch, tmp_path):
+    monkeypatch.setattr(resource_guard.shutil, 'disk_usage', lambda _: SimpleNamespace(free=10**15))
     monkeypatch.setattr(settings, 'storage_path', str(tmp_path))
     monkeypatch.setattr(settings, 'max_upload_bytes', 8)
     app.dependency_overrides[current_user] = lambda: SimpleNamespace(id=123)

@@ -12,7 +12,7 @@ from sqlalchemy import select, func, text, update
 from sqlalchemy.orm import Session
 from .config import settings
 from .db import Base, engine, get_db
-from .models import User, FileRecord, ShareCode, AuditEvent, RefreshToken
+from .models import User, FileRecord, ShareCode, AuditEvent, RefreshToken, TotpEnrollment
 from .schemas import RegisterRequest, LoginRequest, TokenResponse, RefreshRequest, FileCreate, ShareCreate, ShareRedeem
 from .security import hash_password, verify_password, create_token, create_refresh_token, hash_refresh_token, decode_token, generate_share_code, hash_share_code
 from .schemas import EmailSend
@@ -22,7 +22,8 @@ import smtplib
 from .security_scanner import enforce_scan, scanner_health
 from .resource_guard import ResourceGuard, cleanup_work
 
-Base.metadata.create_all(engine)
+if settings.app_env == 'development':
+    Base.metadata.create_all(engine)
 app=FastAPI(title='XAI-Compress Platform API',version='0.1.0')
 app.add_middleware(ResourceGuard)
 app.add_middleware(CORSMiddleware,allow_origins=settings.allowed_origins,allow_credentials=True,allow_methods=['*'],allow_headers=['*'])
@@ -50,7 +51,7 @@ def audit(db,user_id,action,resource='',result='success',details=''):
     db.add(AuditEvent(user_id=user_id,action=action,resource=resource,result=result,details=details)); db.commit()
 
 def require_admin(user:User=Depends(current_user)):
-    if user.role!='admin' and user.email not in {x.strip().lower() for x in settings.admin_emails.split(',') if x.strip()}:
+    if user.role!='admin':
         raise HTTPException(403,'Admin role required')
     return user
 
@@ -94,7 +95,7 @@ def logout(body:RefreshRequest,db:Session=Depends(get_db)):
 
 @app.get('/auth/me')
 def me(user:User=Depends(current_user)):
-    return {'id':user.id,'email':user.email,'display_name':user.display_name,'role':user.role,'mfa_enabled':user.totp_enabled,'is_admin':user.role=='admin' or user.email in {x.strip().lower() for x in settings.admin_emails.split(',') if x.strip()}}
+    return {'id':user.id,'email':user.email,'display_name':user.display_name,'role':user.role,'mfa_enabled':user.totp_enabled,'is_admin':user.role=='admin'}
 
 register_mfa_routes(app, current_user)
 
@@ -245,6 +246,21 @@ def admin_jobs(_:User=Depends(require_admin),db:Session=Depends(get_db)):
     rows=db.execute(select(FileRecord,User).join(User,FileRecord.owner_id==User.id).order_by(FileRecord.created_at.desc())).all()
     return [{'id':str(f.id),'fileName':f.name,'userEmail':u.email,'mode':f.codec,'status':f.status,'originalSize':f.original_size,'compressedSize':f.compressed_size,'integrityVerified':f.integrity_verified,'createdAt':f.created_at} for f,u in rows]
 
+@app.get('/admin/users/{user_id}')
+def admin_user_details(user_id:int,_:User=Depends(require_admin),db:Session=Depends(get_db)):
+    user=db.get(User,user_id)
+    if not user:raise HTTPException(404,'User not found')
+    enrollment=db.get(TotpEnrollment,user_id)
+    last_login=db.scalar(select(func.max(AuditEvent.created_at)).where(AuditEvent.user_id==user_id,AuditEvent.action=='user.login'))
+    return {'id':user.id,'email':user.email,'displayName':user.display_name,'role':user.role,
+            'mfaEnabled':user.totp_enabled,'createdAt':user.created_at,'lastLogin':last_login,
+            'fileCount':db.scalar(select(func.count()).select_from(FileRecord).where(FileRecord.owner_id==user_id)) or 0,
+            'mfaEnrollmentState':'enabled' if user.totp_enabled else ('pending' if enrollment and enrollment.secret and enrollment.expires_at>datetime.utcnow() else 'not_active')}
+
+@app.get('/admin/security/scanner')
+def admin_scanner(_:User=Depends(require_admin)):
+    return scanner_health()
+
 @app.get('/admin/audit')
 def admin_audit(_:User=Depends(require_admin),db:Session=Depends(get_db)):
     return [{'id':e.id,'actor':str(e.user_id or 'system'),'action':e.action,'resource':e.resource,'result':e.result,'ipAddress':'','createdAt':e.created_at} for e in db.scalars(select(AuditEvent).order_by(AuditEvent.created_at.desc()).limit(500)).all()]
@@ -274,7 +290,11 @@ def public_status():
 @app.get('/admin/email/configuration')
 def email_configuration(_:User=Depends(require_admin)):
     return {'provider':settings.email_provider, 'configured':not configuration_missing(),
-            'missing':configuration_missing(), 'delivery_verified':False,'xaic_supported':settings.email_provider!='brevo'}
+            'missing':configuration_missing(), 'delivery_verified':False,'xaic_supported':settings.email_provider!='brevo',
+            'development_only':settings.email_provider=='mailpit',
+            'api_key':('PRESENT' if (settings.brevo_api_key if settings.email_provider=='brevo' else settings.resend_api_key) else 'MISSING') if settings.email_provider in ('brevo','resend') else 'NOT_APPLICABLE',
+            'sender_configured':bool(settings.brevo_sender_email if settings.email_provider=='brevo' else settings.resend_from_email if settings.email_provider=='resend' else settings.smtp_from),
+            'smtp_security':settings.smtp_security if settings.email_provider in ('smtp','mailpit') else None}
 
 
 @app.post('/shares/download')

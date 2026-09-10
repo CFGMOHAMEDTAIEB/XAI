@@ -1,0 +1,143 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\ss\\Desktop\\XAI\\XAI\\tools\\admin_integration_tests\\AdminIntegrationTests.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\ss\\Desktop\\XAI\\XAI\\apps\\admin_dotnet\\AdminDotNet.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\apps\\admin_dotnet\\AdminDotNet.csproj",
+        "projectName": "AdminDotNet",
+        "projectPath": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\apps\\admin_dotnet\\AdminDotNet.csproj",
+        "packagesPath": "C:\\Users\\ss\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\apps\\admin_dotnet\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\ss\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "framework": "net8.0",
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.400"
+      },
+      "frameworks": {
+        "net8.0": {
+          "framework": "net8.0",
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.Authentication.OpenIdConnect": {
+              "target": "Package",
+              "version": "[8.0.19, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\ss\\Desktop\\XAI\\XAI\\tools\\admin_integration_tests\\AdminIntegrationTests.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\tools\\admin_integration_tests\\AdminIntegrationTests.csproj",
+        "projectName": "AdminIntegrationTests",
+        "projectPath": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\tools\\admin_integration_tests\\AdminIntegrationTests.csproj",
+        "packagesPath": "C:\\Users\\ss\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\tools\\admin_integration_tests\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\ss\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "framework": "net8.0",
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\Users\\ss\\Desktop\\XAI\\XAI\\apps\\admin_dotnet\\AdminDotNet.csproj": {
+                "projectPath": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\apps\\admin_dotnet\\AdminDotNet.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.400"
+      },
+      "frameworks": {
+        "net8.0": {
+          "framework": "net8.0",
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

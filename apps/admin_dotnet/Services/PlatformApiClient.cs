@@ -25,6 +25,7 @@ public sealed class PlatformApiClient
 
     public async Task LoginAsync(string email, string password, string? totpCode = null)
     {
+        _session.Clear();
         using var loginResponse = await _http.PostAsJsonAsync(
             "/auth/login", new { email, password, totp_code = totpCode });
 
@@ -34,6 +35,7 @@ public sealed class PlatformApiClient
         loginResponse.EnsureSuccessStatusCode();
         var token = await loginResponse.Content.ReadFromJsonAsync<TokenEnvelope>()
             ?? throw new InvalidOperationException("The backend did not return an access token.");
+        if (string.IsNullOrWhiteSpace(token.AccessToken)) throw new InvalidOperationException("The backend did not return an access token.");
 
         // Verify the role before retaining the token in this Blazor circuit.
         using var validation = CreateAuthorizedRequest(HttpMethod.Get, "/admin/stats", token.AccessToken);
@@ -72,6 +74,9 @@ public sealed class PlatformApiClient
     public async Task<IReadOnlyList<UserSummary>> GetUsersAsync() => await GetProtectedAsync<List<UserSummary>>("/admin/users");
     public async Task<IReadOnlyList<CompressionJob>> GetJobsAsync() => await GetProtectedAsync<List<CompressionJob>>("/admin/jobs");
     public async Task<IReadOnlyList<AuditEvent>> GetAuditAsync() => await GetProtectedAsync<List<AuditEvent>>("/admin/audit");
+    public Task<UserDetails> GetUserAsync(int id) => GetProtectedAsync<UserDetails>($"/admin/users/{id}");
+    public Task<ScannerStatus> GetScannerAsync() => GetProtectedAsync<ScannerStatus>("/admin/security/scanner");
+    public Task<EmailConfiguration> GetEmailConfigurationAsync() => GetProtectedAsync<EmailConfiguration>("/admin/email/configuration");
     public Task<IReadOnlyList<SecurityIncident>> GetIncidentsAsync() => Task.FromResult<IReadOnlyList<SecurityIncident>>([]);
     public Task<IReadOnlyList<QuarantinedFile>> GetQuarantineAsync() => Task.FromResult<IReadOnlyList<QuarantinedFile>>([]);
 

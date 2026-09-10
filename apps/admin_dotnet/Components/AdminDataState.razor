@@ -1,0 +1,10 @@
+@if (RequiresLogin) { <p role="status">An authorized administrator session is required.</p><a class="button" href="/login">Sign in</a> }
+else if (Loading) { <p role="status">Loading...</p> }
+else if (Error is not null) { <p role="alert">@Error</p> }
+else { @ChildContent }
+@code {
+    [Parameter] public bool RequiresLogin { get; set; }
+    [Parameter] public bool Loading { get; set; }
+    [Parameter] public string? Error { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

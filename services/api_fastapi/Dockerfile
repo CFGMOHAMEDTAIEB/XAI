@@ -8,6 +8,7 @@ COPY engines/XAI-Compress/configs /opt/xai-compress/configs
 COPY services/api_fastapi/app app
 RUN pip install --no-cache-dir yara-python==4.5.4
 COPY services/api_fastapi/security security
+COPY services/api_fastapi/migrations migrations
 ENV PYTHONPATH=/opt/xai-compress
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 STORAGE_PATH=/data
 RUN groupadd --gid 10001 xai && useradd --uid 10001 --gid 10001 --no-create-home xai && mkdir -p /data && chown 10001:10001 /data

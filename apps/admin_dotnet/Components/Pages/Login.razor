@@ -1,20 +1,31 @@
-@page "/login"
+﻿@page "/login"
 @inject PlatformApiClient Api
 @inject NavigationManager Navigation
-
 <PageTitle>Admin sign in</PageTitle>
-<div class="page-heading"><div><h1>Admin sign in</h1><p>Use the same XAI platform account as the other applications.</p></div></div>
+<div class="page-heading"><div><h1>Admin sign in</h1><p>Use your XAI platform administrator account. If MFA is enabled, enter your current authenticator code.</p></div></div>
 <section class="panel">
-    <form @onsubmit="SignIn" @onsubmit:preventDefault>
-        <label>Email<input type="email" @bind="_email" required /></label>
-        <label>Password<input type="password" @bind="_password" required /></label>
-        <label>MFA code (when enabled)<input inputmode="numeric" @bind="_totp" /></label>
-        <button class="button" type="submit" disabled="@_busy">@(_busy ? "Signing in..." : "Sign in")</button>
-        @if (!string.IsNullOrWhiteSpace(_error)) { <p class="notice">@_error</p> }
-    </form>
+<form @onsubmit="SignIn" @onsubmit:preventDefault>
+<label>Email<input type="email" @bind="_email" autocomplete="username" disabled="@_busy" required /></label>
+<label>Password<input type="password" @bind="_password" autocomplete="current-password" disabled="@_busy" required /></label>
+<label>MFA code (when enabled)<input inputmode="numeric" maxlength="6" autocomplete="one-time-code" @bind="_totp" disabled="@_busy" /></label>
+<button class="button" type="submit" disabled="@_busy">@(_busy ? "Signing in..." : "Sign in")</button>
+@if (!string.IsNullOrWhiteSpace(_error)) { <p class="notice" role="alert">@_error</p> }
+</form>
 </section>
-
 @code {
-    private string _email = ""; private string _password = ""; private string _totp = ""; private string _error = ""; private bool _busy;
-    private async Task SignIn(){if(_busy)return;_busy=true;_error="";try{await Api.LoginAsync(_email,_password,string.IsNullOrWhiteSpace(_totp)?null:_totp);Navigation.NavigateTo("/");}catch(AdminApiAuthorizationException){_error="Sign-in failed or this account lacks admin access.";}catch(HttpRequestException){_error="The backend is unavailable. Try again shortly.";}catch(OperationCanceledException){_error="Request timed out. Retry shortly.";}catch(System.Text.Json.JsonException){_error="The backend returned an invalid response.";}finally{_password="";_totp="";_busy=false;}}
+ private string _email="", _password="", _totp="", _error="";
+ private bool _busy;
+ private async Task SignIn(){
+  if(_busy)return;
+  _busy=true;_error="";
+  try {
+   await Api.LoginAsync(_email,_password,string.IsNullOrWhiteSpace(_totp)?null:_totp);
+   Navigation.NavigateTo("/");
+  }
+  catch(AdminApiAuthorizationException){_error="Sign-in failed. Check your credentials, current MFA code and administrator access.";}
+  catch(OperationCanceledException){_error="Request timed out. Retry shortly.";}
+  catch(HttpRequestException){_error="The backend is unavailable. Try again shortly.";}
+  catch(Exception){_error="Sign-in could not be completed. The backend may have returned an invalid response.";}
+  finally{_password="";_totp="";_busy=false;}
+ }
 }

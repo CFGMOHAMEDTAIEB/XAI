@@ -1,5 +1,16 @@
 namespace XaiCompress.Admin.Models;
 
+public sealed record UserDetails(int Id, string Email, string DisplayName, string Role, bool MfaEnabled,
+    DateTimeOffset CreatedAt, DateTimeOffset? LastLogin, int FileCount, string MfaEnrollmentState);
+public sealed record ScannerStatus(string Status, string Clamav, string Yara, bool Required);
+public sealed record EmailConfiguration(string Provider, bool Configured, string[] Missing,
+    [property: System.Text.Json.Serialization.JsonPropertyName("delivery_verified")] bool DeliveryVerified,
+    [property: System.Text.Json.Serialization.JsonPropertyName("xaic_supported")] bool XaicSupported,
+    [property: System.Text.Json.Serialization.JsonPropertyName("development_only")] bool DevelopmentOnly,
+    [property: System.Text.Json.Serialization.JsonPropertyName("api_key")] string ApiKey,
+    [property: System.Text.Json.Serialization.JsonPropertyName("sender_configured")] bool SenderConfigured,
+    [property: System.Text.Json.Serialization.JsonPropertyName("smtp_security")] string? SmtpSecurity);
+
 public sealed record DashboardStats(
     int ActiveUsers,
     int JobsToday,

@@ -37,7 +37,8 @@ if (oidcEnabled)
             options.ResponseType = "code";
             options.SaveTokens = true;
             options.GetClaimsFromUserInfoEndpoint = true;
-            options.RequireHttpsMetadata = builder.Configuration.GetValue("Authentication:RequireHttpsMetadata", false);
+            options.RequireHttpsMetadata = !builder.Environment.IsDevelopment()
+                || builder.Configuration.GetValue("Authentication:RequireHttpsMetadata", true);
         });
     builder.Services.AddAuthorization();
 }

@@ -58,7 +58,7 @@ def clamav_scan(path):
 def load_yara_rules(configured_path):
     import yara
     path = Path(configured_path).resolve(strict=True)
-    files = sorted(p for p in path.iterdir() if p.suffix in ('.yar', '.yara')) if path.is_dir() else [path]
+    files = sorted(p for p in path.rglob('*') if p.suffix in ('.yar', '.yara')) if path.is_dir() else [path]
     if not files:
         raise ValueError('No YARA rules configured')
     rules = yara.compile(filepaths={f'rules_{i}': str(p) for i, p in enumerate(files)}, includes=False)

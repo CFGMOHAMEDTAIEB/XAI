@@ -1,9 +1,14 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 class RegisterRequest(BaseModel):
     email: EmailStr
     password: str = Field(min_length=10)
     display_name: str = ''
+    @field_validator('password')
+    @classmethod
+    def password_size(cls,value):
+        if len(value.encode('utf-8'))>72:raise ValueError('Password exceeds hashing limit')
+        return value
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str

@@ -15,7 +15,7 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-xai}
       POSTGRES_USER: ${POSTGRES_USER:-xai}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me-local}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in an ignored local env file}
     volumes: [db-data:/var/lib/postgresql/data]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
@@ -27,8 +27,8 @@ services:
   backend:
     build: {context: ., dockerfile: services/api_fastapi/Dockerfile}
     environment:
-      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-xai}:${POSTGRES_PASSWORD:-change-me-local}@db:5432/${POSTGRES_DB:-xai}
-      JWT_SECRET: ${JWT_SECRET:-development-only-change-me-at-least-32-chars}
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-xai}:${POSTGRES_PASSWORD:?Required}@db:5432/${POSTGRES_DB:-xai}
+      JWT_SECRET: ${JWT_SECRET:?Set a random server-side JWT_SECRET}
       ACCESS_TOKEN_MINUTES: ${ACCESS_TOKEN_MINUTES:-15}
       REFRESH_TOKEN_DAYS: ${REFRESH_TOKEN_DAYS:-30}
       STORAGE_PATH: /data
@@ -41,11 +41,14 @@ services:
       ADMIN_EMAILS: ${ADMIN_EMAILS:-}
       EMAIL_PROVIDER: ${EMAIL_PROVIDER:-smtp}
       BREVO_API_KEY: ${BREVO_API_KEY:-}
+      BREVO_SENDER_EMAIL: ${BREVO_SENDER_EMAIL:-}
+      BREVO_SENDER_NAME: ${BREVO_SENDER_NAME:-XAI Compress}
       SMTP_HOST: ${SMTP_HOST:-}
       SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_USERNAME: ${SMTP_USERNAME:-}
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
       SMTP_FROM: ${SMTP_FROM:-}
+      SMTP_FROM_NAME: ${SMTP_FROM_NAME:-XAI Compress}
       SMTP_SECURITY: ${SMTP_SECURITY:-starttls}
     volumes: [xai-storage:/data]
     ports: ["${API_PORT:-8000}:8000"]

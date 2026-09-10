@@ -1,0 +1,231 @@
+{
+  "public_nextjs": {
+    "counts": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 3,
+      "critical": 1,
+      "total": 4
+    },
+    "packages": {
+      "js-yaml": {
+        "severity": "high",
+        "direct": false,
+        "fix_available": true
+      },
+      "next": {
+        "severity": "critical",
+        "direct": true,
+        "fix_available": true
+      },
+      "postcss": {
+        "severity": "high",
+        "direct": false,
+        "fix_available": true
+      },
+      "sharp": {
+        "severity": "high",
+        "direct": false,
+        "fix_available": true
+      }
+    },
+    "registry_audit_available": true
+  },
+  "web_angular": {
+    "counts": {
+      "info": 0,
+      "low": 2,
+      "moderate": 9,
+      "high": 12,
+      "critical": 0,
+      "total": 23
+    },
+    "packages": {
+      "@angular-devkit/build-angular": {
+        "severity": "high",
+        "direct": true,
+        "fix_available": {
+          "name": "@angular-devkit/build-angular",
+          "version": "20.3.36",
+          "isSemVerMajor": false
+        }
+      },
+      "@angular/build": {
+        "severity": "high",
+        "direct": false,
+        "fix_available": {
+          "name": "@angular-devkit/build-angular",
+          "version": "20.3.36",
+          "isSemVerMajor": false
+        }
+      },
+      "@angular/cli": {
+        "severity": "high",
+        "direct": true,
+        "fix_available": {
+          "name": "@angular/cli",
+          "version": "20.3.36",
+          "isSemVerMajor": false
+        }
+      },
+      "@babel/core": {
+        "severity": "low",
+        "direct": false,
+        "fix_available": {
+          "name": "@angular-devkit/build-angular",
+          "version": "20.3.36",
+          "isSemVerMajor": false
+        }
+      },
+      "@vitest/mocker": {
+        "severity": "moderate",
+        "direct": false,
+        "fix_available": {
+          "name": "vitest",
+          "version": "5.0.0",
+          "isSemVerMajor": true
+        }
+      },
+      "body-parser": {
+        "severity": "moderate",
+        "direct": false,
+        "fix_available": true
+      },
+      "esbuild": {
+        "severity": "low",
+        "direct": false,
+        "fix_available": {
+          "name": "@angular-devkit/build-angular",
+          "version": "20.3.36",
+          "isSemVerMajor": false
+        }
+      },
+      "express": {
+        "severity": "moderate",
+        "direct": false,
+        "fix_available": true
+      },
+      "fast-uri": {
+        "severity": "high",
+        "direct": false,
+        "fix_available": true
+      },
+      "hono": {
+        "severity": "moderate",
+        "direct": false,
+        "fix_available": true
+      },
+      "http-proxy-middleware": {
+        "severity": "high",
+        "direct": false,
+        "fix_available": {
+          "name": "@angular-devkit/build-angular",
+          "version": "20.3.36",
+          "isSemVerMajor": false
+        }
+      },
+      "image-size": {
+        "severity": "high",
+        "direct": false,
+        "fix_available": {
+          "name": "@angular-devkit/build-angular",
+          "version": "20.3.36",
+          "isSemVerMajor": false
+        }
+      },
+      "js-yaml": {
+        "severity": "high",
+        "direct": false,
+        "fix_available": true
+      },
+      "less": {
+        "severity": "high",
+        "direct": false,
+        "fix_available": {
+          "name": "@angular-devkit/build-angular",
+          "version": "20.3.36",
+          "isSemVerMajor": false
+        }
+      },
+      "pacote": {
+        "severity": "high",
+        "direct": false,
+        "fix_available": {
+          "name": "@angular/cli",
+          "version": "20.3.36",
+          "isSemVerMajor": false
+        }
+      },
+      "piscina": {
+        "severity": "high",
+        "direct": false,
+        "fix_available": {
+          "name": "@angular-devkit/build-angular",
+          "version": "20.3.36",
+          "isSemVerMajor": false
+        }
+      },
+      "postcss": {
+        "severity": "high",
+        "direct": false,
+        "fix_available": {
+          "name": "@angular-devkit/build-angular",
+          "version": "20.3.36",
+          "isSemVerMajor": false
+        }
+      },
+      "qs": {
+        "severity": "moderate",
+        "direct": false,
+        "fix_available": true
+      },
+      "sockjs": {
+        "severity": "moderate",
+        "direct": false,
+        "fix_available": {
+          "name": "@angular-devkit/build-angular",
+          "version": "20.3.36",
+          "isSemVerMajor": false
+        }
+      },
+      "uuid": {
+        "severity": "moderate",
+        "direct": false,
+        "fix_available": {
+          "name": "@angular-devkit/build-angular",
+          "version": "20.3.36",
+          "isSemVerMajor": false
+        }
+      },
+      "vite": {
+        "severity": "high",
+        "direct": false,
+        "fix_available": {
+          "name": "@angular-devkit/build-angular",
+          "version": "20.3.36",
+          "isSemVerMajor": false
+        }
+      },
+      "vitest": {
+        "severity": "moderate",
+        "direct": true,
+        "fix_available": {
+          "name": "vitest",
+          "version": "5.0.0",
+          "isSemVerMajor": true
+        }
+      },
+      "webpack-dev-server": {
+        "severity": "moderate",
+        "direct": false,
+        "fix_available": {
+          "name": "@angular-devkit/build-angular",
+          "version": "20.3.36",
+          "isSemVerMajor": false
+        }
+      }
+    },
+    "registry_audit_available": true
+  }
+}

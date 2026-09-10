@@ -1,0 +1,13 @@
+@page "/email"
+@inherits AdminReadPage<EmailConfiguration>
+<PageTitle>Email configuration</PageTitle>
+<div class="page-heading"><h1>Email configuration</h1><button disabled="@Loading" @onclick="LoadAsync">Refresh</button></div>
+<AdminDataState RequiresLogin="RequiresLogin" Loading="Loading" Error="Error">
+@if(Data is not null){
+ <dl><dt>Provider</dt><dd>@Data.Provider</dd><dt>Configuration present</dt><dd>@Data.Configured</dd><dt>API key presence (HTTP providers)</dt><dd>@Data.ApiKey</dd><dt>Sender configured</dt><dd>@Data.SenderConfigured</dd><dt>SMTP transport</dt><dd>@(Data.SmtpSecurity ?? "Not applicable")</dd><dt>XAIC attachment supported by adapter</dt><dd>@Data.XaicSupported</dd></dl>
+ @if(Data.Missing.Length>0){<p role="alert">Missing/invalid configuration: @string.Join(", ",Data.Missing)</p>}
+ @if(Data.DevelopmentOnly){<p>Mailpit captures development messages locally. It does not deliver production email.</p>}
+}
+</AdminDataState>
+<p>Delivery is not verified by this check. No email is sent. Configure secrets on the backend; this page never receives their values.</p>
+@code { protected override Task<EmailConfiguration> FetchAsync()=>Api.GetEmailConfigurationAsync(); }

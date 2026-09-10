@@ -1,0 +1,72 @@
+# Isolated local integration stack. Never use this file for production rollout.
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: xai_devtest
+      POSTGRES_USER: xai_devtest
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Generate .env.admin-test first}
+    volumes: [devtest-db:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U xai_devtest -d xai_devtest']
+      interval: 3s
+      timeout: 3s
+      retries: 30
+  mailpit:
+    image: axllent/mailpit@sha256:98b916bd3c8d61f7633a52d3ea2f58d00620cb01ca57ab59edde68c347a95365
+    ports: ['127.0.0.1:18025:8025', '127.0.0.1:11025:1025']
+    environment:
+      MP_MAX_MESSAGES: 200
+      MP_DISABLE_VERSION_CHECK: 'true'
+    healthcheck:
+      test: [CMD, /mailpit, readyz]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  clamav:
+    build: {context: ., dockerfile: services/api_fastapi/security/clamav/Dockerfile}
+    volumes: [devtest-signatures:/var/lib/clamav]
+    healthcheck:
+      test: [CMD, clamdcheck.sh]
+      interval: 10s
+      timeout: 5s
+      start_period: 180s
+      retries: 30
+  backend:
+    build: {context: ., dockerfile: services/api_fastapi/Dockerfile}
+    environment:
+      APP_ENV: development
+      DATABASE_URL: postgresql+psycopg://xai_devtest:${POSTGRES_PASSWORD:?Required}@db:5432/xai_devtest
+      JWT_SECRET: ${JWT_SECRET:?Required}
+      STORAGE_PATH: /data
+      EMAIL_PROVIDER: mailpit
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+      SMTP_FROM: ${SMTP_FROM:?Required}
+      SMTP_SECURITY: none
+      CLAMAV_HOST: clamav
+      CLAMAV_PORT: 3310
+      SECURITY_SCAN_REQUIRED: 'true'
+      YARA_RULES_PATH: /app/security/yara/production
+      XAI_SEED_ADMIN: ${XAI_SEED_ADMIN:-false}
+      XAI_SEED_ADMIN_EMAIL: ${XAI_SEED_ADMIN_EMAIL:-}
+      XAI_SEED_ADMIN_PASSWORD: ${XAI_SEED_ADMIN_PASSWORD:-}
+    volumes: [devtest-files:/data]
+    ports: ['127.0.0.1:18000:8000']
+    depends_on:
+      db: {condition: service_healthy}
+      mailpit: {condition: service_healthy}
+      clamav: {condition: service_healthy}
+  admin:
+    build: ./apps/admin_dotnet
+    environment:
+      PlatformApi__BaseUrl: http://backend:8000
+      Authentication__OidcEnabled: 'false'
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: Development
+    ports: ['127.0.0.1:15050:8080']
+    depends_on: [backend]
+volumes:
+  devtest-db:
+  devtest-signatures:
+  devtest-files:

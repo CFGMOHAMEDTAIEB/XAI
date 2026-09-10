@@ -1,11 +1,17 @@
-@page "/users"
-@inject PlatformApiClient Api
-@inject AdminSession Session
-@if(!string.IsNullOrEmpty(_error)){<p role="alert">@_error</p>}
+﻿@page "/users"
+@inherits AdminReadPage<IReadOnlyList<UserSummary>>
 <PageTitle>Users</PageTitle>
-<div class="page-heading"><div><h1>Users and access</h1><p>Review roles, MFA state and account status.</p></div><input class="search" @bind="_search" placeholder="Search users" /></div>
-@if(_requiresLogin){<a class="button primary" href="/login">Sign in to view users</a>}else{<section class="panel">
+<div class="page-heading"><div><h1>Users and access</h1><p>Review roles, MFA state and account status.</p></div><button disabled="@Loading" @onclick="LoadAsync">Refresh</button></div>
+<label>Search users<input class="search" @bind="_search" @bind:event="oninput" placeholder="Name or email" /></label>
+<AdminDataState RequiresLogin="RequiresLogin" Loading="Loading" Error="Error">
+@if(Data is not null){<section class="panel">
 <table><thead><tr><th>User</th><th>Role</th><th>Status</th><th>MFA</th><th>Last login</th></tr></thead><tbody>
-@foreach(var user in Filtered){<tr><td><strong>@user.DisplayName</strong><small>@user.Email</small></td><td>@user.Role</td><td><StatusBadge Value="@user.Status" /></td><td>@(user.MfaEnabled ? "Enabled" : "Disabled")</td><td>@(user.LastLogin?.LocalDateTime.ToString() ?? "Not recorded")</td></tr>}
+@if(!Filtered.Any()){<tr><td colspan="5">No users match this view.</td></tr>}
+@foreach(var user in Filtered){<tr><td><a href="@($"/users/{user.Id}")">@(string.IsNullOrWhiteSpace(user.DisplayName) ? user.Email : user.DisplayName)</a><small>@user.Email</small></td><td>@user.Role</td><td><StatusBadge Value="@user.Status" /></td><td>@(user.MfaEnabled ? "Enabled" : "Disabled")</td><td>@(user.LastLogin?.LocalDateTime.ToString() ?? "Not recorded")</td></tr>}
 </tbody></table></section>}
-@code { private string _error=""; private IReadOnlyList<UserSummary> _users=[];private string _search="";private bool _requiresLogin;protected override async Task OnInitializedAsync(){_requiresLogin=!Session.IsAuthenticated;if(_requiresLogin)return;try{_users=await Api.GetUsersAsync();}catch(AdminApiAuthorizationException){_requiresLogin=true;}catch(Exception){_error="Backend unavailable. Reload this page to retry.";}}private IEnumerable<UserSummary> Filtered=>_users.Where(x=>string.IsNullOrWhiteSpace(_search)||x.Email.Contains(_search,StringComparison.OrdinalIgnoreCase)||x.DisplayName.Contains(_search,StringComparison.OrdinalIgnoreCase));}
+</AdminDataState>
+@code {
+ private string _search="";
+ protected override Task<IReadOnlyList<UserSummary>> FetchAsync()=>Api.GetUsersAsync();
+ private IEnumerable<UserSummary> Filtered=>(Data??[]).Where(x=>string.IsNullOrWhiteSpace(_search)||x.Email.Contains(_search,StringComparison.OrdinalIgnoreCase)||(x.DisplayName??"").Contains(_search,StringComparison.OrdinalIgnoreCase));
+}

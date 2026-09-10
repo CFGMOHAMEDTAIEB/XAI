@@ -1,0 +1,9 @@
+@page "/scanner"
+@inherits AdminReadPage<ScannerStatus>
+<PageTitle>Security scanner</PageTitle>
+<div class="page-heading"><h1>Security scanner</h1><button disabled="@Loading" @onclick="LoadAsync">Refresh</button></div>
+<AdminDataState RequiresLogin="RequiresLogin" Loading="Loading" Error="Error">
+@if(Data is not null){<dl><dt>Overall readiness</dt><dd><StatusBadge Value="@Data.Status" /></dd><dt>ClamAV connectivity</dt><dd><StatusBadge Value="@Data.Clamav" /></dd><dt>YARA rule loading</dt><dd><StatusBadge Value="@Data.Yara" /></dd><dt>Required by configuration</dt><dd>@Data.Required</dd></dl>}
+</AdminDataState>
+<p>File processing fails closed when scanning cannot finish. Readiness does not prove detection of every threat. Internal hostnames and rule contents are not exposed.</p>
+@code { protected override Task<ScannerStatus> FetchAsync()=>Api.GetScannerAsync(); }

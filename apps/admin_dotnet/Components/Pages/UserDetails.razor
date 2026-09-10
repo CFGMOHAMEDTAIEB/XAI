@@ -1,0 +1,16 @@
+﻿@page "/users/{Id:int}"
+@inherits AdminReadPage<XaiCompress.Admin.Models.UserDetails>
+<PageTitle>User details</PageTitle>
+<div class="page-heading"><h1>User details</h1><button disabled="@Loading" @onclick="LoadAsync">Refresh</button></div>
+<a href="/users">Back to users</a>
+<AdminDataState RequiresLogin="RequiresLogin" Loading="Loading" Error="Error">
+@if (Data is not null) {
+ <dl><dt>Email</dt><dd>@Data.Email</dd><dt>Display name</dt><dd>@Data.DisplayName</dd><dt>Role</dt><dd>@Data.Role</dd>
+ <dt>MFA</dt><dd>@(Data.MfaEnabled ? "Enabled" : "Not enabled")</dd><dt>Enrollment</dt><dd>@Data.MfaEnrollmentState</dd>
+ <dt>Created</dt><dd>@Data.CreatedAt.ToString("u")</dd><dt>Last recorded login</dt><dd>@(Data.LastLogin?.ToString("u") ?? "Not recorded")</dd>
+ <dt>Stored file records</dt><dd>@Data.FileCount</dd></dl>
+ <p>Read-only account review. Passwords, TOTP secrets and tokens are never returned here.</p>
+}
+</AdminDataState>
+@code { [Parameter] public int Id { get; set; } protected override Task<XaiCompress.Admin.Models.UserDetails> FetchAsync()=>Api.GetUserAsync(Id); }
+

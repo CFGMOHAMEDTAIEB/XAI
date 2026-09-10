@@ -1,0 +1,9 @@
+{
+  "database": "PASS",
+  "model_columns_nullability": "PASS",
+  "primary_foreign_unique_constraints": "PASS",
+  "indexes": "PASS",
+  "migration_matches_model": "PASS",
+  "migration_idempotence": "PASS",
+  "temporary_schema_rolled_back": "PASS"
+}

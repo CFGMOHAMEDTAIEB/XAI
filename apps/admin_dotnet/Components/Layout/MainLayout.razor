@@ -1,4 +1,5 @@
 @inherits LayoutComponentBase
+@implements IDisposable
 @inject PlatformApiClient Api
 @inject AdminSession Session
 @inject NavigationManager Navigation
@@ -40,6 +41,9 @@
 </div>
 
 @code {
+    protected override void OnInitialized() => Session.Changed += SessionChanged;
+    private void SessionChanged() => _ = InvokeAsync(StateHasChanged);
+    public void Dispose() => Session.Changed -= SessionChanged;
     private bool _signingOut;
     private async Task Logout() {
         if (_signingOut) return;
