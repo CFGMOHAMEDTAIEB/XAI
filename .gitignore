@@ -5,6 +5,8 @@ __pycache__/
 node_modules/
 .dart_tool/
 build/
+bin/
+obj/
 dist/
 coverage/
 *.pt
@@ -14,6 +16,10 @@ infrastructure/data/
 *.db
 *.tsbuildinfo
 .flutter-plugins-dependencies
+
+# Local integration test basetemps are rebuildable and may contain symlinks.
+scratch/*pytest*/
+scratch/integration-final-tests-*/
 
 # Deployment credentials: commit templates only.
 .env.*

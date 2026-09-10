@@ -69,6 +69,13 @@ def test_missing_sender_does_not_send(monkeypatch):
     with pytest.raises(email_service.VerificationEmailError, match='not configured'):
         email_service.send_verification_code('registered@example.com', '123456')
 
+def test_missing_key_does_not_send(monkeypatch):
+    monkeypatch.setattr(settings, 'brevo_api_key', '')
+    monkeypatch.setattr(email_service.urllib.request, 'urlopen', lambda *a, **k: pytest.fail('unexpected network call'))
+    assert 'BREVO_API_KEY' in email_service.verification_configuration_missing()
+    with pytest.raises(email_service.VerificationEmailError, match='not configured'):
+        email_service.send_verification_code('registered@example.com', '123456')
+
 def test_invalid_configuration():
     with pytest.raises(ValueError, match='EMAIL_PROVIDER'):
         Settings(_env_file=None, email_provider='unknown')

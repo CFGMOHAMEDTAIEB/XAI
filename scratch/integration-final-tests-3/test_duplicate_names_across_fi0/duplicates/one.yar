@@ -1,1 +1,0 @@
-rule same { condition: true }

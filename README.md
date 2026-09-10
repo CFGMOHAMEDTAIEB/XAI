@@ -31,11 +31,11 @@ The server URLs are:
 - Next.js: `http://localhost:3000`
 - .NET admin: `http://localhost:5050`
 
-PostgreSQL is internal-only at `db:5432`. FastAPI creates the existing SQLAlchemy schema at startup. Named volumes `db-data` and `xai-storage` preserve database records and artifacts across ordinary Compose restarts.
+PostgreSQL is internal-only at `db:5432`. Development startup creates the SQLAlchemy schema; production startup requires the reviewed schema/bootstrap and migration path documented in `deployment/README.md`. Named volumes `db-data` and `xai-storage` preserve database records and artifacts across ordinary Compose restarts.
 
 ## Runtime configuration
 
-Root `.env.example` documents database credentials, JWT lifetime/secret, ports, browser API URL, CORS origins, and admin email allowlist. Containers use `backend` and `db` service DNS names; browsers and host applications use exposed localhost ports.
+Root `.env.example` documents database credentials, JWT lifetime/secret, ports, browser API URL, CORS origins, and the explicit operator-only admin bootstrap. Containers use `backend` and `db` service DNS names; browsers and host applications use exposed localhost ports.
 
 Angular uses `/api` in its production image, proxied by nginx to `backend:8000`. Next.js uses `INTERNAL_API_URL` for server rendering and `NEXT_PUBLIC_API_URL` for browser calls. The .NET container receives `PlatformApi__BaseUrl=http://backend:8000`.
 
@@ -43,7 +43,7 @@ Desktop Flutter defaults to `http://localhost:8000` and can be overridden at bui
 
 ## Authentication and data flow
 
-FastAPI is the single identity and data service. It owns users, password hashes, access/refresh tokens, TOTP enrollment/challenges, files, compression results, history, shares, and admin views. Set `ADMIN_EMAILS` to grant the existing admin application access; production deployments should provision explicit roles instead of relying on a development allowlist.
+FastAPI is the single identity and data service. It owns users, password hashes, access/refresh tokens, TOTP enrollment/challenges, files, compression results, history, shares, and admin views. Admin authorization depends only on the stored `users.role` value being `admin`; `ADMIN_EMAILS` does not grant access. Before rollout, promote the intended existing operator with the explicit bootstrap CLI described in `deployment/README.md`.
 
 Compression uploads use `POST /compression/jobs`. The backend stores input/artifact files in `xai-storage`, invokes the repository's Hybrid V3 runtime (`mode=hybrid-v2`, runtime generation V3) using top-3 routing and the frozen `checkpoints/selector_v2/best.json`, decompresses the generated `.xaic`, and commits the job only after SHA-256 equality. The model is copied read-only into the backend image; it is never trained or overwritten.
 
