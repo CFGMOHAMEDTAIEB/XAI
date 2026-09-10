@@ -73,3 +73,9 @@ public sealed record ServiceHealth(
     double LatencyMs,
     string Version,
     DateTimeOffset CheckedAt);
+
+public sealed record AuthenticatorDevice(int UserId, string DeviceId, string Platform, string AppVersion,
+    string Status, DateTimeOffset RegisteredAt, DateTimeOffset LastActivity);
+public sealed record AuthenticatorHistory(int UserId, string Type, string Result, string Application,
+    DateTimeOffset CreatedAt);
+public sealed record RecoveryCodeSummary(int UserId, int Issued, int Used, int Remaining);

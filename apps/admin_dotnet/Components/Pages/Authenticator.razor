@@ -1,0 +1,26 @@
+@page "/authenticator"
+@inherits AdminReadPage<IReadOnlyList<AuthenticatorDevice>>
+<PageTitle>Authenticator administration</PageTitle>
+<div class="page-heading"><div><h1>Authenticator devices and recovery</h1><p>Read-only operational review. Public keys, TOTP secrets, recovery codes and tokens are never returned.</p></div><button disabled="@Loading" @onclick="LoadAllAsync">Refresh</button></div>
+<AdminDataState RequiresLogin="RequiresLogin" Loading="Loading" Error="Error">
+@if(Data is not null){
+<section class="panel"><h2>Registered devices</h2><table><thead><tr><th>User</th><th>Device</th><th>Platform</th><th>Version</th><th>Status</th><th>Activity</th></tr></thead><tbody>
+@if(!Data.Any()){<tr><td colspan="6">No authenticator devices registered.</td></tr>}
+@foreach(var item in Data){<tr><td>@item.UserId</td><td class="mono">@item.DeviceId</td><td>@item.Platform</td><td>@item.AppVersion</td><td><StatusBadge Value="@item.Status" /></td><td>@item.LastActivity.LocalDateTime</td></tr>}
+</tbody></table></section>
+<section class="panel"><h2>Recovery code inventory</h2><table><thead><tr><th>User</th><th>Issued</th><th>Used</th><th>Remaining</th></tr></thead><tbody>
+@if(!_recovery.Any()){<tr><td colspan="4">No recovery codes issued.</td></tr>}
+@foreach(var item in _recovery){<tr><td>@item.UserId</td><td>@item.Issued</td><td>@item.Used</td><td>@item.Remaining</td></tr>}
+</tbody></table></section>
+<section class="panel"><h2>Authentication history</h2><table><thead><tr><th>Time</th><th>User</th><th>Event</th><th>Result</th><th>Application</th></tr></thead><tbody>
+@if(!_history.Any()){<tr><td colspan="5">No authenticator events recorded.</td></tr>}
+@foreach(var item in _history){<tr><td>@item.CreatedAt.LocalDateTime</td><td>@item.UserId</td><td>@item.Type</td><td><StatusBadge Value="@item.Result" /></td><td>@item.Application</td></tr>}
+</tbody></table></section>}
+</AdminDataState>
+@code {
+ private IReadOnlyList<AuthenticatorHistory> _history=[];
+ private IReadOnlyList<RecoveryCodeSummary> _recovery=[];
+ protected override Task<IReadOnlyList<AuthenticatorDevice>> FetchAsync()=>Api.GetAuthenticatorDevicesAsync();
+ private async Task LoadAllAsync(){await LoadAsync();if(Data is null)return;try{_history=await Api.GetAuthenticatorHistoryAsync();_recovery=await Api.GetRecoveryCodeSummariesAsync();}catch(AdminApiAuthorizationException){RequiresLogin=true;}catch(Exception){Error="Authenticator administration data is unavailable. Retry when connected.";}}
+ protected override async Task OnParametersSetAsync(){await LoadAllAsync();}
+}

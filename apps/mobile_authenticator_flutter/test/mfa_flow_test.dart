@@ -89,54 +89,36 @@ Future<void> type(WidgetTester tester, String label, String value) async {
 }
 
 void main() {
-  testWidgets('Guided enrollment handles invalid codes and provisions before enabling', (tester) async {
+  testWidgets('QR-first enrollment saves a valid standard TOTP URI', (tester) async {
     final api = FlowApi(); final store = MemoryStore();
     await mount(tester, api, store);
-    await tap(tester, 'Sign in');
-    await tap(tester, 'Setup Authenticator');
-    expect(find.text('Email verification code'), findsOneWidget);
-    await type(tester, 'Email verification code', '000000');
-    await tap(tester, 'Verify email & provision authenticator');
-    expect(find.text('Invalid email code. Retry.'), findsOneWidget);
-    expect(find.byType(LinearProgressIndicator), findsNothing);
-    await type(tester, 'Email verification code', '123456');
-    await tap(tester, 'Verify email & provision authenticator');
-    expect(store.stored.length, 1);
-    expect(store.stored.single.id, 'xai-${FlowApi.eid}');
-    await type(tester, 'Generated TOTP code', '000000');
-    await tap(tester, 'Verify TOTP & enable MFA');
-    expect(find.text('Invalid TOTP. Retry with a fresh code.'), findsOneWidget);
-    await type(tester, 'Generated TOTP code', '654321');
-    await tap(tester, 'Verify TOTP & enable MFA');
-    expect(find.textContaining('MFA ENABLED.'), findsOneWidget);
+    await tap(tester, 'Add account');
+    expect(find.text('Scan QR code'), findsOneWidget);
+    await type(tester, 'otpauth URI', 'otpauth://totp/XAI:test@example.com?secret=GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ&issuer=XAI');
+    await tap(tester, 'Add standard TOTP account');
+    expect(store.stored, hasLength(1));
+    expect(store.stored.single.issuer, 'XAI');
+    expect(store.stored.single.secret, isNotEmpty);
   });
 
-  testWidgets('Storage retry does not replay consumed email verification', (tester) async {
+  testWidgets('Invalid QR URI is rejected without writing secure storage', (tester) async {
+    final api = FlowApi(); final store = MemoryStore();
+    await mount(tester, api, store);
+    await tap(tester, 'Add account');
+    await type(tester, 'otpauth URI', 'https://example.test/not-a-totp-code');
+    await tap(tester, 'Add standard TOTP account');
+    expect(find.text('The QR code is not an otpauth TOTP URI.'), findsOneWidget);
+    expect(store.stored, isEmpty);
+  });
+
+  testWidgets('Secure storage errors leave the account list unchanged', (tester) async {
     final api = FlowApi(); final store = MemoryStore()..failWrite = true;
     await mount(tester, api, store);
-    await tap(tester, 'Sign in'); await tap(tester, 'Setup Authenticator');
-    await type(tester, 'Email verification code', '123456');
-    await tap(tester, 'Verify email & provision authenticator');
-    expect(find.text('Retry secure storage'), findsOneWidget);
+    await tap(tester, 'Add account');
+    await type(tester, 'otpauth URI', 'otpauth://totp/XAI:test@example.com?secret=GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ&issuer=XAI');
+    await tap(tester, 'Add standard TOTP account');
+    expect(find.text('Secure storage could not save this account.'), findsOneWidget);
     expect(store.stored, isEmpty);
-    expect(find.text('Verify TOTP & enable MFA'), findsNothing);
-    store.failWrite = false;
-    await tap(tester, 'Retry secure storage');
-    expect(api.disclosures, 1);
-    expect(store.stored.length, 1);
-    expect(find.text('Verify TOTP & enable MFA'), findsOneWidget);
-  });
-
-  testWidgets('Registration and backend outage recover without an infinite spinner', (tester) async {
-    final api = FlowApi()..unavailable = true;
-    await mount(tester, api, MemoryStore());
-    await tap(tester, 'Create a new XAI account');
-    await tap(tester, 'Create account');
-    expect(find.text('Backend unavailable. Retry.'), findsOneWidget);
-    expect(find.byType(LinearProgressIndicator), findsNothing);
-    api.unavailable = false;
-    await tap(tester, 'Create account');
-    expect(find.text('Setup Authenticator'), findsOneWidget);
   });
 
   testWidgets('Startup secure storage failure clears loading and can retry', (tester) async {
@@ -153,14 +135,14 @@ void main() {
     state.dispose();
   });
 
-  testWidgets('Lost disclosure recovers through restart, never an invented secret', (tester) async {
-    final api = FlowApi()..stage = 'awaiting_totp';
-    await mount(tester, api, MemoryStore());
-    await tap(tester, 'Sign in');
-    expect(find.textContaining('secret is not on this phone'), findsOneWidget);
-    expect(find.text('Verify TOTP & enable MFA'), findsNothing);
-    await tap(tester, 'Restart setup with a new secret');
-    expect(find.text('Email verification code'), findsOneWidget);
+  test('Duplicate QR enrollment is rejected', () async {
+    final store = MemoryStore();
+    final state = AppState(accountStore: store, biometricService: BiometricService(), apiService: FlowApi());
+    addTearDown(state.dispose);
+    const uri = 'otpauth://totp/XAI:test@example.com?secret=GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ&issuer=XAI';
+    await state.addFromUri(uri);
+    await expectLater(state.addFromUri(uri), throwsA(isA<FormatException>()));
+    expect(store.stored, hasLength(1));
   });
 
   test('API keeps secrets in authenticated POST bodies, not URLs', () async {

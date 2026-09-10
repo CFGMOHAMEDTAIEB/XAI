@@ -28,18 +28,18 @@ void main() {
     await tester.tap(find.text('Unlock'));
     await tester.pumpAndSettle();
     expect(find.text('Unlock'), findsOneWidget);
-    expect(find.text('XAI account & MFA'), findsNothing);
+    expect(find.text('Authenticator accounts'), findsNothing);
 
     biometrics.result = true;
     await tester.tap(find.text('Unlock'));
     await tester.pumpAndSettle();
     expect(find.text('Unlock'), findsNothing);
-    expect(find.text('XAI account & MFA'), findsOneWidget);
+    expect(find.text('Authenticator accounts'), findsOneWidget);
 
     await tester.tap(find.byTooltip('Lock'));
     await tester.pumpAndSettle();
     expect(find.text('Unlock'), findsOneWidget);
-    expect(find.text('XAI account & MFA'), findsNothing);
+    expect(find.text('Authenticator accounts'), findsNothing);
   });
 
   testWidgets('Authenticator starts locked and does not expose account codes', (tester) async {
@@ -50,7 +50,7 @@ void main() {
       value: state, child: const XaiAuthenticatorApp()));
     expect(find.text('Unlock'), findsOneWidget);
     expect(find.text('XAI-Compress Authenticator'), findsOneWidget);
-    expect(find.text('XAI account & MFA'), findsNothing);
+    expect(find.text('Authenticator accounts'), findsNothing);
     expect(tester.takeException(), isNull);
   });
 }

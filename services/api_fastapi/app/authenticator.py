@@ -9,7 +9,7 @@ import qrcode
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 from fastapi import Depends, HTTPException, Response
 from pydantic import BaseModel, Field, field_validator
-from sqlalchemy import select, update, delete
+from sqlalchemy import select, update, delete, func
 from sqlalchemy.orm import Session
 
 from .config import settings
@@ -160,3 +160,13 @@ def register_authenticator_routes(app,current_user,require_admin):
     @app.get('/admin/authenticator/devices')
     def admin_devices(admin:User=Depends(require_admin),db:Session=Depends(get_db)):
         return [{'user_id':x.user_id,**public_device(x)} for x in db.scalars(select(AuthenticatorDevice).order_by(AuthenticatorDevice.registered_at.desc()).limit(500))]
+
+    @app.get('/admin/authenticator/history')
+    def admin_history(admin:User=Depends(require_admin),db:Session=Depends(get_db)):
+        rows=db.scalars(select(AuthEvent).order_by(AuthEvent.created_at.desc()).limit(500)).all()
+        return [{'user_id':x.user_id,'type':x.event_type,'result':x.result,'application':x.application,'created_at':x.created_at} for x in rows]
+
+    @app.get('/admin/authenticator/recovery')
+    def admin_recovery(admin:User=Depends(require_admin),db:Session=Depends(get_db)):
+        rows=db.execute(select(RecoveryCode.user_id,func.count(RecoveryCode.id),func.sum(RecoveryCode.used_at.is_not(None))).group_by(RecoveryCode.user_id)).all()
+        return [{'user_id':user_id,'issued':int(issued),'used':int(used or 0),'remaining':int(issued-(used or 0))} for user_id,issued,used in rows]

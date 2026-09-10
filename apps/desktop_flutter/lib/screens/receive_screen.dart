@@ -48,7 +48,7 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
    FilledButton(onPressed:busy?null:()=>run(login),child:Text(registering?'Create account':'Sign in')),
    TextButton(onPressed:busy?null:()=>setState(()=>registering=!registering),child:Text(registering?'Sign in instead':'Create account')),
   ]else...[
-   const Text('Set up MFA in XAI Authenticator using this same account. Future logins require TOTP after setup is confirmed.'),
+   const Text('Open the portal Security page to generate a short-lived QR code, then scan it with XAI Authenticator. Future logins require TOTP after activation.'),
    FilledButton(onPressed:busy?null:()=>run(history),child:const Text('Cloud history and downloads')),
    TextField(controller:code,enabled:!busy,decoration:const InputDecoration(labelText:'Share code')),
    FilledButton(onPressed:busy?null:()=>run(()async{await api.redeem(code.text.trim());if(mounted)result='Share available. Download the artifact below.';}),child:const Text('Redeem code')),

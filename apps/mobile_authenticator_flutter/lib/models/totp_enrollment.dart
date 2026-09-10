@@ -50,8 +50,8 @@ class TotpEnrollment {
       issuer: issuer,
       accountName: account.isEmpty ? 'Account' : account,
       algorithm: algorithm,
-      digits: digits!,
-      period: period!,
+      digits: digits == 8 ? 8 : 6,
+      period: period,
     );
   }
 

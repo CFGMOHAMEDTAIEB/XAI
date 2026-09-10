@@ -77,6 +77,9 @@ public sealed class PlatformApiClient
     public Task<UserDetails> GetUserAsync(int id) => GetProtectedAsync<UserDetails>($"/admin/users/{id}");
     public Task<ScannerStatus> GetScannerAsync() => GetProtectedAsync<ScannerStatus>("/admin/security/scanner");
     public Task<EmailConfiguration> GetEmailConfigurationAsync() => GetProtectedAsync<EmailConfiguration>("/admin/email/configuration");
+    public async Task<IReadOnlyList<AuthenticatorDevice>> GetAuthenticatorDevicesAsync() => await GetProtectedAsync<List<AuthenticatorDevice>>("/admin/authenticator/devices");
+    public async Task<IReadOnlyList<AuthenticatorHistory>> GetAuthenticatorHistoryAsync() => await GetProtectedAsync<List<AuthenticatorHistory>>("/admin/authenticator/history");
+    public async Task<IReadOnlyList<RecoveryCodeSummary>> GetRecoveryCodeSummariesAsync() => await GetProtectedAsync<List<RecoveryCodeSummary>>("/admin/authenticator/recovery");
     public Task<IReadOnlyList<SecurityIncident>> GetIncidentsAsync() => Task.FromResult<IReadOnlyList<SecurityIncident>>([]);
     public Task<IReadOnlyList<QuarantinedFile>> GetQuarantineAsync() => Task.FromResult<IReadOnlyList<QuarantinedFile>>([]);
 
