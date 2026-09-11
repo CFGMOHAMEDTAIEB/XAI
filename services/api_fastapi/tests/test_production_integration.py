@@ -49,6 +49,14 @@ def test_production_rejects_development_credentials():
     with pytest.raises(ValidationError):
         Settings(_env_file=None,app_env='production')
 
+def test_production_rejects_case_insensitive_jwt_placeholder():
+    from app.config import Settings
+    from pydantic import ValidationError
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None,app_env='production',
+                 jwt_secret='replace-with-a-random-secret-of-at-least-32-characters',
+                 database_url='postgresql+psycopg://u:p@db/xai',cors_origins='https://xai-usg.vercel.app')
+
 
 def test_production_rejects_unsafe_cors():
     from app.config import Settings

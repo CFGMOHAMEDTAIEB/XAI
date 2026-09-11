@@ -91,7 +91,9 @@ class Settings(BaseSettings):
                 raise ValueError('Production requires security scanning')
             if 'test' in Path(self.yara_rules_path).parts:
                 raise ValueError('Production cannot load test YARA rules')
-            if len(self.jwt_secret)<32 or 'REPLACE_' in self.jwt_secret or 'development-only' in self.jwt_secret:
+            secret_marker = self.jwt_secret.lower()
+            if (len(self.jwt_secret) < 32 or 'replace' in secret_marker
+                    or 'development' in secret_marker or 'changeme' in secret_marker):
                 raise ValueError('Production JWT_SECRET must be a configured random secret')
             if not self.database_url.startswith('postgresql+psycopg://') or 'REPLACE_' in self.database_url:
                 raise ValueError('Production DATABASE_URL must use configured PostgreSQL/psycopg')
