@@ -25,7 +25,8 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "src/auth-security.scss"
             ]
           },
           "configurations": {
