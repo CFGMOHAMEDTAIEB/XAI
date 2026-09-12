@@ -54,7 +54,7 @@ def test_production_rejects_case_insensitive_jwt_placeholder():
     from pydantic import ValidationError
     with pytest.raises(ValidationError):
         Settings(_env_file=None,app_env='production',
-                 jwt_secret='replace-with-a-random-secret-of-at-least-32-characters',
+                 jwt_secret='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNzg5MjIxNzc1fQ.f1M58fpCCR-NiZyGIRvMGXcCvPz0vCtNpeeK2gLxgiA',
                  database_url='postgresql+psycopg://u:p@db/xai',cors_origins='https://xai-usg.vercel.app')
 
 
