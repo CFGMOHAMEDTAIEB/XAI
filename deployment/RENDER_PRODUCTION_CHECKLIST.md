@@ -9,14 +9,14 @@ migrations, or change credentials without operator approval.
 Vercel public Next.js ─┐
 Vercel Angular portal ─┼──> Render FastAPI API ──> Render PostgreSQL
 Render .NET admin ─────┘             │
-                                    ├──> Render private ClamAV:3310
+                                    ├──> Same-container ClamAV:127.0.0.1:3310
                                     └──> Persistent Disk mounted at /data
 
 YARA production rules remain in the FastAPI image at /app/security/yara/production.
 ```
 
-The API, PostgreSQL, and private ClamAV service must be in the same Render
-workspace and region. The current file/artifact design supports one API instance
+The API and PostgreSQL must be in the same Render workspace and region. ClamAV
+runs in the API container on loopback. The current file/artifact design supports one API instance
 with its persistent disk. Multiple API replicas are unsafe: file records contain
 absolute paths to artifacts on a local disk that is not shared between replicas.
 
@@ -34,7 +34,7 @@ Set these explicit baseline variables in the FastAPI Render service:
 - `BREVO_API_KEY` — rotated transactional API key.
 - `BREVO_SENDER_EMAIL`
 - `BREVO_SENDER_NAME`
-- `CLAMAV_HOST` — the actual Render private hostname, without a scheme or port.
+- `CLAMAV_HOST=127.0.0.1` — the loopback-only daemon in the API container.
 - `CLAMAV_PORT=3310`
 - `SECURITY_SCAN_REQUIRED=true`
 - `SECURITY_SCAN_TIMEOUT`
@@ -101,14 +101,15 @@ variables and restart the API. Do not use public registration for promotion.
 
 ## ClamAV and YARA
 
-Deploy ClamAV as a Render **Private Service** from
-`services/api_fastapi/security/clamav/Dockerfile`. Do not expose port 3310
-publicly. Preserve the official entrypoint, FreshClam updates, the included
-`clamdcheck.sh` health probe, and `AlertExceedsMax yes`. Configure the API with
-the service's actual Connect/Internal hostname and port 3310. Allocate at least
-3 GiB memory (4 GiB preferred) for signature loading, and persist
-`/var/lib/clamav` where the selected Render service supports it. Confirm private
-connectivity and readiness before API traffic.
+The API image starts clamd, FreshClam, and Uvicorn under Supervisor. clamd binds
+only to `127.0.0.1:3310`; do not publish that port. Startup initializes the
+signature database when absent, periodic updates happen outside request paths,
+and Uvicorn waits for a successful clamd PING. `AlertExceedsMax yes` and the
+application's fail-closed behavior remain mandatory. Allocate at least 3 GiB
+memory (4 GiB preferred) for ClamAV plus the application, and persist
+`/var/lib/clamav` if the selected paid service supports the required mount.
+Render's 512 MB free web plan is below ClamAV's documented recommendation and
+must not be treated as validated for this combined image.
 
 The API Dockerfile copies `services/api_fastapi/security` to `/app/security`, so
 the configured production rule directory is included in the image. After image
@@ -172,7 +173,7 @@ not configured in this repository.
 
 Roll out only in this order: rotate secrets; update protected Render settings;
 confirm `APP_ENV`; snapshot and inspect PostgreSQL; verify/promote the operator;
-apply migrations; attach the disk; provision private ClamAV; verify YARA image
+apply migrations; attach the disk; verify same-container ClamAV resources; verify YARA image
 contents; verify Brevo sender; validate the API environment; deploy the API; run
 health/scanner checks; deploy frontend configuration; run MFA/scanner/admin E2E;
 then begin release signing work. Production push remains blocked until Android/iOS

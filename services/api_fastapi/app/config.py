@@ -93,7 +93,8 @@ class Settings(BaseSettings):
                 raise ValueError('Production cannot load test YARA rules')
             secret_marker = self.jwt_secret.lower()
             if (len(self.jwt_secret) < 32 or 'replace' in secret_marker
-                    or 'development' in secret_marker or 'changeme' in secret_marker):
+                    or 'development' in secret_marker or 'changeme' in secret_marker
+                    or (secret_marker.startswith('eyj') and self.jwt_secret.count('.') == 2)):
                 raise ValueError('Production JWT_SECRET must be a configured random secret')
             if not self.database_url.startswith('postgresql+psycopg://') or 'REPLACE_' in self.database_url:
                 raise ValueError('Production DATABASE_URL must use configured PostgreSQL/psycopg')
