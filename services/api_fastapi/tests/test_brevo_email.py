@@ -37,6 +37,17 @@ def test_verification_contract(monkeypatch):
     monkeypatch.setattr(email_service.urllib.request, 'urlopen', send)
     email_service.send_verification_code('registered@example.com', '123456')
 
+@pytest.mark.parametrize('purpose,expected_subject',[
+    ('ACCOUNT_EMAIL_VERIFY','Verify your XAI Compress account'),
+    ('PASSWORD_RESET','Reset your XAI Compress password'),
+    ('PASSWORD_RESET_SUCCESS','Your XAI Compress password was changed')])
+def test_account_email_templates_are_accepted_without_secret_leak(monkeypatch,purpose,expected_subject):
+    captured=[]
+    monkeypatch.setattr(email_service,'_send_brevo',lambda body:captured.append(body) or '<unit-test>')
+    email_service.send_account_email('registered@example.com',None if purpose.endswith('SUCCESS') else '123456',purpose)
+    assert captured[0]['subject']==expected_subject
+    assert settings.brevo_api_key not in str(captured[0])
+
 @pytest.mark.parametrize('status', [400,401,403,404,422,429,500,503])
 def test_http_errors_are_sanitized(monkeypatch, status, caplog):
     def send(*args, **kwargs):

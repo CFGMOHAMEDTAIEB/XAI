@@ -215,6 +215,11 @@ def email_artifact(file_id:int,body:EmailSend,user:User=Depends(current_user),db
     audit(db,user.id,'email.accepted',str(file_id))
     return result
 
+@app.get('/email/capabilities')
+def email_capabilities(_:User=Depends(current_user)):
+    configured=not configuration_missing()
+    return {'configured':configured,'artifact_email_supported':configured and settings.email_provider!='brevo'}
+
 @app.get('/history')
 def history(user:User=Depends(current_user),db:Session=Depends(get_db)):
     files=db.scalars(select(FileRecord).where(FileRecord.owner_id==user.id).order_by(FileRecord.created_at.desc())).all()
@@ -228,6 +233,27 @@ def create_share(body:ShareCreate,user:User=Depends(current_user),db:Session=Dep
         expires_at=datetime.utcnow()+timedelta(minutes=body.expires_minutes),max_downloads=body.max_downloads,anonymous_sender=body.anonymous_sender)
     db.add(row); db.commit(); audit(db,user.id,'share.created',str(file.id))
     return {'share_code':code,'expires_at':row.expires_at,'recipient_email':row.recipient_email,'email_delivery':'not_configured_in_mvp'}
+
+@app.get('/shares')
+def list_shares(user:User=Depends(current_user),db:Session=Depends(get_db)):
+    now=datetime.utcnow()
+    rows=db.execute(select(ShareCode,FileRecord).join(FileRecord,FileRecord.id==ShareCode.file_id)
+        .where(ShareCode.sender_id==user.id).order_by(ShareCode.expires_at.desc())).all()
+    result=[]
+    for share,file in rows:
+        status='revoked' if share.revoked else 'expired' if share.expires_at<=now else 'exhausted' if share.download_count>=share.max_downloads else 'active'
+        result.append({'id':share.id,'file_name':file.name,'recipient_email':share.recipient_email,
+            'expires_at':share.expires_at,'status':status,'download_count':share.download_count,
+            'max_downloads':share.max_downloads})
+    return result
+
+@app.post('/shares/{share_id}/revoke')
+def revoke_share(share_id:int,user:User=Depends(current_user),db:Session=Depends(get_db)):
+    row=db.scalar(select(ShareCode).where(ShareCode.id==share_id,ShareCode.sender_id==user.id))
+    if not row: raise HTTPException(404,'Share not found')
+    if not row.revoked:
+        row.revoked=True;db.commit();audit(db,user.id,'share.revoked',str(row.id))
+    return {'status':'revoked'}
 
 @app.post('/shares/redeem')
 def redeem(body:ShareRedeem,user:User=Depends(current_user),db:Session=Depends(get_db)):

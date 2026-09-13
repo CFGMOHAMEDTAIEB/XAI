@@ -59,6 +59,7 @@ def test_password_reset_generic_one_time_and_preserves_mfa(accounts):
     assert verified.status_code==200 and 'reset_token' in verified.json()
     assert client.post('/auth/password/verify-code',json={'identifier':'person@example.com','code':code}).status_code==400
     token=verified.json()['reset_token'];assert client.post('/auth/password/reset',json={'reset_token':token,'new_password':'new-correct-password'}).status_code==200
+    assert sent[-1][2]=='PASSWORD_RESET_SUCCESS' and sent[-1][1] is None
     assert client.post('/auth/password/reset',json={'reset_token':token,'new_password':'another-password'}).status_code==400
     assert client.post('/auth/login',json={'email':'person@example.com','password':'correct-password'}).status_code==401
     assert client.post('/auth/login',json={'email':'person@example.com','password':'new-correct-password'}).status_code==200
