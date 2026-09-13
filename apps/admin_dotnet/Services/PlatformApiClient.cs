@@ -11,6 +11,7 @@ public sealed class AdminApiAuthorizationException(HttpStatusCode statusCode)
 {
     public HttpStatusCode StatusCode { get; } = statusCode;
 }
+public sealed class AdminMfaRequiredException() : Exception("An authenticator code is required.");
 
 public sealed class PlatformApiClient
 {
@@ -29,7 +30,13 @@ public sealed class PlatformApiClient
         using var loginResponse = await _http.PostAsJsonAsync(
             "/auth/login", new { email, password, totp_code = totpCode });
 
-        if (loginResponse.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+        if (loginResponse.StatusCode is HttpStatusCode.Unauthorized)
+        {
+            var error = await loginResponse.Content.ReadFromJsonAsync<ApiError>();
+            if (error?.Detail == "Valid TOTP code required") throw new AdminMfaRequiredException();
+            throw new AdminApiAuthorizationException(loginResponse.StatusCode);
+        }
+        if (loginResponse.StatusCode is HttpStatusCode.Forbidden)
             throw new AdminApiAuthorizationException(loginResponse.StatusCode);
 
         loginResponse.EnsureSuccessStatusCode();
@@ -123,4 +130,5 @@ public sealed class PlatformApiClient
 
     private sealed record TokenEnvelope([property: JsonPropertyName("access_token")] string AccessToken,
         [property: JsonPropertyName("refresh_token")] string? RefreshToken);
+    private sealed record ApiError([property: JsonPropertyName("detail")] string Detail);
 }

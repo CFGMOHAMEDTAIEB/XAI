@@ -5,6 +5,7 @@ public abstract class AdminReadPage<T> : ComponentBase where T : class
 {
     [Inject] protected PlatformApiClient Api { get; set; } = default!;
     [Inject] protected AdminSession Session { get; set; } = default!;
+    [Inject] protected NavigationManager Navigation { get; set; } = default!;
     protected T? Data;
     protected bool Loading;
     protected bool RequiresLogin;
@@ -15,10 +16,10 @@ public abstract class AdminReadPage<T> : ComponentBase where T : class
     {
         if (Loading) return;
         Data = null; Error = null; RequiresLogin = !Session.IsAuthenticated;
-        if (RequiresLogin) return;
+        if (RequiresLogin) { Navigation.NavigateTo("/login"); return; }
         Loading = true;
         try { Data = await FetchAsync(); }
-        catch (AdminApiAuthorizationException) { RequiresLogin = true; }
+        catch (AdminApiAuthorizationException exception) { RequiresLogin = true; if(exception.StatusCode==System.Net.HttpStatusCode.Unauthorized) Navigation.NavigateTo("/login"); else Error="Access denied."; }
         catch (HttpRequestException e) when (e.StatusCode == System.Net.HttpStatusCode.NotFound) { Error = "Record or endpoint not found."; }
         catch (Exception) { Error = "Data unavailable. The backend may be unreachable or returned an invalid response. Retry when connected."; }
         finally { Loading = false; }

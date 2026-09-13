@@ -13,6 +13,14 @@ public sealed record EmailConfiguration(string Provider, bool Configured, string
 
 public sealed record DashboardStats(
     int ActiveUsers,
+    int TotalUsers,
+    int PendingVerification,
+    int MfaEnabled,
+    int AuthenticatorDevices,
+    int CompressionJobs,
+    int SuccessfulJobs,
+    int FailedJobs,
+    int SecurityEvents,
     int JobsToday,
     long BytesSaved,
     int? OpenIncidents,
@@ -25,6 +33,8 @@ public sealed record UserSummary(
     string DisplayName,
     string Role,
     string Status,
+    bool EmailVerified,
+    bool PhoneVerified,
     bool MfaEnabled,
     DateTimeOffset CreatedAt,
     DateTimeOffset? LastLogin);

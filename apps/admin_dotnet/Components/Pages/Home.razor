@@ -1,114 +1,14 @@
 @page "/"
 @inject PlatformApiClient Api
 @inject AdminSession Session
-
-<PageTitle>Dashboard</PageTitle>
-
-@if (_requiresLogin)
-{
-    <div class="page-heading"><div><h1>Admin sign in required</h1><p>Authenticate with your XAI platform administrator account.</p></div></div>
-    <a class="button primary" href="/login">Go to sign in</a>
+@inject NavigationManager Navigation
+<PageTitle>Dashboard | XAI Admin</PageTitle>
+<div class="page-heading"><div><p class="eyebrow">Operational overview</p><h1>Dashboard</h1><p>Live account, compression and security records from the XAI platform API.</p></div><button class="button" disabled="@_loading" @onclick="LoadAsync">Refresh data</button></div>
+@if(!string.IsNullOrWhiteSpace(_error)){<div class="notice" role="alert">@_error</div>}
+else if(_loading||_stats is null){<div class="dashboard-skeleton" role="status"><span></span><span></span><span></span><span></span></div>}
+else{
+ <div class="stat-grid admin-stats"><MetricCard Label="Total users" Value="@_stats.TotalUsers.ToString()" Detail="All stored accounts" Tone="blue" Href="/users"/><MetricCard Label="Active accounts" Value="@_stats.ActiveUsers.ToString()" Detail="Account status ACTIVE" Tone="green" Href="/users"/><MetricCard Label="Pending verification" Value="@_stats.PendingVerification.ToString()" Detail="Awaiting account activation" Tone="orange" Href="/users"/><MetricCard Label="MFA enabled" Value="@_stats.MfaEnabled.ToString()" Detail="Accounts protected by TOTP" Tone="purple" Href="/authenticator"/><MetricCard Label="Authenticator devices" Value="@_stats.AuthenticatorDevices.ToString()" Detail="Active registered devices" Tone="teal" Href="/authenticator"/><MetricCard Label="Compression jobs" Value="@_stats.CompressionJobs.ToString()" Detail="Stored file job records" Tone="blue" Href="/jobs"/><MetricCard Label="Successful jobs" Value="@_stats.SuccessfulJobs.ToString()" Detail="Completed records" Tone="green" Href="/jobs"/><MetricCard Label="Failed jobs" Value="@_stats.FailedJobs.ToString()" Detail="Failed records" Tone="red" Href="/jobs"/><MetricCard Label="Security events" Value="@_stats.SecurityEvents.ToString()" Detail="Recorded security audit events" Tone="orange" Href="/audit"/></div>
+ <div class="two-column"><section class="panel"><div class="panel-header"><h2>Recent compression jobs</h2><a href="/jobs">View all</a></div><table><thead><tr><th>File</th><th>Mode</th><th>Status</th><th>Saving</th></tr></thead><tbody>@if(_jobs.Count==0){<tr><td colspan="4">No compression records yet.</td></tr>}@foreach(var job in _jobs.Take(5)){<tr><td><strong>@job.FileName</strong><small>@job.UserEmail</small></td><td>@job.Mode</td><td><StatusBadge Value="@job.Status"/></td><td>@FormatSaving(job)</td></tr>}</tbody></table></section>
+ <section class="panel"><div class="panel-header"><h2>Platform snapshot</h2><a href="/system">System health</a></div><div class="snapshot"><div><span>Created today</span><strong>@_stats.JobsToday</strong></div><div><span>Net bytes saved</span><strong>@FormatBytes(_stats.BytesSaved)</strong></div><div><span>Integrity-verified records</span><strong>@(_stats.LosslessSuccessRate is double rate?$"{rate:F1}%":"No records")</strong></div></div></section></div>
 }
-else
-{
-<div class="page-heading">
-    <div><h1>Security dashboard</h1><p>Operational overview of the XAI-Compress platform.</p></div>
-    <button class="button" @onclick="LoadAsync">Refresh</button>
-</div>
-
-@if (!string.IsNullOrWhiteSpace(_error))
-{
-    <div class="notice">@_error</div>
-}
-else if (_stats is null)
-{
-    <div class="loading">Loading dashboard...</div>
-}
-else
-{
-    <div class="stat-grid">
-        <MetricCard Label="Registered users" Value="@_stats.ActiveUsers.ToString()" Detail="Stored accounts; not active sessions" Tone="blue" />
-        <MetricCard Label="Files created today" Value="@_stats.JobsToday.ToString()" Detail="Since midnight UTC" Tone="purple" />
-        <MetricCard Label="Net bytes saved" Value="@FormatBytes(_stats.BytesSaved)" Detail="Original minus artifact sizes in stored records" Tone="green" />
-        <MetricCard Label="Open incidents" Value="Unknown" Detail="Incident reporting is not implemented" Tone="red" />
-        <MetricCard Label="Quarantined" Value="Unknown" Detail="Quarantine reporting is not implemented" Tone="orange" />
-        <MetricCard Label="Verified file records" Value="@(_stats.LosslessSuccessRate is double rate ? $"{rate:F1}%" : "No file records")" Detail="Integrity flags among stored files; not all attempted jobs" Tone="teal" />
-    </div>
-
-    <div class="two-column">
-        <section class="panel">
-            <div class="panel-header"><h2>Recent compression jobs</h2><a href="/jobs">View all</a></div>
-            <table>
-                <thead><tr><th>File</th><th>Mode</th><th>Status</th><th>Saving</th></tr></thead>
-                <tbody>
-                    @if (_jobs.Count == 0) { <tr><td colspan="4">No compression file records yet.</td></tr> }
-                    @foreach (var job in _jobs.Take(4))
-                    {
-                        <tr>
-                            <td><strong>@job.FileName</strong><small>@job.UserEmail</small></td>
-                            <td>@job.Mode</td>
-                            <td><StatusBadge Value="@job.Status" /></td>
-                            <td>@FormatSaving(job)</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </section>
-        <section class="panel">
-            <div class="panel-header"><h2>Security incidents</h2><a href="/incidents">Review</a></div>
-            <div class="incident-list">
-                <p>Incident reporting is unavailable. This does not establish that no incidents exist.</p>
-                @foreach (var incident in _incidents)
-                {
-                    <div class="incident-item">
-                        <span class="severity @incident.Severity.ToLowerInvariant()">@incident.Severity</span>
-                        <div><strong>@incident.Type</strong><p>@incident.Summary</p><small>@incident.CreatedAt.LocalDateTime</small></div>
-                    </div>
-                }
-            </div>
-        </section>
-    </div>
-}
-}
-
-@code {
-    private DashboardStats? _stats;
-    private IReadOnlyList<CompressionJob> _jobs = [];
-    private IReadOnlyList<SecurityIncident> _incidents = [];
-    private bool _requiresLogin;
-    private string? _error;
-
-    protected override Task OnInitializedAsync()
-    {
-        _requiresLogin = !Session.IsAuthenticated;
-        return _requiresLogin ? Task.CompletedTask : LoadAsync();
-    }
-
-    private async Task LoadAsync()
-    {
-        try
-        {
-            _error = null;
-            _stats = await Api.GetDashboardAsync();
-            _jobs = await Api.GetJobsAsync();
-            _incidents = await Api.GetIncidentsAsync();
-        }
-        catch (AdminApiAuthorizationException)
-        {
-            _stats = null;
-            _requiresLogin = true;
-        }
-        catch (Exception)
-        {
-            _error = "The backend is currently unavailable. Try again shortly.";
-        }
-    }
-
-    private static string FormatBytes(long bytes) => bytes >= 1_073_741_824
-        ? $"{bytes / 1_073_741_824d:F1} GiB"
-        : $"{bytes / 1_048_576d:F1} MiB";
-
-    private static string FormatSaving(CompressionJob job) => job.CompressedSize <= 0 || job.OriginalSize <= 0
-        ? "In progress"
-        : $"{100 * (1 - (double)job.CompressedSize / job.OriginalSize):F1}%";
-}
+@code{private DashboardStats?_stats;private IReadOnlyList<CompressionJob>_jobs=[];private bool _loading=true;private string?_error;protected override async Task OnInitializedAsync(){if(!Session.IsAuthenticated){Navigation.NavigateTo("/login");return;}await LoadAsync();}private async Task LoadAsync(){_loading=true;_error=null;try{_stats=await Api.GetDashboardAsync();_jobs=await Api.GetJobsAsync();}catch(AdminApiAuthorizationException ex){if(ex.StatusCode==System.Net.HttpStatusCode.Unauthorized)Navigation.NavigateTo("/login");else _error="Access denied.";}catch(Exception){_error="Dashboard data is unavailable. Try again shortly.";}finally{_loading=false;}}private static string FormatBytes(long bytes)=>bytes>=1_073_741_824?$"{bytes/1_073_741_824d:F1} GiB":$"{bytes/1_048_576d:F1} MiB";private static string FormatSaving(CompressionJob job)=>job.CompressedSize<=0||job.OriginalSize<=0?"Not available":$"{100*(1-(double)job.CompressedSize/job.OriginalSize):F1}%";}

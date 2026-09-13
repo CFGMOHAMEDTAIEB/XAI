@@ -12,7 +12,7 @@ from sqlalchemy import select, func, text, update
 from sqlalchemy.orm import Session
 from .config import settings
 from .db import Base, engine, get_db
-from .models import User, FileRecord, ShareCode, AuditEvent, RefreshToken, TotpEnrollment
+from .models import User, FileRecord, ShareCode, AuditEvent, RefreshToken, TotpEnrollment, AuthenticatorDevice
 from .schemas import RegisterRequest, LoginRequest, TokenResponse, RefreshRequest, FileCreate, ShareCreate, ShareRedeem
 from .security import hash_password, verify_password, create_token, create_refresh_token, hash_refresh_token, decode_token, generate_share_code, hash_share_code
 from .schemas import EmailSend
@@ -250,13 +250,22 @@ def admin_stats(_:User=Depends(require_admin),db:Session=Depends(get_db)):
     original=db.scalar(select(func.coalesce(func.sum(FileRecord.original_size),0))) or 0; compressed=db.scalar(select(func.coalesce(func.sum(FileRecord.compressed_size),0))) or 0
     total=db.scalar(select(func.count()).select_from(FileRecord)) or 0
     verified=db.scalar(select(func.count()).select_from(FileRecord).where(FileRecord.integrity_verified.is_(True))) or 0
-    return {'activeUsers':db.scalar(select(func.count()).select_from(User)) or 0,'jobsToday':db.scalar(select(func.count()).select_from(FileRecord).where(FileRecord.created_at >= datetime.utcnow().replace(hour=0,minute=0,second=0,microsecond=0))) or 0,
+    return {'activeUsers':db.scalar(select(func.count()).select_from(User).where(User.account_status=='ACTIVE')) or 0,
+            'totalUsers':db.scalar(select(func.count()).select_from(User)) or 0,
+            'pendingVerification':db.scalar(select(func.count()).select_from(User).where(User.account_status=='PENDING_VERIFICATION')) or 0,
+            'mfaEnabled':db.scalar(select(func.count()).select_from(User).where(User.totp_enabled.is_(True))) or 0,
+            'authenticatorDevices':db.scalar(select(func.count()).select_from(AuthenticatorDevice).where(AuthenticatorDevice.status=='active')) or 0,
+            'compressionJobs':total,'successfulJobs':db.scalar(select(func.count()).select_from(FileRecord).where(FileRecord.status=='completed')) or 0,
+            'failedJobs':db.scalar(select(func.count()).select_from(FileRecord).where(FileRecord.status=='failed')) or 0,
+            'securityEvents':db.scalar(select(func.count()).select_from(AuditEvent).where(AuditEvent.action.like('security.%'))) or 0,
+            'jobsToday':db.scalar(select(func.count()).select_from(FileRecord).where(FileRecord.created_at >= datetime.utcnow().replace(hour=0,minute=0,second=0,microsecond=0))) or 0,
             'bytesSaved':original-compressed,'openIncidents':None,'quarantinedFiles':None,'losslessSuccessRate':100.0*verified/total if total else None,
             'security_scanner':scanner_health()}
 
 @app.get('/admin/users')
 def admin_users(_:User=Depends(require_admin),db:Session=Depends(get_db)):
-    return [{'id':u.id,'email':u.email,'displayName':u.display_name,'role':u.role,'status':'registered','mfaEnabled':u.totp_enabled,'createdAt':u.created_at,'lastLogin':None} for u in db.scalars(select(User).order_by(User.created_at.desc())).all()]
+    return [{'id':u.id,'email':u.email,'displayName':u.full_name or u.display_name,'role':u.role,'status':u.account_status,
+             'emailVerified':u.email_verified,'phoneVerified':u.phone_verified,'mfaEnabled':u.totp_enabled,'createdAt':u.created_at,'lastLogin':None} for u in db.scalars(select(User).order_by(User.created_at.desc())).all()]
 
 @app.get('/admin/jobs')
 def admin_jobs(_:User=Depends(require_admin),db:Session=Depends(get_db)):

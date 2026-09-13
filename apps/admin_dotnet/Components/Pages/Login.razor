@@ -1,31 +1,19 @@
-﻿@page "/login"
+@page "/login"
 @inject PlatformApiClient Api
+@inject AdminSession Session
 @inject NavigationManager Navigation
-<PageTitle>Admin sign in</PageTitle>
-<div class="page-heading"><div><h1>Admin sign in</h1><p>Use your XAI platform administrator account. If MFA is enabled, enter your current authenticator code.</p></div></div>
-<section class="panel">
-<form @onsubmit="SignIn" @onsubmit:preventDefault>
-<label>Email<input type="email" @bind="_email" autocomplete="username" disabled="@_busy" required /></label>
-<label>Password<input type="password" @bind="_password" autocomplete="current-password" disabled="@_busy" required /></label>
-<label>MFA code (when enabled)<input inputmode="numeric" maxlength="6" autocomplete="one-time-code" @bind="_totp" disabled="@_busy" /></label>
-<button class="button" type="submit" disabled="@_busy">@(_busy ? "Signing in..." : "Sign in")</button>
-@if (!string.IsNullOrWhiteSpace(_error)) { <p class="notice" role="alert">@_error</p> }
-</form>
+<PageTitle>Sign in | XAI Admin</PageTitle>
+<section class="admin-login-card" aria-labelledby="admin-login-title"><div class="login-brand"><span class="brand-mark">XC</span><div><strong>XAI-Compress</strong><small>Administrator console</small></div></div>
+ @if(!_mfaRequired){<p class="eyebrow">Protected access</p><h1 id="admin-login-title">Welcome back</h1><p>Sign in with an authorized administrator account.</p><form @onsubmit="SignIn" @onsubmit:preventDefault><label>Email<input type="email" @bind="_email" autocomplete="username" disabled="@_busy" required /></label><label>Password<input type="password" @bind="_password" autocomplete="current-password" disabled="@_busy" required /></label><button class="button primary" type="submit" disabled="@_busy">@(_busy ? "Signing in..." : "Sign in")</button></form>}
+ else{<p class="eyebrow">Additional verification</p><h1 id="admin-login-title">Verify your identity</h1><p>Enter the current 6-digit code from XAI Authenticator.</p><form @onsubmit="SignIn" @onsubmit:preventDefault><label>Authenticator code<input class="otp" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" @bind="_totp" disabled="@_busy" autofocus /></label><button class="button primary" type="submit" disabled="@(_busy||_totp.Length!=6)">@(_busy ? "Verifying..." : "Verify and continue")</button><button class="button" type="button" @onclick="Back">Back</button></form>}
+ @if (!string.IsNullOrWhiteSpace(_error)) { <p class="notice" role="alert">@_error</p> }
 </section>
 @code {
- private string _email="", _password="", _totp="", _error="";
- private bool _busy;
- private async Task SignIn(){
-  if(_busy)return;
-  _busy=true;_error="";
-  try {
-   await Api.LoginAsync(_email,_password,string.IsNullOrWhiteSpace(_totp)?null:_totp);
-   Navigation.NavigateTo("/");
-  }
-  catch(AdminApiAuthorizationException){_error="Sign-in failed. Check your credentials, current MFA code and administrator access.";}
-  catch(OperationCanceledException){_error="Request timed out. Retry shortly.";}
-  catch(HttpRequestException){_error="The backend is unavailable. Try again shortly.";}
-  catch(Exception){_error="Sign-in could not be completed. The backend may have returned an invalid response.";}
-  finally{_password="";_totp="";_busy=false;}
- }
+ private string _email="",_password="",_totp="",_error="";private bool _busy,_mfaRequired;
+ protected override void OnInitialized(){if(Session.IsAuthenticated)Navigation.NavigateTo("/");}
+ private void Back(){_mfaRequired=false;_totp="";_password="";_error="";}
+ private async Task SignIn(){if(_busy)return;_busy=true;_error="";try{await Api.LoginAsync(_email,_password,_mfaRequired?_totp:null);_password="";_totp="";Navigation.NavigateTo("/");}
+ catch(AdminMfaRequiredException){_mfaRequired=true;_totp="";}
+ catch(AdminApiAuthorizationException ex){_error=ex.StatusCode==System.Net.HttpStatusCode.Forbidden?"Access denied. This account is not authorized for administration.":(_mfaRequired?"That code was not accepted. Try the current 6-digit code.":"Sign-in failed. Check your credentials.");if(!_mfaRequired)_password="";}
+ catch(OperationCanceledException){_error="Request timed out. Retry shortly.";}catch(HttpRequestException){_error="The service is unavailable. Try again shortly.";}catch(Exception){_error="Sign-in could not be completed.";}finally{_busy=false;}}
 }

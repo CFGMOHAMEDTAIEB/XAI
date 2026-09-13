@@ -1,15 +1,6 @@
-@inject IConfiguration Configuration
-<nav class="nav-menu">
-    @if (!string.IsNullOrWhiteSpace(Configuration["PortalUrl"])) { <a href="@Configuration["PortalUrl"]">Cloud portal</a> }
-    <NavLink href="/" Match="NavLinkMatch.All"><span>▦</span> Dashboard</NavLink>
-    <NavLink href="/users"><span>♙</span> Users</NavLink>
-    <NavLink href="/jobs"><span>⇅</span> Compression jobs</NavLink>
-    <NavLink href="/incidents"><span>⚠</span> Security incidents</NavLink>
-    <NavLink href="/quarantine"><span>⌧</span> Quarantine</NavLink>
-    <NavLink href="/audit"><span>≡</span> Audit logs</NavLink>
-    <NavLink href="/system"><span>⚙</span> System health</NavLink>
-<NavLink href="/scanner">Security scanner</NavLink>
-<NavLink href="/authenticator">Authenticator</NavLink>
-<NavLink href="/email">Email configuration</NavLink>
-<NavLink href="/privacy">Privacy and data use</NavLink>
+<nav class="nav-menu" aria-label="Admin navigation">
+ <small>Overview</small><NavLink href="/" Match="NavLinkMatch.All"><span>◆</span> Dashboard</NavLink>
+ <small>Management</small><NavLink href="/users"><span>◎</span> Users</NavLink><NavLink href="/jobs"><span>↕</span> Compression jobs</NavLink>
+ <small>Security</small><NavLink href="/audit"><span>≡</span> Audit activity</NavLink><NavLink href="/authenticator"><span>◇</span> Authenticator</NavLink><NavLink href="/scanner"><span>⌁</span> Scanner</NavLink>
+ <small>System</small><NavLink href="/system"><span>⚙</span> System health</NavLink><NavLink href="/email"><span>✉</span> Email delivery</NavLink><NavLink href="/privacy"><span>◉</span> Privacy</NavLink>
 </nav>

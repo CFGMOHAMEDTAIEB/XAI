@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.DataProtection;
 using XaiCompress.Admin.Components;
 using XaiCompress.Admin.Services;
 
@@ -11,6 +12,8 @@ builder.Services.AddRazorComponents()
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<AdminSession>();
+// Local sessions are intentionally ephemeral; deployed environments retain the platform key provider.
+if (builder.Environment.IsDevelopment()) builder.Services.AddDataProtection().UseEphemeralDataProtectionProvider();
 
 builder.Services.AddHttpClient<PlatformApiClient>((services, client) =>
 {
