@@ -29,7 +29,7 @@ flowchart LR
  Admin --> API
 ```
 
-The active architecture includes an internal ClamAV daemon and backend YARA scanning. It has no Keycloak identity service, compression-worker queue, MinIO client, or Grafana/ELK service. Authentication remains the repository's password/JWT/refresh-token/TOTP implementation. Mobile codes are generated offline after QR/manual enrollment.
+The local Compose architecture uses a dedicated, private ClamAV service and YARA scanning inside the FastAPI process. It has no Keycloak identity service, compression-worker queue, MinIO client, or Grafana/ELK service. Authentication remains the repository's password/JWT/refresh-token/TOTP implementation. Mobile codes are generated offline after QR/manual enrollment.
 
 ## Environment files
 
@@ -50,7 +50,7 @@ Every variable has Used by, Example, Secret and Required comments. Import only t
 
 2. **Deploy backend.** Create Render PostgreSQL and a Docker web service in the same region. Backend build root is repository root (Root Directory empty), Dockerfile `services/api_fastapi/Dockerfile`. Import .env.render.api. Convert the internal PostgreSQL URL scheme to `postgresql+psycopg://` for the installed psycopg 3 driver; preserve encoded credentials and any URL options. Generate a random JWT_SECRET locally, at least 32 characters. Health check is `/health`. Docker starts `uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}`. Render's PORT is honored; template uses 10000. Local Compose uses 8000.
 
-   The backend image runs clamd and FreshClam in the same container under Supervisor. Set `CLAMAV_HOST=127.0.0.1`, `CLAMAV_PORT=3310`, and `SECURITY_SCAN_REQUIRED=true`; port 3310 is loopback-only and must not be published. Startup initializes signatures once when absent, then FreshClam updates them periodically. Uvicorn waits for an actual clamd PING before binding the public API port.
+   The generic backend image does not embed ClamAV. Local Compose sets `CLAMAV_HOST=clamav`, `CLAMAV_PORT=3310`, and `SECURITY_SCAN_REQUIRED=true`, with clamd reachable only on its private Docker network. Production must remain scanner-unavailable until real private ClamAV infrastructure is provisioned; do not deploy the local Compose hostname or claim local scanner evidence as production readiness.
 
    Attach a persistent disk at `/data`. The existing code stores both uploaded files and compressed artifacts there. Render free web services have ephemeral filesystems and no persistent disks. Brevo HTTPS avoids blocked SMTP ports but does not solve persistence. Use a single persistent-disk instance for the current architecture. Production startup does not call SQLAlchemy `create_all`: provision the base schema through the reviewed database bootstrap process and apply `services/api_fastapi/migrations/001_totp_enrollments.sql` and `services/api_fastapi/migrations/002_authenticator_platform.sql` before starting the new API. These migrations are additive and idempotent, but are not substitutes for provisioning a fresh base schema.
 

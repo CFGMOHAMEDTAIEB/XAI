@@ -6,9 +6,11 @@ import {AuthService} from '../core/auth.service';
 @Component({standalone:true,imports:[FormsModule,RouterLink],template:`
 <main class="auth-page"><section class="auth-card" aria-labelledby="register-title">
  <div class="logo" aria-hidden="true">XC</div><p class="eyebrow">Create your workspace</p><h1 id="register-title">Create account</h1>
- <p class="muted">Start with email and password. You can add XAI Authenticator from Security after signing in.</p>
+ <p class="muted">Create your account, then verify your email. You can add XAI Authenticator after signing in.</p>
  <form (ngSubmit)="submit()" novalidate>
+  <label for="register-name">Full name</label><input id="register-name" name="fullName" [(ngModel)]="fullName" autocomplete="name" required [disabled]="busy()">
   <label for="register-email">Email</label><input id="register-email" type="email" name="email" [(ngModel)]="email" autocomplete="email" required [disabled]="busy()">
+  <label for="register-phone">Phone number</label><input id="register-phone" type="tel" name="phone" [(ngModel)]="phone" autocomplete="tel" placeholder="+33 6 12 34 56 78" required [disabled]="busy()">
   <label for="register-password">Password</label><input id="register-password" type="password" name="password" [(ngModel)]="password" autocomplete="new-password" required [disabled]="busy()" aria-describedby="password-help">
   <small id="password-help">Use at least 10 characters.</small>
   <label for="register-confirm">Confirm password</label><input id="register-confirm" type="password" name="confirmPassword" [(ngModel)]="confirmPassword" autocomplete="new-password" required [disabled]="busy()">
@@ -19,15 +21,17 @@ import {AuthService} from '../core/auth.service';
  <p class="auth-switch">Already have an account? <a routerLink="/login">Sign in</a></p>
 </section></main>`})
 export class RegisterPage {
- email='';password='';confirmPassword='';busy=signal(false);error=signal('');validation=signal('');
+ fullName='';email='';phone='';password='';confirmPassword='';busy=signal(false);error=signal('');validation=signal('');
  constructor(private auth:AuthService,private router:Router){}
  validate(){
+  if(!this.fullName.trim()||this.fullName.trim().length>120)return 'Enter your full name.';
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email))return 'Enter a valid email address.';
+  if(!/^\+(?:[\s().-]*\d){8,15}$/.test(this.phone))return 'Enter an international phone number including country code.';
   const bytes=new TextEncoder().encode(this.password).length;
   if(this.password.length<10)return 'Password must contain at least 10 characters.';
   if(bytes>72)return 'Password must not exceed 72 UTF-8 bytes.';
   if(this.password!==this.confirmPassword)return 'Passwords do not match.';
   return '';
  }
- async submit(){if(this.busy())return;const issue=this.validate();this.validation.set(issue);this.error.set('');if(issue)return;this.busy.set(true);try{await this.auth.register(this.email,this.password);await this.router.navigateByUrl('/dashboard')}catch{this.error.set('Account creation could not be completed. Check your details or try again later.')}finally{this.busy.set(false)}}
+ async submit(){if(this.busy())return;const issue=this.validate();this.validation.set(issue);this.error.set('');if(issue)return;this.busy.set(true);try{await this.auth.register(this.fullName.trim().replace(/\s+/g,' '),this.email.trim().toLowerCase(),this.phone,this.password);await this.router.navigate(['/verify-account'],{state:{email:this.email.trim().toLowerCase()}})}catch{this.error.set('Account creation could not be completed. Check your details or try again later.')}finally{this.busy.set(false)}}
 }

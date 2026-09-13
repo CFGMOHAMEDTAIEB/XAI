@@ -8,7 +8,7 @@ import {AuthToken} from '../models/models';
 export class AuthService {
   private readonly key='xai_access_token';
   private readonly refreshKey='xai_refresh_token';
-  private readonly value=signal<string|null>(localStorage.getItem(this.key));
+  private readonly value=signal<string|null>(sessionStorage.getItem(this.key));
   private refreshing:Promise<string>|null=null;
   private generation=0;
   readonly token=this.value.asReadonly();
@@ -17,14 +17,13 @@ export class AuthService {
     window.addEventListener('storage',event=>{
       if(event.key===this.key||event.key===null){
         this.generation++;
-        this.value.set(localStorage.getItem(this.key));
+        this.value.set(sessionStorage.getItem(this.key));
         if(!this.value())void this.router.navigateByUrl('/login');
       }
     });
   }
-  async register(email:string,password:string){
-    const r=await firstValueFrom(this.http.post<AuthToken>(`${environment.apiUrl}/auth/register`,{email,password}));
-    this.save(r.access_token,r.refresh_token);
+  async register(full_name:string,email:string,phone_number:string,password:string){
+    return firstValueFrom(this.http.post<{verification_required:boolean}>(`${environment.apiUrl}/auth/register`,{full_name,email,phone_number,password}));
   }
   async login(email:string,password:string,totp?:string){
     const r=await firstValueFrom(this.http.post<AuthToken>(`${environment.apiUrl}/auth/login`,{email,password,totp_code:totp||null}));
@@ -35,7 +34,7 @@ export class AuthService {
     const generation=this.generation;
     this.refreshing=(async()=>{
       try{
-        const refresh_token=localStorage.getItem(this.refreshKey);
+        const refresh_token=sessionStorage.getItem(this.refreshKey);
         if(!refresh_token)throw new Error('Sign in again.');
         const r=await firstValueFrom(this.http.post<AuthToken>(`${environment.apiUrl}/auth/refresh`,{refresh_token}));
         if(generation!==this.generation)throw new Error('Session changed. Sign in again.');
@@ -47,18 +46,18 @@ export class AuthService {
     return this.refreshing;
   }
   logout(){
-    const refresh_token=localStorage.getItem(this.refreshKey);
+    const refresh_token=sessionStorage.getItem(this.refreshKey);
     this.clearSession();
     if(refresh_token)this.http.post(`${environment.apiUrl}/auth/logout`,{refresh_token}).subscribe({error:()=>{}});
   }
   clearSession(){
     this.generation++;
-    localStorage.removeItem(this.key);localStorage.removeItem(this.refreshKey);
+    sessionStorage.removeItem(this.key);sessionStorage.removeItem(this.refreshKey);
     this.value.set(null);void this.router.navigateByUrl('/login');
   }
   private save(token:string,refresh?:string){
-    localStorage.setItem(this.key,token);
-    if(refresh)localStorage.setItem(this.refreshKey,refresh);else localStorage.removeItem(this.refreshKey);
+    sessionStorage.setItem(this.key,token);
+    if(refresh)sessionStorage.setItem(this.refreshKey,refresh);else sessionStorage.removeItem(this.refreshKey);
     this.value.set(token);
   }
 }

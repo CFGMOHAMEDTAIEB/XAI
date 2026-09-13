@@ -13,6 +13,9 @@ def create_token(user_id:int):
     return jwt.encode({'sub':str(user_id),'exp':exp},settings.jwt_secret,algorithm='HS256')
 def create_refresh_token(): return secrets.token_urlsafe(48)
 def hash_refresh_token(token:str): return hashlib.sha256(token.encode()).hexdigest()
+def generate_numeric_code(): return f'{secrets.randbelow(1_000_000):06d}'
+def hash_verification_secret(value:str):
+    return hashlib.sha256((settings.jwt_secret + ':account-verification:' + value).encode()).hexdigest()
 def decode_token(token:str)->int:
     try: return int(jwt.decode(token,settings.jwt_secret,algorithms=['HS256'])['sub'])
     except (JWTError,KeyError,ValueError): raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail='Invalid token')

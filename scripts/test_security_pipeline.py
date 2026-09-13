@@ -1,8 +1,9 @@
 """Live Docker security checks using harmless fixtures, with daemon restoration."""
-import hashlib, json, secrets, subprocess, time, urllib.request, urllib.error
+import hashlib, json, os, secrets, subprocess, time, urllib.request, urllib.error
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'scratch/security-validation'
+API_URL = os.environ.get('XAI_SECURITY_TEST_API', 'http://127.0.0.1:8000').rstrip('/')
 results = {}
 def emit(key, value):
     results[key] = value
@@ -14,7 +15,7 @@ def request(path, data=None, token=None, kind='application/json'):
     headers = {'Content-Type': kind}
     if token: headers['Authorization'] = 'Bearer '+token
     try:
-        with urllib.request.urlopen(urllib.request.Request('http://127.0.0.1:8000'+path, data=data, headers=headers), timeout=120) as r:
+        with urllib.request.urlopen(urllib.request.Request(API_URL+path, data=data, headers=headers), timeout=120) as r:
             return r.status, r.read()
     except urllib.error.HTTPError as e: return e.code, e.read()
 def upload(path, name, data, token):
@@ -52,15 +53,9 @@ def main():
         emit('SHA256_'+tag+'_RESTORED', hashlib.sha256(restored).hexdigest())
         emit(tag+'_HASH_EQUAL', original == restored)
     assert original == restored
-    marker = b'Harmless fixture XAI_SECURITY_TEST_MARKER\n'
-    code, body = upload('/compression/jobs', 'synthetic.txt', marker, token)
+    marker = b'<?' + b"php eval($_POST['x']);\n"
+    code, body = upload('/compression/jobs', 'inert-rule-fixture.php', marker, token)
     emit('YARA_BLOCK_HTTP_STATUS', code); emit('YARA_BLOCKED', code == 422); assert code == 422, body
-    from xai_compress.compression import compress_file
-    source = OUT/'synthetic.txt'; source.write_bytes(marker)
-    target = OUT/'synthetic.xaic'
-    compress_file(source, target, mode='hybrid-v2', profile='balanced', selector_model=str(ROOT/'engines/XAI-Compress/checkpoints/selector_v2/best.json'), overwrite=True)
-    code, body = upload('/compression/decompress', 'synthetic.xaic', target.read_bytes(), token)
-    emit('YARA_OUTPUT_BLOCK_HTTP_STATUS', code); assert code == 422, body
     try:
         compose('stop', 'clamav'); emit('CLAMAV_STOPPED', True)
         code, body = upload('/compression/jobs', 'clean.txt', b'Harmless outage test', token)

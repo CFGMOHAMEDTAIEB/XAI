@@ -22,6 +22,8 @@ import smtplib
 from .security_scanner import enforce_scan, scanner_health
 from .resource_guard import ResourceGuard, cleanup_work
 from .authenticator import register_authenticator_routes
+from .account import register_account_routes, normalize_phone, issue, EMAIL_VERIFY
+from .email_service import VerificationEmailError
 
 if settings.app_env == 'development':
     Base.metadata.create_all(engine)
@@ -45,7 +47,7 @@ def token_pair(db:Session,user:User):
 def current_user(authorization:str=Header(default=''),db:Session=Depends(get_db)):
     if not authorization.startswith('Bearer '): raise HTTPException(401,'Bearer token required')
     uid=decode_token(authorization[7:]); user=db.get(User,uid)
-    if not user: raise HTTPException(401,'User not found')
+    if not user or user.account_status=='DISABLED': raise HTTPException(401,'Invalid session')
     return user
 
 def audit(db,user_id,action,resource='',result='success',details=''):
@@ -61,18 +63,28 @@ def health():
     selector=Path(settings.selector_model_path)
     return {'status':'ok','service':'xai-platform-api','compression':{'mode':'hybrid-v2','runtime_generation':'v3','routing':'top3','selector_v2':selector.is_file()}}
 
-@app.post('/auth/register',response_model=TokenResponse)
+@app.post('/auth/register',status_code=201)
 def register(body:RegisterRequest,db:Session=Depends(get_db)):
     if settings.app_env=='production' and body.email.lower() in {x.strip().lower() for x in settings.admin_emails.split(',') if x.strip()}: raise HTTPException(403,'Administrator accounts must be provisioned by the operator')
-    if db.scalar(select(User).where(User.email==body.email.lower())): raise HTTPException(409,'Email already registered')
-    user=User(email=body.email.lower(),password_hash=hash_password(body.password),display_name=body.display_name)
-    db.add(user); db.commit(); db.refresh(user); audit(db,user.id,'user.register')
-    return token_pair(db,user)
+    email=body.email.strip().lower()
+    try:phone=normalize_phone(body.phone_number)
+    except ValueError:raise HTTPException(422,'Invalid authentication request')
+    if db.scalar(select(User).where(User.email==email)): raise HTTPException(409,'Account could not be created')
+    if db.scalar(select(User).where(User.phone_number==phone)): raise HTTPException(409,'Account could not be created')
+    user=User(email=email,password_hash=hash_password(body.password),display_name=body.full_name,
+              full_name=body.full_name,phone_number=phone,email_verified=False,phone_verified=False,
+              account_status='PENDING_VERIFICATION')
+    db.add(user);db.commit();db.refresh(user);audit(db,user.id,'user.register')
+    try:issue(db,user,'email',EMAIL_VERIFY)
+    except VerificationEmailError:raise HTTPException(503,'Account created; verification email is temporarily unavailable')
+    return {'verification_required':True,'channel':'email'}
 
 @app.post('/auth/login',response_model=TokenResponse)
 def login(body:LoginRequest,db:Session=Depends(get_db)):
     user=db.scalar(select(User).where(User.email==body.email.lower()))
     if not user or not verify_password(body.password,user.password_hash): raise HTTPException(401,'Invalid credentials')
+    if user.account_status=='DISABLED':raise HTTPException(401,'Invalid credentials')
+    if user.account_status!='ACTIVE' or not user.email_verified:raise HTTPException(403,'Account verification required')
     if user.totp_enabled and not verify_totp(user.totp_secret, body.totp_code):
         raise HTTPException(401,'Valid TOTP code required')
     audit(db,user.id,'user.login'); return token_pair(db,user)
@@ -85,7 +97,7 @@ def refresh(body:RefreshRequest,db:Session=Depends(get_db)):
         RefreshToken.revoked.is_(False),RefreshToken.expires_at>=datetime.utcnow()).values(revoked=True))
     if consumed.rowcount != 1: raise HTTPException(401,'Invalid refresh token')
     user=db.get(User,row.user_id)
-    if not user: raise HTTPException(401,'User not found')
+    if not user or user.account_status!='ACTIVE' or not user.email_verified: raise HTTPException(401,'Invalid refresh token')
     return token_pair(db,user)
 
 @app.post('/auth/logout')
@@ -96,8 +108,11 @@ def logout(body:RefreshRequest,db:Session=Depends(get_db)):
 
 @app.get('/auth/me')
 def me(user:User=Depends(current_user)):
-    return {'id':user.id,'email':user.email,'display_name':user.display_name,'role':user.role,'mfa_enabled':user.totp_enabled,'is_admin':user.role=='admin'}
+    return {'id':user.id,'email':user.email,'display_name':user.display_name,'full_name':user.full_name,
+            'phone_number':user.phone_number,'email_verified':user.email_verified,'phone_verified':user.phone_verified,
+            'account_status':user.account_status,'role':user.role,'mfa_enabled':user.totp_enabled,'is_admin':user.role=='admin'}
 
+register_account_routes(app,current_user)
 register_mfa_routes(app, current_user)
 register_authenticator_routes(app, current_user, require_admin)
 

@@ -18,6 +18,12 @@ class Settings(BaseSettings):
     storage_path: str = './storage'
     selector_model_path: str = 'engines/XAI-Compress/checkpoints/selector_v2/best.json'
     refresh_token_days: int = 30
+    account_verification_minutes: int = 10
+    verification_resend_seconds: int = 60
+    verification_max_attempts: int = 5
+    password_reset_token_minutes: int = 10
+    phone_verification_required: bool = False
+    sms_provider: str = 'none'
     max_upload_bytes: int = 1073741824
     max_decompressed_bytes: int = 1073741824
     email_provider: str = 'smtp'
@@ -70,6 +76,8 @@ class Settings(BaseSettings):
     def validate_production(self):
         if self.email_provider not in ('smtp', 'resend', 'brevo', 'mailpit'):
             raise ValueError('EMAIL_PROVIDER must be smtp, resend, brevo or mailpit')
+        if self.sms_provider not in ('none',):
+            raise ValueError('SMS_PROVIDER is not supported by this build')
         if self.smtp_security not in ('starttls','ssl','none'):
             raise ValueError('SMTP_SECURITY must be starttls, ssl or none')
         if not 1 <= self.smtp_port <= 65535 or not 1 <= self.clamav_port <= 65535:

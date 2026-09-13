@@ -9,6 +9,11 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(320), unique=True, index=True)
     password_hash: Mapped[str] = mapped_column(String(255))
     display_name: Mapped[str] = mapped_column(String(120), default='')
+    full_name: Mapped[str] = mapped_column(String(120), default='')
+    phone_number: Mapped[str|None] = mapped_column(String(16), nullable=True, unique=True, index=True)
+    email_verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    phone_verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    account_status: Mapped[str] = mapped_column(String(32), default='PENDING_VERIFICATION', index=True)
     totp_secret: Mapped[str|None] = mapped_column(String(128), nullable=True)
     totp_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
     role: Mapped[str] = mapped_column(String(32), default='user')
@@ -66,6 +71,24 @@ class AuditEvent(Base):
     result: Mapped[str] = mapped_column(String(32), default='success')
     details: Mapped[str] = mapped_column(Text, default='')
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+class AccountVerificationChallenge(Base):
+    __tablename__ = 'account_verification_challenges'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'), index=True)
+    channel: Mapped[str] = mapped_column(String(16))
+    purpose: Mapped[str] = mapped_column(String(40), index=True)
+    code_hash: Mapped[str] = mapped_column(String(64))
+    expires_at: Mapped[datetime] = mapped_column(DateTime, index=True)
+    attempt_count: Mapped[int] = mapped_column(Integer, default=0)
+    max_attempts: Mapped[int] = mapped_column(Integer, default=5)
+    used_at: Mapped[datetime|None] = mapped_column(DateTime, nullable=True)
+    verified_at: Mapped[datetime|None] = mapped_column(DateTime, nullable=True)
+    reset_token_hash: Mapped[str|None] = mapped_column(String(64), nullable=True, unique=True)
+    reset_token_expires_at: Mapped[datetime|None] = mapped_column(DateTime, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    last_sent_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 class RefreshToken(Base):
     __tablename__='refresh_tokens'

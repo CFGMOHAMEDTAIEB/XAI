@@ -28,6 +28,17 @@ Run scripts/test_security_pipeline.py with the repository's engine-capable Pytho
 for the real Docker test. It temporarily stops only ClamAV, tests rejection, then
 restarts it in finally. Evidence is saved under scratch/security-validation.
 
+Local startup (PowerShell):
+
+    $env:POSTGRES_PASSWORD='<local-only-random-password>'
+    $env:JWT_SECRET='<local-only-random-secret-at-least-32-characters>'
+    docker compose up --build -d db clamav backend
+
+The API binds to `127.0.0.1:8000` by default. For an explicitly LAN-accessible VM
+session, set `API_BIND_ADDRESS=0.0.0.0`; discover the guest address with `ip addr`
+and browse to `http://<VM-IP>:<API-PORT>`. Keep any additional CORS origin in the
+VM's local environment only; do not modify production CORS for LAN testing.
+
 References:
 - https://docs.clamav.net/manual/Usage/ClamdProtocol.html
 - https://docs.clamav.net/manual/Installing/Docker.html

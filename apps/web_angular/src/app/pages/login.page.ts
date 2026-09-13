@@ -15,6 +15,7 @@ import {AuthService} from '../core/auth.service';
    <label for="login-password">Password</label><input id="login-password" type="password" name="password" [(ngModel)]="password" autocomplete="current-password" required [disabled]="busy()">
    <button class="primary" [disabled]="busy()||!email||!password">{{busy()?'Signing in…':'Sign in'}}</button>
   </form>
+  <p class="auth-switch"><a routerLink="/forgot-password">Forgot password?</a></p>
   <p class="auth-switch">New to XAI? <a routerLink="/register">Create an account</a></p>
  } @else {
   <p class="eyebrow">Additional verification</p><h1 id="login-title">Verify your identity</h1>
@@ -41,6 +42,7 @@ export class LoginPage {
    const response=error as HttpErrorResponse;const detail=typeof response?.error?.detail==='string'?response.error.detail:'';
    if(!withCode&&response?.status===401&&detail==='Valid TOTP code required'){this.step.set('mfa');this.totp=''}
    else if(withCode&&response?.status===401)this.error.set('That code was not accepted. Enter the current 6-digit code and try again.');
+   else if(response?.status===403){this.error.set('Your account still needs verification.');void this.router.navigate(['/verify-account'],{state:{email:this.email}})}
    else if(response?.status===0||response?.status===503)this.error.set('XAI is temporarily unavailable. Check your connection and try again.');
    else this.error.set('Sign-in failed. Check your credentials and try again.');
   }finally{this.busy.set(false)}}

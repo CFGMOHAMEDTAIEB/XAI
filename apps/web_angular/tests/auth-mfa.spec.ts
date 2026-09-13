@@ -7,7 +7,7 @@ import {AuthService} from '../src/app/core/auth.service';
 import {ApiService} from '../src/app/core/api.service';
 
 const flush=()=>new Promise(resolve=>setTimeout(resolve,0));
-beforeEach(()=>localStorage.clear());
+beforeEach(()=>{localStorage.clear();sessionStorage.clear()});
 
 describe('staged login',()=>{
  const setup=(login=vi.fn().mockResolvedValue(undefined))=>{const router={navigateByUrl:vi.fn().mockResolvedValue(true)};return {login,router,page:new LoginPage({login} as never,router as never)}};
@@ -17,14 +17,14 @@ describe('staged login',()=>{
 });
 
 describe('registration',()=>{
- const setup=()=>{const auth={register:vi.fn().mockResolvedValue(undefined)};const router={navigateByUrl:vi.fn().mockResolvedValue(true)};return {auth,router,page:new RegisterPage(auth as never,router as never)}};
- it('validates email, backend password bounds, and matching confirmation',async()=>{const {page,auth}=setup();page.email='bad';page.password='short';page.confirmPassword='different';await page.submit();expect(page.validation()).toContain('valid email');expect(auth.register).not.toHaveBeenCalled();page.email='person@example.com';await page.submit();expect(page.validation()).toContain('10 characters');page.password='correct-password';page.confirmPassword='other-password';await page.submit();expect(page.validation()).toContain('do not match')});
- it('registers without enabling MFA and continues to the dashboard',async()=>{const {page,auth,router}=setup();page.email='person@example.com';page.password=page.confirmPassword='correct-password';await page.submit();expect(auth.register).toHaveBeenCalledWith(page.email,page.password);expect(router.navigateByUrl).toHaveBeenCalledWith('/dashboard')});
+ const setup=()=>{const auth={register:vi.fn().mockResolvedValue({verification_required:true})};const router={navigate:vi.fn().mockResolvedValue(true),navigateByUrl:vi.fn().mockResolvedValue(true)};return {auth,router,page:new RegisterPage(auth as never,router as never)}};
+ it('validates profile fields, backend password bounds, and matching confirmation',async()=>{const {page,auth}=setup();page.fullName='Test Person';page.phone='+33612345678';page.email='bad';page.password='short';page.confirmPassword='different';await page.submit();expect(page.validation()).toContain('valid email');expect(auth.register).not.toHaveBeenCalled();page.email='person@example.com';await page.submit();expect(page.validation()).toContain('10 characters');page.password='correct-password';page.confirmPassword='other-password';await page.submit();expect(page.validation()).toContain('do not match')});
+ it('registers a pending account and continues to verification',async()=>{const {page,auth,router}=setup();page.fullName='Test Person';page.phone='+33612345678';page.email='person@example.com';page.password=page.confirmPassword='correct-password';await page.submit();expect(auth.register).toHaveBeenCalledWith(page.fullName,page.email,page.phone,page.password);expect(router.navigate).toHaveBeenCalledWith(['/verify-account'],{state:{email:page.email}})});
 });
 
 describe('current authenticator enrollment',()=>{
  const qr='data:image/png;base64,ZmFrZS1wbmc=';const uri='otpauth://totp/XAI:person?secret=TESTONLY&issuer=XAI';
- const setup=async(overrides:Record<string,unknown>={})=>{const api={totpStatus:vi.fn(()=>of({state:'not_configured',enrollment_id:null})),startAuthenticator:vi.fn(()=>of({enrollment_id:'a'.repeat(32),qr_data_uri:qr,otpauth_uri:uri,expires_in_seconds:600})),confirmAuthenticator:vi.fn(()=>of({enabled:true})),...overrides};const page=new SecurityPage(api as unknown as ApiService);await flush();return {api,page}};
+ const setup=async(overrides:Record<string,unknown>={})=>{const api={me:vi.fn(()=>of({email:'person@example.com',phone_number:'+33612345678',email_verified:true,phone_verified:false})),totpStatus:vi.fn(()=>of({state:'not_configured',enrollment_id:null})),startAuthenticator:vi.fn(()=>of({enrollment_id:'a'.repeat(32),qr_data_uri:qr,otpauth_uri:uri,expires_in_seconds:600})),confirmAuthenticator:vi.fn(()=>of({enabled:true})),...overrides};const page=new SecurityPage(api as unknown as ApiService);await flush();return {api,page}};
  it('shows the backend authenticator status',async()=>{const {page}=await setup();expect(page.state()).toBe('not_configured');expect(page.statusLabel()).toBe('Not configured')});
  it('starts enrollment and retains the authorized QR only in memory',async()=>{const {page,api}=await setup();await page.start();expect(api.startAuthenticator).toHaveBeenCalledOnce();expect(page.state()).toBe('pending_activation');expect(page.qr()).toBe(qr);expect(page.uri()).toBe(uri);expect(localStorage.length).toBe(0)});
  it('verifies the mobile TOTP before activating MFA',async()=>{const {page,api}=await setup();await page.start();page.code='123456';await page.confirm();expect(api.confirmAuthenticator).toHaveBeenCalledWith('a'.repeat(32),'123456');expect(page.state()).toBe('enabled');expect(page.statusLabel()).toBe('Active');expect(page.qr()).toBe('');expect(page.uri()).toBe('')});

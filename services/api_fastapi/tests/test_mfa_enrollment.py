@@ -12,7 +12,7 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 from sqlalchemy.pool import StaticPool
 
-from app import main, mfa, email_service
+from app import main, mfa, email_service, account
 from app.config import settings
 from app.db import Base, get_db
 from app.models import User, TotpEnrollment
@@ -29,10 +29,16 @@ def flow(monkeypatch):
     main.app.dependency_overrides[get_db] = db
     sent = []
     monkeypatch.setattr(mfa, 'send_verification_code', lambda recipient, code: sent.append((recipient, code)))
+    monkeypatch.setattr(account, 'send_account_email', lambda recipient, code, purpose: sent.append((recipient, code)))
     with TestClient(main.app) as client:
-        result = client.post('/auth/register', json={'email': 'person@example.com', 'password': 'correct-password'})
-        assert result.status_code == 200
-        client.headers['Authorization'] = 'Bearer ' + result.json()['access_token']
+        result = client.post('/auth/register', json={'full_name':'Test Person','email': 'person@example.com',
+            'phone_number':'+33612345678','password': 'correct-password'})
+        assert result.status_code == 201
+        verified=client.post('/auth/verification/email/confirm',json={'identifier':'person@example.com','code':sent[-1][1]})
+        assert verified.status_code==200
+        login=client.post('/auth/login',json={'email':'person@example.com','password':'correct-password'})
+        client.headers['Authorization'] = 'Bearer ' + login.json()['access_token']
+        sent.clear()
         yield client, engine, sent
     main.app.dependency_overrides.clear()
     engine.dispose()
@@ -43,6 +49,13 @@ def start(client):
     assert response.status_code == 200
     assert 'secret' not in response.json()
     return response.json()['enrollment_id']
+
+def register_and_login(client,sent,email,phone):
+    result=client.post('/auth/register',json={'full_name':'Another Person','email':email,
+        'phone_number':phone,'password':'correct-password'})
+    assert result.status_code==201
+    assert client.post('/auth/verification/email/confirm',json={'identifier':email,'code':sent[-1][1]}).status_code==200
+    return client.post('/auth/login',json={'email':email,'password':'correct-password'}).json()['access_token']
 
 
 def disclose(client, sent, enrollment_id):
@@ -97,8 +110,7 @@ def test_unique_server_secrets_and_client_input_rejected(flow):
     assert 'client-selected-secret' not in response.text
     eid = start(client)
     first = disclose(client, sent, eid)
-    result = client.post('/auth/register', json={'email': 'another@example.com', 'password': 'correct-password'})
-    client.headers['Authorization'] = 'Bearer ' + result.json()['access_token']
+    client.headers['Authorization'] = 'Bearer ' + register_and_login(client,sent,'another@example.com','+33612345679')
     second = disclose(client, sent, start(client))
     assert bool(first != second)
 
@@ -144,8 +156,7 @@ def test_unauthorized_and_other_user_cannot_receive_secret(flow):
     client.headers.pop('Authorization')
     for path in ['/auth/totp/enroll', '/auth/totp/resend', '/auth/totp/email/confirm', '/auth/totp/confirm']:
         assert client.post(path, json={'enrollment_id': eid, 'code': sent[-1][1]} if 'confirm' in path else {}).status_code == 401
-    result = client.post('/auth/register', json={'email': 'other@example.com', 'password': 'correct-password'})
-    client.headers['Authorization'] = 'Bearer ' + result.json()['access_token']
+    client.headers['Authorization'] = 'Bearer ' + register_and_login(client,sent,'other@example.com','+33612345680')
     assert client.post('/auth/totp/email/confirm', json={'enrollment_id': eid, 'code': sent[-1][1]}).status_code == 409
 
 

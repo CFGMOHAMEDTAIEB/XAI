@@ -6,6 +6,10 @@ import {ApiService} from '../core/api.service';
 
 @Component({standalone:true,imports:[FormsModule],template:`
 <div class="heading"><div><h1>Security</h1><p>Protect your account and review authenticator access.</p></div></div>
+<article class="panel"><h2>Account verification</h2>
+ <p><strong>Email</strong> {{profile()?.email||'—'}} <span class="status-pill" [class.active]="profile()?.email_verified">{{profile()?.email_verified?'Verified':'Not verified'}}</span></p>
+ <p><strong>Phone</strong> {{profile()?.phone_number||'Not provided'}} <span class="status-pill" [class.active]="profile()?.phone_verified">{{profile()?.phone_verified?'Verified':'Not verified'}}</span></p>
+</article>
 <article class="panel security-card" aria-labelledby="authenticator-title">
  <div class="security-summary"><div class="security-icon" aria-hidden="true">◇</div><div><p class="eyebrow">Account protection</p><h2 id="authenticator-title">XAI Authenticator</h2><p class="muted">Use time-based codes generated securely by the XAI mobile app.</p></div><span class="status-pill" [class.active]="state()==='enabled'">{{statusLabel()}}</span></div>
 
@@ -35,8 +39,8 @@ import {ApiService} from '../core/api.service';
  @if(message()){<div class="error" role="alert">{{message()}}</div>}
 </article>`})
 export class SecurityPage implements OnDestroy {
- state=signal('loading');qr=signal('');uri=signal('');message=signal('');busy=signal(false);showManagement=signal(false);showRecovery=signal(false);code='';enrollmentId='';expiresSeconds=600;destroyed=false;
- constructor(private api:ApiService){void this.refresh()}
+ state=signal('loading');profile=signal<{email:string;phone_number:string|null;email_verified:boolean;phone_verified:boolean}|null>(null);qr=signal('');uri=signal('');message=signal('');busy=signal(false);showManagement=signal(false);showRecovery=signal(false);code='';enrollmentId='';expiresSeconds=600;destroyed=false;
+ constructor(private api:ApiService){void this.refresh();firstValueFrom(this.api.me()).then(value=>this.profile.set(value)).catch(()=>{})}
  statusLabel(){return this.state()==='enabled'?'Active':this.state()==='pending_activation'||this.state().startsWith('awaiting_')?'Pending':'Not configured'}
  expiresMinutes(){return Math.max(1,Math.ceil(this.expiresSeconds/60))}
  validCode(value:string){return /^\d{6}$/.test(value)}

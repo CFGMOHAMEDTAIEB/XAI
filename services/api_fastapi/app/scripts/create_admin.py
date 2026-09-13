@@ -16,7 +16,8 @@ def create_admin(db, config, *, promote_existing=False, allow_production=False):
     if config.app_env == 'production' and not allow_production:
         raise ValueError('Production bootstrap requires the explicit CLI approval flag')
     try:
-        request=RegisterRequest(email=config.xai_seed_admin_email,password=config.xai_seed_admin_password)
+        request=RegisterRequest(full_name='Administrator',phone_number='+10000000000',
+                                email=config.xai_seed_admin_email,password=config.xai_seed_admin_password)
         # bcrypt has a byte limit, not a character limit.
         if len(request.password.encode('utf-8')) > 72:
             raise ValueError('Password exceeds hashing input limit')
@@ -30,7 +31,8 @@ def create_admin(db, config, *, promote_existing=False, allow_production=False):
         user.role='admin'
         action='admin.bootstrap.promoted'
     else:
-        user=User(email=request.email.lower(),password_hash=hash_password(request.password),role='admin',display_name='')
+        user=User(email=request.email.lower(),password_hash=hash_password(request.password),role='admin',display_name='',
+                  full_name='',email_verified=True,account_status='ACTIVE')
         db.add(user);db.flush()
         action='admin.bootstrap.created'
     # Promotion never replaces an existing password or MFA factor.

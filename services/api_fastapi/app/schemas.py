@@ -3,7 +3,14 @@ from pydantic import BaseModel, EmailStr, Field, field_validator
 class RegisterRequest(BaseModel):
     email: EmailStr
     password: str = Field(min_length=10)
-    display_name: str = ''
+    full_name: str = Field(min_length=1,max_length=120)
+    phone_number: str = Field(min_length=8,max_length=32)
+    @field_validator('full_name')
+    @classmethod
+    def clean_name(cls,value):
+        value=' '.join(value.split())
+        if not value: raise ValueError('Full name is required')
+        return value
     @field_validator('password')
     @classmethod
     def password_size(cls,value):
@@ -13,6 +20,21 @@ class LoginRequest(BaseModel):
     email: EmailStr
     password: str
     totp_code: str|None = None
+class IdentifierRequest(BaseModel):
+    identifier: str = Field(min_length=3,max_length=320)
+class VerificationSendRequest(IdentifierRequest): pass
+class VerificationConfirmRequest(IdentifierRequest):
+    model_config={'extra':'forbid','hide_input_in_errors':True}
+    code: str = Field(pattern=r'^\d{6}$')
+class PasswordResetRequest(BaseModel):
+    model_config={'extra':'forbid','hide_input_in_errors':True}
+    reset_token: str = Field(min_length=32,max_length=256)
+    new_password: str = Field(min_length=10)
+    @field_validator('new_password')
+    @classmethod
+    def password_size(cls,value):
+        if len(value.encode('utf-8'))>72:raise ValueError('Password exceeds hashing limit')
+        return value
 class TokenResponse(BaseModel):
     access_token: str
     refresh_token: str|None = None

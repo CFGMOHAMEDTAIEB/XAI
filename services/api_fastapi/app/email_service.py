@@ -58,6 +58,27 @@ def send_verification_code(recipient: str, code: str) -> None:
             'text': text}
     _send_resend(body)
 
+def send_account_email(recipient: str, code: str|None, purpose: str) -> None:
+    """Deliver account-security mail without logging or returning sensitive content."""
+    if verification_configuration_missing():
+        raise VerificationEmailError('Account email is not configured; contact support')
+    templates={
+        'ACCOUNT_EMAIL_VERIFY': ('Verify your XAI Compress account',
+            f'Your account verification code is {code}. It expires in 10 minutes. Never share this code. If you did not create an account, ignore this email.'),
+        'PASSWORD_RESET': ('Reset your XAI Compress password',
+            f'Your password reset code is {code}. It expires in 10 minutes. Never share this code. If you did not request a reset, ignore this email.'),
+        'PASSWORD_RESET_SUCCESS': ('Your XAI Compress password was changed',
+            'Your password was changed successfully. If you did not make this change, contact support immediately. No password or security code is included in this message.')}
+    subject,text=templates[purpose]
+    if settings.email_provider in ('smtp','mailpit'):
+        message=EmailMessage();message['From']=formataddr((settings.smtp_from_name,settings.smtp_from))
+        message['To']=recipient;message['Subject']=subject;message['Message-ID']=make_msgid();message.set_content(text)
+        _send_smtp_message(message);return
+    if settings.email_provider=='brevo':
+        _send_brevo({'sender':{'email':settings.brevo_sender_email,'name':settings.brevo_sender_name},
+                     'to':[{'email':recipient}],'subject':subject,'textContent':text});return
+    _send_resend({'from':settings.resend_from_email,'to':[recipient],'subject':subject,'text':text})
+
 
 def _send_resend(body: dict) -> str:
     request = urllib.request.Request('https://api.resend.com/emails',
