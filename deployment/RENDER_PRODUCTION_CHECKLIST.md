@@ -72,21 +72,24 @@ database, but changing databases requires the reviewed schema/data migration.
 ## Database and administrator gate
 
 Production startup does not call `Base.metadata.create_all`; it is development
-only. Before migration, take a provider snapshot, inspect the current schema and
-migration history, identify the existing operator account, and confirm its stored
-`users.role` value. Stop if a backup, schema, operator identity, or role check is
-not available.
+only. Before the first automatic-migration deployment, take a provider snapshot,
+inspect the current schema and migration history, identify the existing operator
+account, and confirm its stored `users.role` value. Stop if a backup, schema,
+operator identity, or role check is not available.
 
-Apply, in order, as reviewed PostgreSQL migrations:
+The backend image runs `python scripts/run_all_migrations.py --apply` before
+Uvicorn. The runner discovers every numbered file under `migrations/`, takes a
+session-level PostgreSQL advisory lock, creates `schema_migrations` when needed,
+checks stored SHA-256 checksums, and applies each pending migration in its own
+transaction. Any error exits non-zero, so Uvicorn is not launched. Multiple
+instances may start concurrently; only the lock holder performs migration work.
 
-1. `services/api_fastapi/migrations/001_totp_enrollments.sql`
-2. `services/api_fastapi/migrations/002_authenticator_platform.sql`
-
-Both scripts are additive, use `CREATE TABLE/INDEX IF NOT EXISTS`, and do not
-alter existing user factors or delete data. Run them in a transaction where the
-operator's migration tool supports it; stop and restore from the snapshot on an
-unexpected error. Validate tables, indexes, existing login/MFA state, and stored
-operator role afterward without selecting secrets.
+For preflight inspection, run `python scripts/run_all_migrations.py --check-only`
+in the built backend environment. This performs no schema mutation and exits
+non-zero when work is pending. Never edit migrations already represented in
+`schema_migrations`; create the next numeric migration instead. The first tracked
+startup safely baselines complete legacy migrations 001-004 using catalog
+metadata rather than re-executing them.
 
 To promote an existing operator only after the database schema is ready, set the
 one-time bootstrap variables in the protected API environment and run exactly:
