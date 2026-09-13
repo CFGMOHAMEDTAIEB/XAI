@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-import re, secrets
+import logging, re, secrets
 from fastapi import Depends, HTTPException, Response
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
@@ -13,6 +13,7 @@ from .email_service import send_account_email, VerificationEmailError
 from .sms_service import send_verification_code as send_sms, SmsUnavailableError
 
 EMAIL_VERIFY='ACCOUNT_EMAIL_VERIFY'; PHONE_VERIFY='ACCOUNT_PHONE_VERIFY'; PASSWORD_RESET='PASSWORD_RESET'
+logger=logging.getLogger('uvicorn.error.account')
 
 def normalize_email(value:str)->str: return value.strip().lower()
 def normalize_phone(value:str)->str:
@@ -117,5 +118,5 @@ def register_account_routes(app,current_user):
         user.password_hash=hash_password(body.new_password);row.used_at=now;row.reset_token_hash=None
         db.execute(update(RefreshToken).where(RefreshToken.user_id==user.id,RefreshToken.revoked.is_(False)).values(revoked=True));db.commit()
         try:send_account_email(user.email,None,'PASSWORD_RESET_SUCCESS')
-        except VerificationEmailError:pass
+        except VerificationEmailError:logger.warning('password_reset_notification_failed')
         return {'reset':True}

@@ -38,14 +38,16 @@ def test_verification_contract(monkeypatch):
     email_service.send_verification_code('registered@example.com', '123456')
 
 @pytest.mark.parametrize('purpose,expected_subject',[
-    ('ACCOUNT_EMAIL_VERIFY','Verify your XAI Compress account'),
-    ('PASSWORD_RESET','Reset your XAI Compress password'),
-    ('PASSWORD_RESET_SUCCESS','Your XAI Compress password was changed')])
+    ('ACCOUNT_EMAIL_VERIFY','Verify your XAI-Compress account'),
+    ('PASSWORD_RESET','Reset your XAI-Compress password'),
+    ('PASSWORD_RESET_SUCCESS','Your XAI-Compress password was changed')])
 def test_account_email_templates_are_accepted_without_secret_leak(monkeypatch,purpose,expected_subject):
     captured=[]
     monkeypatch.setattr(email_service,'_send_brevo',lambda body:captured.append(body) or '<unit-test>')
     email_service.send_account_email('registered@example.com',None if purpose.endswith('SUCCESS') else '123456',purpose)
     assert captured[0]['subject']==expected_subject
+    assert 'textContent' in captured[0] and 'htmlContent' in captured[0]
+    assert 'http://' not in captured[0]['htmlContent'] and 'https://' not in captured[0]['htmlContent']
     assert settings.brevo_api_key not in str(captured[0])
 
 @pytest.mark.parametrize('status', [400,401,403,404,422,429,500,503])
@@ -86,6 +88,15 @@ def test_missing_key_does_not_send(monkeypatch):
     assert 'BREVO_API_KEY' in email_service.verification_configuration_missing()
     with pytest.raises(email_service.VerificationEmailError, match='not configured'):
         email_service.send_verification_code('registered@example.com', '123456')
+
+def test_delivery_smoke_test_uses_brevo_transport_without_attachments(monkeypatch):
+    captured=[]
+    monkeypatch.setattr(email_service, '_send_brevo',
+                        lambda body, email_settings=settings: captured.append(body) or '<unit-test>')
+    email_service.send_delivery_smoke_test('diagnostic@example.com')
+    assert captured[0]['subject'] == 'XAI-Compress email delivery smoke test'
+    assert 'XAI-Compress email delivery smoke test' in captured[0]['textContent']
+    assert 'attachment' not in captured[0]
 
 def test_invalid_configuration():
     with pytest.raises(ValueError, match='EMAIL_PROVIDER'):

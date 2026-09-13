@@ -4,6 +4,7 @@ import json
 import urllib.request
 import urllib.error
 import hashlib
+import html
 import smtplib
 import ssl
 from email.message import EmailMessage
@@ -62,22 +63,45 @@ def send_account_email(recipient: str, code: str|None, purpose: str) -> None:
     """Deliver account-security mail without logging or returning sensitive content."""
     if verification_configuration_missing():
         raise VerificationEmailError('Account email is not configured; contact support')
-    templates={
-        'ACCOUNT_EMAIL_VERIFY': ('Verify your XAI Compress account',
-            f'Your account verification code is {code}. It expires in 10 minutes. Never share this code. If you did not create an account, ignore this email.'),
-        'PASSWORD_RESET': ('Reset your XAI Compress password',
-            f'Your password reset code is {code}. It expires in 10 minutes. Never share this code. If you did not request a reset, ignore this email.'),
-        'PASSWORD_RESET_SUCCESS': ('Your XAI Compress password was changed',
-            'Your password was changed successfully. If you did not make this change, contact support immediately. No password or security code is included in this message.')}
-    subject,text=templates[purpose]
+    subject,text,html_content=_account_email_template(purpose,code)
     if settings.email_provider in ('smtp','mailpit'):
         message=EmailMessage();message['From']=formataddr((settings.smtp_from_name,settings.smtp_from))
         message['To']=recipient;message['Subject']=subject;message['Message-ID']=make_msgid();message.set_content(text)
+        message.add_alternative(html_content,subtype='html')
         _send_smtp_message(message);return
     if settings.email_provider=='brevo':
         _send_brevo({'sender':{'email':settings.brevo_sender_email,'name':settings.brevo_sender_name},
-                     'to':[{'email':recipient}],'subject':subject,'textContent':text});return
-    _send_resend({'from':settings.resend_from_email,'to':[recipient],'subject':subject,'text':text})
+                     'to':[{'email':recipient}],'subject':subject,'textContent':text,
+                     'htmlContent':html_content});return
+    _send_resend({'from':settings.resend_from_email,'to':[recipient],'subject':subject,'text':text,
+                  'html':html_content})
+
+
+def _account_email_template(purpose: str, code: str|None) -> tuple[str,str,str]:
+    """Return matching plaintext and self-contained HTML account-security mail."""
+    templates={
+        'ACCOUNT_EMAIL_VERIFY': ('Verify your XAI-Compress account','Account verification',
+            'Enter this code to verify your email and activate your XAI-Compress account.',
+            'This code expires in 10 minutes. Never share it. If you did not create an account, ignore this email.'),
+        'PASSWORD_RESET': ('Reset your XAI-Compress password','Password reset',
+            'Enter this code in XAI-Compress to continue resetting your password.',
+            'This code expires in 10 minutes. Never share it. If you did not request a reset, ignore this email.'),
+        'PASSWORD_RESET_SUCCESS': ('Your XAI-Compress password was changed','Password changed',
+            'Your XAI-Compress password was changed successfully.',
+            'If you did not make this change, contact support immediately to recover your account.')}
+    subject,heading,intro,notice=templates[purpose]
+    code_line=f'\n\nCode: {code}' if code is not None else ''
+    text=f'XAI-Compress\n\n{heading}\n\n{intro}{code_line}\n\n{notice}'
+    code_html=(f'<div style="margin:24px 0;padding:16px;background:#f1f5f9;border-radius:8px;'
+               f'font:700 30px/1.2 monospace;letter-spacing:6px;text-align:center">{html.escape(code)}</div>') if code is not None else ''
+    html_content=(f'<!doctype html><html><body style="margin:0;background:#f8fafc;color:#172033;font-family:Arial,sans-serif">'
+        f'<div style="max-width:560px;margin:24px auto;padding:28px;background:#fff;border:1px solid #dbe3ee;border-radius:12px">'
+        f'<div style="font-size:18px;font-weight:700;color:#3154d5">XAI-Compress</div>'
+        f'<h1 style="font-size:24px;margin:24px 0 12px">{html.escape(heading)}</h1>'
+        f'<p style="line-height:1.6">{html.escape(intro)}</p>{code_html}'
+        f'<p style="line-height:1.6;color:#4b5563">{html.escape(notice)}</p>'
+        f'</div></body></html>')
+    return subject,text,html_content
 
 
 def _send_resend(body: dict) -> str:
@@ -105,12 +129,12 @@ def _send_resend(body: dict) -> str:
         raise VerificationEmailError('Verification email unavailable; retry later') from None
 
 
-def _send_brevo(body: dict) -> str:
+def _send_brevo(body: dict, email_settings=settings) -> str:
     request = urllib.request.Request('https://api.brevo.com/v3/smtp/email',
-        data=json.dumps(body).encode(), headers={'api-key': settings.brevo_api_key,
+        data=json.dumps(body).encode(), headers={'api-key': email_settings.brevo_api_key,
         'Content-Type': 'application/json', 'Accept': 'application/json'})
     try:
-        with urllib.request.urlopen(request, timeout=settings.smtp_timeout_seconds) as response:
+        with urllib.request.urlopen(request, timeout=email_settings.smtp_timeout_seconds) as response:
             result = json.loads(response.read())
             if (response.status != 201 or not isinstance(result, dict)
                     or not isinstance(result.get('messageId'), str) or not result['messageId'].strip()):
@@ -128,6 +152,26 @@ def _send_brevo(body: dict) -> str:
         raise
     except (OSError, ValueError):
         raise VerificationEmailError('Verification email unavailable; retry later') from None
+
+
+def send_delivery_smoke_test(recipient: str, email_settings=settings) -> str:
+    """Send one attachment-free diagnostic message through the production Brevo transport."""
+    required = (
+        email_settings.email_provider == 'brevo',
+        bool(email_settings.brevo_api_key) and 'REPLACE_' not in email_settings.brevo_api_key,
+        bool(email_settings.brevo_sender_email) and 'REPLACE_' not in email_settings.brevo_sender_email,
+        bool(email_settings.brevo_sender_name) and 'REPLACE_' not in email_settings.brevo_sender_name,
+        bool(recipient),
+    )
+    if not all(required):
+        raise VerificationEmailError('Email smoke test is not configured')
+    return _send_brevo({
+        'sender': {'email': email_settings.brevo_sender_email, 'name': email_settings.brevo_sender_name},
+        'to': [{'email': recipient}],
+        'subject': 'XAI-Compress email delivery smoke test',
+        'textContent': ('This is an XAI-Compress email delivery smoke test. '
+                        'It is a non-production diagnostic message and requires no action.'),
+    }, email_settings)
 
 
 def _smtp_configuration_missing():

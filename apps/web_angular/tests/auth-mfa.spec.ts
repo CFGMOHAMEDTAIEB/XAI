@@ -2,6 +2,8 @@ import {beforeEach,describe,expect,it,vi} from 'vitest';
 import {of,throwError} from 'rxjs';
 import {LoginPage} from '../src/app/pages/login.page';
 import {RegisterPage} from '../src/app/pages/register.page';
+import {VerifyAccountPage} from '../src/app/pages/verify-account.page';
+import {ForgotPasswordPage} from '../src/app/pages/forgot-password.page';
 import {SecurityPage} from '../src/app/pages/security.page';
 import {AuthService} from '../src/app/core/auth.service';
 import {ApiService} from '../src/app/core/api.service';
@@ -24,6 +26,20 @@ describe('registration',()=>{
  const setup=()=>{const auth={register:vi.fn().mockResolvedValue({verification_required:true})};const router={navigate:vi.fn().mockResolvedValue(true),navigateByUrl:vi.fn().mockResolvedValue(true)};return {auth,router,page:new RegisterPage(auth as never,router as never)}};
  it('validates profile fields, backend password bounds, and matching confirmation',async()=>{const {page,auth}=setup();page.fullName='Test Person';page.phone='+33612345678';page.email='bad';page.password='short';page.confirmPassword='different';await page.submit();expect(page.validation()).toContain('valid email');expect(auth.register).not.toHaveBeenCalled();page.email='person@example.com';await page.submit();expect(page.validation()).toContain('10 characters');page.password='correct-password';page.confirmPassword='other-password';await page.submit();expect(page.validation()).toContain('do not match')});
  it('registers a pending account and continues to verification',async()=>{const {page,auth,router}=setup();page.fullName='Test Person';page.phone='+33612345678';page.email='person@example.com';page.password=page.confirmPassword='correct-password';await page.submit();expect(auth.register).toHaveBeenCalledWith(page.fullName,page.email,page.phone,page.password);expect(router.navigate).toHaveBeenCalledWith(['/verify-account'],{state:{email:page.email}})});
+});
+
+describe('email account verification',()=>{
+ const setup=(post=vi.fn(()=>of({verified:true})))=>{const router={navigateByUrl:vi.fn().mockResolvedValue(true)};const page=new VerifyAccountPage({post} as never,router as never);page.email='person@example.com';return {page,post,router}};
+ it('submits the six-digit code in a POST body and routes successful verification to login',async()=>{vi.useFakeTimers();const {page,post,router}=setup();page.code='123456';const pending=page.verify();await vi.runAllTimersAsync();await pending;expect(post.mock.calls[0][0]).toContain('/auth/verification/email/confirm');expect(post.mock.calls[0][0]).not.toContain('123456');expect(post.mock.calls[0][1]).toEqual({identifier:'person@example.com',code:'123456'});expect(page.success()).toBe(true);expect(router.navigateByUrl).toHaveBeenCalledWith('/login');vi.useRealTimers()});
+ it('resends with loading-safe state, visible cooldown, and sanitized failure',async()=>{const {page,post}=setup();await page.resend();expect(post.mock.calls[0][0]).toContain('/auth/verification/email/send');expect(page.cooldown()).toBe(60);page.ngOnDestroy();post.mockImplementation(()=>throwError(()=>({error:{detail:'private provider detail'}})));page.cooldown.set(0);await page.resend();expect(page.message()).toContain('cannot be sent');expect(page.message()).not.toContain('private')});
+ it('rejects malformed codes locally',async()=>{const {page,post}=setup();page.code='12x';page.digitsOnly();await page.verify();expect(page.code).toBe('12');expect(post).not.toHaveBeenCalled()});
+});
+
+describe('forgot-password recovery',()=>{
+ const setup=()=>{const post=vi.fn((url:string)=>url.endsWith('/verify-code')?of({reset_token:'short-lived-reset-authorization'}):of({accepted:true}));return {post,page:new ForgotPasswordPage({post} as never)}};
+ it('uses POST bodies for forgot, code verification, and password reset without URL secrets',async()=>{const {page,post}=setup();page.identifier='person@example.com';await page.send();expect(page.step()).toBe(2);page.code='654321';await page.verify();expect(page.step()).toBe(3);page.password=page.confirm='new-correct-password';await page.reset();expect(page.step()).toBe(4);expect(post.mock.calls.map(call=>call[0])).toEqual(expect.arrayContaining([expect.stringContaining('/auth/password/forgot'),expect.stringContaining('/auth/password/verify-code'),expect.stringContaining('/auth/password/reset')]));expect(post.mock.calls.every(call=>!call[0].includes('654321')&&!call[0].includes('short-lived-reset'))).toBe(true);expect(localStorage.length).toBe(0);expect(sessionStorage.length).toBe(0)});
+ it('keeps generic sanitized errors and does not advance',async()=>{const post=vi.fn(()=>throwError(()=>({error:{detail:'private provider response'}})));const page=new ForgotPasswordPage({post} as never);page.identifier='person@example.com';await page.send();expect(page.step()).toBe(1);expect(page.message()).toContain('could not be completed');expect(page.message()).not.toContain('private')});
+ it('exposes both recovery and login routes',()=>{expect(routes.map(route=>route.path)).toEqual(expect.arrayContaining(['forgot-password','login']))});
 });
 
 describe('current authenticator enrollment',()=>{
