@@ -5,6 +5,9 @@ import {RegisterPage} from '../src/app/pages/register.page';
 import {SecurityPage} from '../src/app/pages/security.page';
 import {AuthService} from '../src/app/core/auth.service';
 import {ApiService} from '../src/app/core/api.service';
+import {routes} from '../src/app/app.routes';
+import {ShellComponent} from '../src/app/layout/shell.component';
+import {DashboardPage} from '../src/app/pages/dashboard.page';
 
 const flush=()=>new Promise(resolve=>setTimeout(resolve,0));
 beforeEach(()=>{localStorage.clear();sessionStorage.clear()});
@@ -35,4 +38,10 @@ describe('current authenticator enrollment',()=>{
 describe('real authentication transport',()=>{
  it('supports logout and relogin with the current mobile code',async()=>{let calls=0;const http={post:vi.fn((url:string,body:Record<string,string|null>)=>{if(url.endsWith('/auth/logout'))return of({logged_out:true});calls++;if(calls===1)return throwError(()=>({status:401,error:{detail:'Valid TOTP code required'}}));expect(body.totp_code).toBe('654321');return of({access_token:'access-fixture',refresh_token:'refresh-fixture'})})};const router={navigateByUrl:vi.fn()};const auth=new AuthService(http as never,router as never);await expect(auth.login('person@example.com','correct-password')).rejects.toBeTruthy();await auth.login('person@example.com','correct-password','654321');expect(auth.authenticated()).toBe(true);auth.logout();expect(auth.authenticated()).toBe(false);expect(localStorage.length).toBe(0)});
  it('places MFA codes in POST bodies and never URLs',()=>{const http={post:vi.fn(()=>of({}))};const api=new ApiService(http as never);api.confirmAuthenticator('a'.repeat(32),'123456');const [url,body]=http.post.mock.calls[0] as unknown as [string,{code:string}];expect(url).not.toContain('123456');expect(body.code).toBe('123456')});
+});
+
+describe('authenticated workspace navigation',()=>{
+ it('exposes dashboard, compression, restoration, history, security and account routes',()=>{const shell=routes.find(x=>x.path==='');const paths=shell?.children?.map(x=>x.path);expect(paths).toEqual(expect.arrayContaining(['dashboard','compress','inbox','files','security','settings']))});
+ it('uses a responsive drawer and real account identity in the shell',()=>{const auth={logout:vi.fn()};const api={me:vi.fn(()=>of({email:'person@example.com',display_name:'Test Person',is_admin:false}))};const shell=new ShellComponent(auth as never,api as never);expect(shell.initials()).toBe('TP');shell.drawer.set(true);shell.close();expect(shell.drawer()).toBe(false)});
+ it('derives dashboard totals from real file records',async()=>{const files=[{id:1,name:'one.bin',status:'completed',codec:'static',created_at:'2026-01-01',original_size:10,compressed_size:8},{id:2,name:'two.bin',status:'failed',codec:'static',created_at:'2026-01-02',original_size:10,compressed_size:0}];const api={me:vi.fn(()=>of({display_name:'Test Person'})),files:vi.fn(()=>of(files))};const page=new DashboardPage(api as never);await flush();expect(page.completed()).toBe(1);expect(page.failed()).toBe(1);expect(page.firstName()).toBe('Test')});
 });

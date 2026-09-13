@@ -7,7 +7,7 @@
 @if(Data is not null){<section class="panel">
 <table><thead><tr><th>User</th><th>Role</th><th>Status</th><th>MFA</th><th>Last login</th></tr></thead><tbody>
 @if(!Filtered.Any()){<tr><td colspan="5">No users match this view.</td></tr>}
-@foreach(var user in Filtered){<tr><td><a href="@($"/users/{user.Id}")">@(string.IsNullOrWhiteSpace(user.DisplayName) ? user.Email : user.DisplayName)</a><small>@user.Email</small></td><td>@user.Role</td><td><StatusBadge Value="@user.Status" /></td><td>@(user.MfaEnabled ? "Enabled" : "Disabled")</td><td>@(user.LastLogin?.LocalDateTime.ToString() ?? "Not recorded")</td></tr>}
+@foreach(var user in Filtered){<tr><td><a href="@($"/users/{user.Id}")">@(string.IsNullOrWhiteSpace(user.DisplayName) ? user.Email : user.DisplayName)</a><small>@user.Email</small></td><td>@user.Role</td><td><StatusBadge Value="@user.Status" /></td><td><StatusBadge Value="@(user.MfaEnabled ? "MFA enabled" : "Disabled")" /></td><td>@(user.LastLogin?.LocalDateTime.ToString() ?? "Not recorded")</td></tr>}
 </tbody></table></section>}
 </AdminDataState>
 @code {

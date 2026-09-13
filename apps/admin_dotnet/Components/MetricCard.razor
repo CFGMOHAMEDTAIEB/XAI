@@ -1,3 +1,3 @@
-@if(string.IsNullOrWhiteSpace(Href)){<div class="metric-card @Tone"><span>@Label</span><strong>@Value</strong><small>@Detail</small></div>}
-else{<a class="metric-card metric-link @Tone" href="@Href"><span>@Label</span><strong>@Value</strong><small>@Detail</small><b>View details →</b></a>}
-@code {[Parameter,EditorRequired]public string Label{get;set;}="";[Parameter,EditorRequired]public string Value{get;set;}="";[Parameter]public string Detail{get;set;}="";[Parameter]public string Tone{get;set;}="blue";[Parameter]public string? Href{get;set;}}
+@if(string.IsNullOrWhiteSpace(Href)){<div class="metric-card @Tone"><div class="metric-title"><span>@Label</span><XIcon Name="@Icon"/></div><strong>@Value</strong><small>@Detail</small></div>}
+else{<a class="metric-card metric-link @Tone" href="@Href"><div class="metric-title"><span>@Label</span><XIcon Name="@Icon"/></div><strong>@Value</strong><small>@Detail</small><b>View details →</b></a>}
+@code {[Parameter,EditorRequired]public string Label{get;set;}="";[Parameter,EditorRequired]public string Value{get;set;}="";[Parameter]public string Detail{get;set;}="";[Parameter]public string Tone{get;set;}="blue";[Parameter]public string? Href{get;set;}[Parameter]public string Icon{get;set;}="dashboard";}

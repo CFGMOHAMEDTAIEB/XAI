@@ -4,23 +4,6 @@
 @inject AdminSession Session
 @inject NavigationManager Navigation
 @inject IWebHostEnvironment HostEnvironment
-
-@if (!Session.IsAuthenticated)
-{
-    <main class="login-shell">@Body</main>
-}
-else
-{
-<div class="app-shell">
- <aside class="sidebar"><div class="brand"><div class="brand-mark">XC</div><div><strong>XAI Admin</strong><span>Operations console</span></div></div><NavMenu/><div class="sidebar-footer"><div class="environment-dot"></div><div><strong>@HostEnvironment.EnvironmentName</strong><small>Administrative environment</small></div></div></aside>
- <main class="main-content"><header class="topbar"><div><strong>Administration</strong><span>Users, operations and account security</span></div><div class="admin-profile"><div class="avatar">A</div><div><strong>Administrator</strong><small>Server-authorized session</small></div><button disabled="@_signingOut" @onclick="Logout">Sign out</button></div></header><section class="page-content">@Body</section></main>
-</div>
-}
-@code {
- protected override void OnInitialized(){Session.Changed+=SessionChanged;RedirectIfRequired();}
- protected override void OnParametersSet()=>RedirectIfRequired();
- private void RedirectIfRequired(){var path=Navigation.ToBaseRelativePath(Navigation.Uri);if(!Session.IsAuthenticated&&!path.StartsWith("login",StringComparison.OrdinalIgnoreCase))Navigation.NavigateTo("/login");}
- private void SessionChanged()=>_ = InvokeAsync(StateHasChanged);public void Dispose()=>Session.Changed-=SessionChanged;
- private bool _signingOut;
- private async Task Logout(){if(_signingOut)return;_signingOut=true;try{await Api.LogoutAsync();Navigation.NavigateTo("/login",true);}finally{_signingOut=false;}}
-}
+@if(!Session.IsAuthenticated){<main class="login-shell">@Body</main>}
+else{<div class="app-shell">@if(_drawer){<button class="admin-backdrop" aria-label="Close navigation" @onclick="()=>_drawer=false"></button>}<aside class="sidebar @(_drawer?"open":"")"><div class="brand"><div class="brand-mark">XC</div><div><strong>XAI Admin</strong><span>Operations console</span></div></div><NavMenu/><button class="sidebar-logout" @onclick="Logout"><XIcon Name="logout"/>Sign out</button><div class="sidebar-footer"><div class="environment-dot"></div><div><strong>@HostEnvironment.EnvironmentName</strong><small>Administrative environment</small></div></div></aside><main class="main-content"><header class="topbar"><button class="mobile-nav-button" aria-label="Open navigation" aria-expanded="@_drawer" @onclick="()=>_drawer=true"><XIcon Name="dashboard"/></button><div><strong>Administration</strong><span>Users, operations and account security</span></div><div class="admin-profile"><div class="avatar">A</div><div><strong>Administrator</strong><small>Server-authorized session</small></div><button disabled="@_signingOut" @onclick="Logout">Sign out</button></div></header><section class="page-content">@Body</section></main></div>}
+@code{protected override void OnInitialized(){Session.Changed+=SessionChanged;RedirectIfRequired();}protected override void OnParametersSet()=>RedirectIfRequired();private void RedirectIfRequired(){var path=Navigation.ToBaseRelativePath(Navigation.Uri);if(!Session.IsAuthenticated&&!path.StartsWith("login",StringComparison.OrdinalIgnoreCase))Navigation.NavigateTo("/login");}private void SessionChanged()=>_=InvokeAsync(StateHasChanged);public void Dispose()=>Session.Changed-=SessionChanged;private bool _signingOut,_drawer;private async Task Logout(){if(_signingOut)return;_signingOut=true;try{await Api.LogoutAsync();Navigation.NavigateTo("/login",true);}finally{_signingOut=false;}}}

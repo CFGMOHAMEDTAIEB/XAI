@@ -5,7 +5,7 @@
 <AdminDataState RequiresLogin="RequiresLogin" Loading="Loading" Error="Error">
 @if(Data is not null){<section class="panel"><table><thead><tr><th>Job</th><th>File</th><th>User</th><th>Mode</th><th>Status</th><th>Sizes</th><th>Integrity</th></tr></thead><tbody>
 @if(Data.Count==0){<tr><td colspan="7">No file records yet.</td></tr>}
-@foreach(var job in Data){<tr><td>@job.Id</td><td><strong>@job.FileName</strong><small>@job.CreatedAt.LocalDateTime</small></td><td>@job.UserEmail</td><td>@job.Mode</td><td><StatusBadge Value="@job.Status" /></td><td>@Format(job.OriginalSize) &rarr; @Format(job.CompressedSize)</td><td>@(job.IntegrityVerified?"Verified":"Not verified")</td></tr>}
+@foreach(var job in Data){<tr><td>@job.Id</td><td><strong>@job.FileName</strong><small>@job.CreatedAt.LocalDateTime</small></td><td>@job.UserEmail</td><td>@job.Mode</td><td><StatusBadge Value="@job.Status" /></td><td>@Format(job.OriginalSize) &rarr; @Format(job.CompressedSize)</td><td><StatusBadge Value="@(job.IntegrityVerified ? "Verified" : "Unverified")" /></td></tr>}
 </tbody></table></section>}
 </AdminDataState>
 @code {

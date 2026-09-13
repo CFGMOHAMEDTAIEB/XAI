@@ -3,15 +3,16 @@ import {FormsModule} from '@angular/forms';
 import {HttpErrorResponse} from '@angular/common/http';
 import {firstValueFrom} from 'rxjs';
 import {ApiService} from '../core/api.service';
+import {IconComponent} from '../ui/icon.component';
 
-@Component({standalone:true,imports:[FormsModule],template:`
+@Component({standalone:true,imports:[FormsModule,IconComponent],template:`
 <div class="heading"><div><h1>Security</h1><p>Protect your account and review authenticator access.</p></div></div>
-<article class="panel"><h2>Account verification</h2>
+<article class="panel"><div class="card-title"><x-icon name="mail"/><div><h2>Account verification</h2><p class="muted">Your verified contact methods.</p></div></div>
  <p><strong>Email</strong> {{profile()?.email||'—'}} <span class="status-pill" [class.active]="profile()?.email_verified">{{profile()?.email_verified?'Verified':'Not verified'}}</span></p>
  <p><strong>Phone</strong> {{profile()?.phone_number||'Not provided'}} <span class="status-pill" [class.active]="profile()?.phone_verified">{{profile()?.phone_verified?'Verified':'Not verified'}}</span></p>
 </article>
 <article class="panel security-card" aria-labelledby="authenticator-title">
- <div class="security-summary"><div class="security-icon" aria-hidden="true">◇</div><div><p class="eyebrow">Account protection</p><h2 id="authenticator-title">XAI Authenticator</h2><p class="muted">Use time-based codes generated securely by the XAI mobile app.</p></div><span class="status-pill" [class.active]="state()==='enabled'">{{statusLabel()}}</span></div>
+ <div class="security-summary"><div class="security-icon" aria-hidden="true"><x-icon name="security"/></div><div><p class="eyebrow">Account protection</p><h2 id="authenticator-title">XAI Authenticator</h2><p class="muted">Use time-based codes generated securely by the XAI mobile app.</p></div><span class="status-pill" [class.active]="state()==='enabled'">{{statusLabel()}}</span></div>
 
  @if(state()==='loading'){<p role="status">Checking authenticator status…</p>}
  @if(state()==='not_configured'||state()==='expired'||state()==='awaiting_email'||state()==='awaiting_totp'){
