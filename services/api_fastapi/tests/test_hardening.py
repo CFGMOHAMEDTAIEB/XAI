@@ -36,7 +36,7 @@ def test_production_rejects_unsafe_config(overrides):
     with pytest.raises(ValueError): Settings(_env_file=None, **config)
 
 def test_production_defaults_defensive_rules_directory():
-    config = Settings(_env_file=None, app_env='production', jwt_secret='a'*48, database_url='postgresql+psycopg://u:p@db/xai', cors_origins='https://xai-usg.vercel.app', yara_rules_path='')
+    config = Settings(_env_file=None, app_env='production', jwt_secret='0123456789abcdef'*3, database_url='postgresql+psycopg://u:p@db/xai', cors_origins='https://xai-usg.vercel.app', yara_rules_path='')
     assert config.security_scan_required and Path(config.yara_rules_path).name == 'production'
     rules = scanner.load_yara_rules(config.yara_rules_path)
     assert {rule.identifier for rule in rules} == {

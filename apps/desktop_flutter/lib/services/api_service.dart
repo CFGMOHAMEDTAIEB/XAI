@@ -1,105 +1,345 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'deployment_config.dart';
 
 class ApiException implements Exception {
-  const ApiException(this.message);
+  const ApiException(this.message, {this.kind});
   final String message;
-  @override String toString()=>message;
+  final String? kind;
+  @override
+  String toString() => message;
 }
+
 class ApiService {
-  ApiService({http.Client? client}):_client=client??http.Client();
+  ApiService({http.Client? client, Duration? requestTimeout})
+      : _client = client ?? http.Client(),
+        requestTimeout = requestTimeout ?? const Duration(seconds: 40);
   final http.Client _client;
-  String baseUrl=configuredApiUrl();
-  String? token;
-  String? _refreshToken;
+  final Duration requestTimeout;
+  String baseUrl = configuredApiUrl();
+  String? token, _refreshToken;
   Future<void>? _refreshing;
-  int _generation=0;
-  Future<void> login(String email,String password,{String?totp}) async {
-    final generation=_generation;
-    final response=await _json('/auth/login',body:{'email':email,'password':password,'totp_code':totp?.isEmpty==true?null:totp});
-    if(generation!=_generation)throw const ApiException('Session changed. Sign in again.');
-    final data=jsonDecode(response.body);
-    token=data['access_token'] as String;
-    _refreshToken=data['refresh_token'] as String?;
+  int _generation = 0;
+  String? get refreshToken => _refreshToken;
+
+  Future<Map<String, dynamic>> login(String email, String password,
+      {String? totp}) async {
+    validateEmail(email);
+    final generation = _generation;
+    final r = await _post(
+        '/auth/login',
+        {
+          'email': email,
+          'password': password,
+          'totp_code': totp?.isEmpty == true ? null : totp
+        },
+        auth: false,
+        detectAuth: true);
+    if (generation != _generation) {
+      throw const ApiException('Session changed. Sign in again.');
+    }
+    final data = Map<String, dynamic>.from(jsonDecode(r.body));
+    token = data['access_token'];
+    _refreshToken = data['refresh_token'];
+    return me();
   }
-  Future<void> register(String email,String password) async {
-    final generation=_generation;
-    final response=await _json('/auth/register',body:{'email':email,'password':password});
-    if(generation!=_generation)throw const ApiException('Session changed. Sign in again.');
-    final data=jsonDecode(response.body);
-    token=data['access_token'] as String;
-    _refreshToken=data['refresh_token'] as String?;
+
+  Future<void> restore(String refresh) async {
+    _refreshToken = refresh;
+    await _rotate();
+    await me();
   }
+
+  Future<void> register(String name, String email, String password) {
+    validateEmail(email);
+    return _public('/auth/register',
+        {'full_name': name, 'email': email, 'password': password});
+  }
+
+  Future<Map<String, dynamic>> me() async =>
+      Map<String, dynamic>.from(jsonDecode((await _get('/auth/me')).body));
+  Future<List<dynamic>> devices() async =>
+      jsonDecode((await _get('/auth/devices')).body);
+  Future<void> sendEmailVerification(String email) {
+    validateEmail(email);
+    return _public('/auth/verification/email/send', {'identifier': email});
+  }
+
+  Future<void> confirmEmail(String email, String code) {
+    validateEmail(email);
+    return _public('/auth/verification/email/confirm',
+        {'identifier': email, 'code': code});
+  }
+
+  Future<void> forgotPassword(String email) {
+    validateEmail(email);
+    return _public('/auth/password/forgot', {'identifier': email});
+  }
+
+  Future<String> verifyResetCode(String email, String code) async {
+    validateEmail(email);
+    return jsonDecode((await _post(
+            '/auth/password/verify-code', {'identifier': email, 'code': code},
+            auth: false))
+        .body)['reset_token'];
+  }
+
+  Future<void> resetPassword(String reset, String password) => _public(
+      '/auth/password/reset', {'reset_token': reset, 'new_password': password});
+  Future<void> _public(String path, Map<String, dynamic> body) async {
+    await _post(path, body, auth: false);
+  }
+
   Future<void> logout() async {
-    final refresh=_refreshToken;
-    _generation++;token=null;_refreshToken=null;
-    if(refresh==null)return;
-    try{await _json('/auth/logout',body:{'refresh_token':refresh});}on ApiException{/* Local session is already cleared. */}
+    final refresh = _refreshToken;
+    _generation++;
+    token = null;
+    _refreshToken = null;
+    if (refresh != null) {
+      try {
+        await _post('/auth/logout', {'refresh_token': refresh}, auth: false);
+      } on ApiException {/* cleared locally */}
+    }
   }
-  Future<void> _refresh() => _refreshing??=_rotate().whenComplete(()=>_refreshing=null);
+
+  Future<void> _refresh() =>
+      _refreshing ??= _rotate().whenComplete(() => _refreshing = null);
   Future<void> _rotate() async {
-    final generation=_generation;
-    try{
-      if(_refreshToken==null)throw const ApiException('Sign in again.');
-      final r=await _json('/auth/refresh',body:{'refresh_token':_refreshToken});
-      if(generation!=_generation)throw const ApiException('Session changed. Sign in again.');
-      final data=jsonDecode(r.body);token=data['access_token'];_refreshToken=data['refresh_token'];
-    }catch(_){if(generation==_generation){token=null;_refreshToken=null;}throw const ApiException('Session expired. Sign in again.');}
+    final g = _generation;
+    try {
+      if (_refreshToken == null) throw const ApiException('Sign in again.');
+      final r = await _post('/auth/refresh', {'refresh_token': _refreshToken},
+          auth: false);
+      if (g != _generation) throw const ApiException('Session changed.');
+      final d = jsonDecode(r.body);
+      token = d['access_token'];
+      _refreshToken = d['refresh_token'];
+    } catch (_) {
+      if (g == _generation) {
+        token = null;
+        _refreshToken = null;
+      }
+      throw const ApiException('Session expired. Sign in again.');
+    }
   }
-  Future<http.Response> _send(Future<http.Response> Function() action,{bool authenticated=true}) async {
-    try{
-      var r=await action().timeout(const Duration(minutes:10));
-      if(r.statusCode==401&&authenticated&&_refreshToken!=null){await _refresh();r=await action().timeout(const Duration(minutes:10));}
-      if(r.statusCode>=400){
-        if(r.statusCode==401&&authenticated){token=null;_refreshToken=null;}
-        throw ApiException(switch(r.statusCode){
-          401=>'Sign in again. Check your password and current TOTP if MFA is enabled.',
-          403=>'This action is not permitted for this account.',
-          409=>'Account or file state changed. Refresh and retry.',
-          422=>'Check your input or file. Passwords require at least 10 characters.',
-          429=>'Too many requests. Wait before retrying.',
-          503=>'Backend or security scanner unavailable. Retry later.',
-          _=>'Request failed. Check the file or code and retry.',
-        });
+
+  Future<http.Response> _send(Future<http.Response> Function() call,
+      {bool auth = true, bool detectAuth = false}) async {
+    try {
+      var r = await call().timeout(requestTimeout);
+      if (r.statusCode == 401 && auth && _refreshToken != null) {
+        await _refresh();
+        r = await call();
+      }
+      if (r.statusCode >= 400) {
+        throw _mapHttpError(r, authenticated: auth, detectAuth: detectAuth);
       }
       return r;
-    }on ApiException{rethrow;}on TimeoutException{throw const ApiException('Request timed out. Check history before repeating an operation.');}
-    catch(_){throw const ApiException('Could not complete the request. Check your connection and retry.');}
+    } on ApiException {
+      rethrow;
+    } on TimeoutException {
+      throw const ApiException('Request timed out. Please retry.');
+    } on SocketException {
+      throw const ApiException('Could not connect securely. Please retry.');
+    } on HandshakeException {
+      throw const ApiException('Could not connect securely. Please retry.');
+    } on http.ClientException {
+      throw const ApiException('Could not connect securely. Please retry.');
+    } catch (_) {
+      throw const ApiException(
+          'Service is temporarily unavailable. Please try again.');
+    }
   }
-  Future<http.Response> _json(String path,{Map<String,dynamic>?body}) => _send((){
-    final headers={'content-type':'application/json',if(token!=null)'authorization':'Bearer $token'};
-    return (body==null?_client.get(Uri.parse('$baseUrl$path'),headers:headers):_client.post(Uri.parse('$baseUrl$path'),headers:headers,body:jsonEncode(body))).timeout(const Duration(seconds:40));
-  },authenticated:!RegExp(r'^/auth/(login|register|refresh|logout)$').hasMatch(path));
-  Future<List<dynamic>> history() async => jsonDecode((await _json('/history')).body) as List<dynamic>;
-  Future<Map<String,dynamic>> redeem(String code) async => Map<String,dynamic>.from(jsonDecode((await _json('/shares/redeem',body:{'code':code})).body));
-  Future<http.Response> _upload(String path,String input) => _send(() async {
-    if(token==null)throw const ApiException('Sign in before using cloud operations.');
-    final request=http.MultipartRequest('POST',Uri.parse('$baseUrl$path'));
-    request.headers['authorization']='Bearer $token';
-    request.files.add(await http.MultipartFile.fromPath('upload',input));
-    return http.Response.fromStream(await _client.send(request));
-  });
-  Future<void> downloadFile(int id,String output) async {
-    final r=await _send(()=>_client.get(Uri.parse('$baseUrl/files/$id/download'),headers:{'authorization':'Bearer $token'}));
+
+  ApiException _mapHttpError(http.Response response,
+      {required bool authenticated, required bool detectAuth}) {
+    final detail = _safeDetail(response.body);
+    if (detectAuth &&
+        response.statusCode == 401 &&
+        detail == 'Valid TOTP code required') {
+      return const ApiException(
+          'Enter the current code from XAI Authenticator.',
+          kind: 'mfa_required');
+    }
+    if (detectAuth &&
+        response.statusCode == 403 &&
+        detail == 'Account verification required') {
+      return const ApiException('Verify your email to continue.',
+          kind: 'verification_required');
+    }
+    final status = response.statusCode;
+    if (status == 400 || status == 422) {
+      return const ApiException('Please check the information you entered.',
+          kind: 'invalid_input');
+    }
+    if (status == 401) {
+      return ApiException(
+          authenticated
+              ? 'Your session has expired. Please sign in again.'
+              : 'Email, password, or authentication code is incorrect.',
+          kind: 'authentication');
+    }
+    if (status == 403) {
+      return const ApiException('This action is not allowed.',
+          kind: 'forbidden');
+    }
+    if (status == 409) {
+      return const ApiException(
+          'This request conflicts with the current account or resource state.',
+          kind: 'conflict');
+    }
+    if (status == 429) {
+      return const ApiException('Too many attempts. Please try again later.',
+          kind: 'rate_limited');
+    }
+    if (status >= 500) {
+      return const ApiException(
+          'Service is temporarily unavailable. Please try again.',
+          kind: 'server');
+    }
+    return const ApiException('The requested operation could not be completed.',
+        kind: 'http');
+  }
+
+  String? _safeDetail(String body) {
+    try {
+      final decoded = jsonDecode(body);
+      if (decoded is Map<String, dynamic> && decoded['detail'] is String) {
+        return decoded['detail'] as String;
+      }
+    } catch (_) {
+      // Provider bodies are never shown directly.
+    }
+    return null;
+  }
+
+  static void validateEmail(String value) {
+    final email = value.trim();
+    final valid = email.length <= 254 &&
+        RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(email);
+    if (!valid) {
+      throw const ApiException('Please check the information you entered.',
+          kind: 'invalid_input');
+    }
+  }
+
+  Map<String, String> get _headers => {
+        'content-type': 'application/json',
+        if (token != null) 'authorization': 'Bearer $token'
+      };
+  Future<http.Response> _post(String path, Map<String, dynamic> body,
+      {bool auth = true, bool detectAuth = false}) {
+    if (auth && token == null) {
+      return Future.error(const ApiException(
+          'Complete authentication before accessing the workspace.',
+          kind: 'authentication_required'));
+    }
+    final uri = Uri.parse('$baseUrl$path');
+    final diagnose = kDebugMode && path == '/auth/password/forgot';
+    if (diagnose) {
+      debugPrint('DESKTOP_API_SCHEME=${uri.scheme}');
+      debugPrint('DESKTOP_API_HOST=${uri.host}');
+      debugPrint('DESKTOP_API_ENDPOINT=$path');
+    }
+    return _send(() async {
+      try {
+        final response =
+            await _client.post(uri, headers: _headers, body: jsonEncode(body));
+        if (diagnose) debugPrint('HTTP_STATUS=${response.statusCode}');
+        return response;
+      } catch (error) {
+        if (diagnose) debugPrint('EXCEPTION_TYPE=${error.runtimeType}');
+        rethrow;
+      }
+    }, auth: auth, detectAuth: detectAuth);
+  }
+
+  Future<http.Response> _get(String path) {
+    if (token == null) {
+      return Future.error(const ApiException(
+          'Complete authentication before accessing the workspace.',
+          kind: 'authentication_required'));
+    }
+    return _send(
+        () => _client.get(Uri.parse('$baseUrl$path'), headers: _headers));
+  }
+
+  Future<List<dynamic>> history() async =>
+      jsonDecode((await _get('/history')).body);
+  Future<List<dynamic>> shares() async =>
+      jsonDecode((await _get('/shares')).body);
+  Future<Map<String, dynamic>> createShare(
+          int fileId, String email, int minutes) async =>
+      Map<String, dynamic>.from(jsonDecode((await _post('/shares', {
+        'file_id': fileId,
+        'recipient_email': email,
+        'expires_minutes': minutes,
+        'max_downloads': 1,
+        'anonymous_sender': false
+      }))
+          .body));
+  Future<void> revokeShare(int id) async {
+    await _post('/shares/$id/revoke', {});
+  }
+
+  Future<void> revokeDevice(String deviceId) async {
+    await _post('/auth/devices/$deviceId/revoke', {});
+  }
+
+  Future<Map<String, dynamic>> redeem(String code) async =>
+      Map<String, dynamic>.from(
+          jsonDecode((await _post('/shares/redeem', {'code': code})).body));
+  Future<http.Response> _upload(String path, String input) => _send(() async {
+        if (token == null) {
+          throw const ApiException(
+              'Complete authentication before accessing the workspace.',
+              kind: 'authentication_required');
+        }
+        final q = http.MultipartRequest('POST', Uri.parse('$baseUrl$path'));
+        q.headers['authorization'] = 'Bearer $token';
+        q.files.add(await http.MultipartFile.fromPath('upload', input));
+        return http.Response.fromStream(await _client.send(q));
+      });
+  Future<void> downloadFile(int id, String output) async {
+    if (token == null) {
+      throw const ApiException(
+          'Complete authentication before accessing the workspace.',
+          kind: 'authentication_required');
+    }
+    final r = await _send(() => _client
+        .get(Uri.parse('$baseUrl/files/$id/download'), headers: _headers));
     await File(output).writeAsBytes(r.bodyBytes);
   }
-  Future<Map<String,dynamic>> compress(String input,String output) async {
-    final r=await _upload('/compression/jobs',input);
-    final job=Map<String,dynamic>.from(jsonDecode(r.body));
-    await downloadFile(job['id'] as int,output);
-    return {'original_size':job['original_size'],'artifact_size':job['compressed_size'],'mode':job['codec'],'sha256':job['sha256']};
+
+  Future<Map<String, dynamic>> compress(String input, String output) async {
+    final r = await _upload('/compression/jobs', input);
+    final j = Map<String, dynamic>.from(jsonDecode(r.body));
+    await downloadFile(j['id'], output);
+    return {
+      'original_size': j['original_size'],
+      'artifact_size': j['compressed_size'],
+      'mode': j['codec'],
+      'sha256': j['sha256']
+    };
   }
-  Future<Map<String,dynamic>> decompress(String input,String output) async {
-    final r=await _upload('/compression/decompress',input);
+
+  Future<Map<String, dynamic>> decompress(String input, String output) async {
+    final r = await _upload('/compression/decompress', input);
     await File(output).writeAsBytes(r.bodyBytes);
-    return {'restored_size':r.bodyBytes.length,'mode':'cloud-decompress','sha256':r.headers['x-content-sha256']};
+    return {
+      'restored_size': r.bodyBytes.length,
+      'mode': 'cloud-decompress',
+      'sha256': r.headers['x-content-sha256']
+    };
   }
-  Future<void> downloadShare(String code,String output) async {
-    final r=await _json('/shares/download',body:{'code':code});
+
+  Future<void> downloadShare(String code, String output) async {
+    final r = await _post('/shares/download', {'code': code});
     await File(output).writeAsBytes(r.bodyBytes);
   }
-  void dispose()=>_client.close();
+
+  void dispose() => _client.close();
 }

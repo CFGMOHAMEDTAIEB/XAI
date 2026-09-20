@@ -2,11 +2,12 @@ from datetime import datetime, timedelta
 import logging, re, secrets
 from fastapi import Depends, HTTPException, Response
 from sqlalchemy import select, update
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from .config import settings
 from .db import get_db
-from .models import User, AccountVerificationChallenge, RefreshToken
+from .models import User, AccountVerificationChallenge, AuditEvent, RefreshToken
 from .schemas import VerificationSendRequest, VerificationConfirmRequest, PasswordResetRequest
 from .security import generate_numeric_code, hash_verification_secret, hash_password
 from .email_service import send_account_email, VerificationEmailError
@@ -40,7 +41,12 @@ def issue(db:Session,user:User,channel:str,purpose:str):
     code=generate_numeric_code();row=AccountVerificationChallenge(user_id=user.id,channel=channel,purpose=purpose,
         code_hash=hash_verification_secret(code),expires_at=now+timedelta(minutes=settings.account_verification_minutes),
         max_attempts=settings.verification_max_attempts,last_sent_at=now)
-    db.add(row);db.commit()
+    action={'ACCOUNT_EMAIL_VERIFY':'account.email_verification.requested',
+            'ACCOUNT_PHONE_VERIFY':'account.phone_verification.requested',
+            'PASSWORD_RESET':'password.reset.requested'}[purpose]
+    db.add(row)
+    db.add(AuditEvent(user_id=user.id,action=action))
+    db.commit()
     try:
         if channel=='email':send_account_email(user.email,code,purpose)
         else:send_sms(user.phone_number,code)
@@ -95,7 +101,13 @@ def register_account_routes(app,current_user):
         user=find_user(db,body.identifier)
         if user and user.account_status!='DISABLED':
             try:issue(db,user,'email',PASSWORD_RESET)
-            except (VerificationEmailError,HTTPException):pass
+            except VerificationEmailError:
+                logger.error('password_reset_delivery_failed')
+            except HTTPException:
+                logger.info('password_reset_request_suppressed')
+            except SQLAlchemyError:
+                db.rollback()
+                logger.error('password_reset_transaction_failed')
         else: hash_password(secrets.token_urlsafe(16))
         return {'accepted':True,'message':'If the account is eligible, reset instructions will be sent.'}
 

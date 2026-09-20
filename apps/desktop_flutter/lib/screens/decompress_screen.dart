@@ -10,7 +10,8 @@ class DecompressScreen extends StatelessWidget {
   const DecompressScreen({super.key});
 
   Future<void> selectOutput(BuildContext context) async {
-    final path = await FilePicker.platform.saveFile(dialogTitle: 'Save restored file', fileName: 'restored.bin');
+    final path = await FilePicker.platform
+        .saveFile(dialogTitle: 'Save restored file', fileName: 'restored.bin');
     if (!context.mounted) return;
     context.read<AppState>().selectOutput(path);
   }
@@ -23,11 +24,16 @@ class DecompressScreen extends StatelessWidget {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(28),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('Restore a .xaic file', style: Theme.of(context).textTheme.headlineMedium),
+          Text('Restore a .xaic file',
+              style: Theme.of(context).textTheme.headlineMedium),
           const SizedBox(height: 6),
-          const Text('The engine rejects corruption, wrong checkpoints and invalid output sizes.'),
+          const Text(
+              'The engine rejects corruption, wrong checkpoints and invalid output sizes.'),
           const SizedBox(height: 24),
-          FileSelector(value: state.inputPath, onChanged: state.selectInput, label: 'Compressed .xaic file'),
+          FileSelector(
+              value: state.inputPath,
+              onChanged: state.selectInput,
+              label: 'Compressed .xaic file'),
           const SizedBox(height: 18),
           OutlinedButton.icon(
             onPressed: () => selectOutput(context),
@@ -38,10 +44,13 @@ class DecompressScreen extends StatelessWidget {
           if (state.processing) ...[
             const LinearProgressIndicator(),
             Text(state.status),
-            if (state.mode != 'cloud') TextButton(onPressed: state.cancel, child: const Text('Cancel')),
+            if (state.mode != 'cloud')
+              TextButton(onPressed: state.cancel, child: const Text('Cancel')),
           ] else
             FilledButton.icon(
-              onPressed: state.inputPath != null && state.outputPath != null ? state.decompress : null,
+              onPressed: state.inputPath != null && state.outputPath != null
+                  ? state.decompress
+                  : null,
               icon: const Icon(Icons.unarchive),
               label: const Text('Decompress and verify'),
             ),

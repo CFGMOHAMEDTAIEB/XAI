@@ -4,7 +4,7 @@ class RegisterRequest(BaseModel):
     email: EmailStr
     password: str = Field(min_length=10)
     full_name: str = Field(min_length=1,max_length=120)
-    phone_number: str = Field(min_length=8,max_length=32)
+    phone_number: str|None = Field(default=None,min_length=8,max_length=32)
     @field_validator('full_name')
     @classmethod
     def clean_name(cls,value):

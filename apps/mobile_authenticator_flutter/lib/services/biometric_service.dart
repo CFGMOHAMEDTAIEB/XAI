@@ -9,7 +9,9 @@ class BiometricService {
   Future<bool> authenticate() async {
     try {
       final supported = await _auth.isDeviceSupported();
-      if (kDebugMode) debugPrint('[XAI startup] local_auth supported=$supported');
+      if (kDebugMode) {
+        debugPrint('[XAI startup] local_auth supported=$supported');
+      }
       if (!supported) return false;
       return await _auth.authenticate(
         localizedReason: 'Unlock XAI-Compress Authenticator',
@@ -17,7 +19,10 @@ class BiometricService {
         persistAcrossBackgrounding: true,
       );
     } catch (_) {
-      if (kDebugMode) debugPrint('[XAI startup] local_auth failed; retry device authentication');
+      if (kDebugMode) {
+        debugPrint(
+            '[XAI startup] local_auth failed; retry device authentication');
+      }
       return false;
     }
   }

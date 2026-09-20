@@ -1,56 +1,61 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:xai_compress_authenticator/main.dart';
 import 'package:xai_compress_authenticator/core/app_state.dart';
+import 'package:xai_compress_authenticator/main.dart';
+import 'package:xai_compress_authenticator/models/authenticator_account.dart';
 import 'package:xai_compress_authenticator/services/api_service.dart';
 import 'package:xai_compress_authenticator/services/biometric_service.dart';
 import 'package:xai_compress_authenticator/services/secure_account_store.dart';
 
 class TestBiometricService extends BiometricService {
   bool result = false;
-
   @override
   Future<bool> authenticate() async => result;
 }
 
 void main() {
-  testWidgets('Only successful authentication navigates to home', (tester) async {
+  testWidgets('stored authenticator remains behind biometric unlock',
+      (tester) async {
     final biometrics = TestBiometricService();
     final state = AppState(
-      accountStore: SecureAccountStore(),
-      biometricService: biometrics,
-      apiService: ApiService(),
-    )..loading = false;
+        accountStore: SecureAccountStore(),
+        biometricService: biometrics,
+        apiService: ApiService())
+      ..loading = false
+      ..accounts = [
+        const AuthenticatorAccount(
+            id: '1',
+            issuer: 'XAI',
+            accountName: 'test@example.com',
+            secret: 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ')
+      ];
     addTearDown(state.dispose);
-    await tester.pumpWidget(ChangeNotifierProvider<AppState>.value(
-      value: state, child: const XaiAuthenticatorApp()));
-
-    await tester.tap(find.text('Unlock'));
-    await tester.pumpAndSettle();
+    await tester.pumpWidget(ChangeNotifierProvider.value(
+        value: state, child: const XaiAuthenticatorApp()));
     expect(find.text('Unlock'), findsOneWidget);
-    expect(find.text('Authenticator accounts'), findsNothing);
-
+    expect(find.byKey(const ValueKey('totp-code')), findsNothing);
     biometrics.result = true;
     await tester.tap(find.text('Unlock'));
     await tester.pumpAndSettle();
-    expect(find.text('Unlock'), findsNothing);
-    expect(find.text('Authenticator accounts'), findsOneWidget);
-
+    expect(find.byKey(const ValueKey('totp-code')), findsOneWidget);
     await tester.tap(find.byTooltip('Lock'));
     await tester.pumpAndSettle();
     expect(find.text('Unlock'), findsOneWidget);
-    expect(find.text('Authenticator accounts'), findsNothing);
   });
 
-  testWidgets('Authenticator starts locked and does not expose account codes', (tester) async {
-    final state = AppState(accountStore: SecureAccountStore(),
-      biometricService: BiometricService(), apiService: ApiService())..loading = false;
+  testWidgets('fresh install opens auth landing without dashboard',
+      (tester) async {
+    final state = AppState(
+        accountStore: SecureAccountStore(),
+        biometricService: BiometricService(),
+        apiService: ApiService())
+      ..loading = false
+      ..unlocked = true;
     addTearDown(state.dispose);
-    await tester.pumpWidget(ChangeNotifierProvider<AppState>.value(
-      value: state, child: const XaiAuthenticatorApp()));
-    expect(find.text('Unlock'), findsOneWidget);
-    expect(find.text('XAI-Compress Authenticator'), findsOneWidget);
-    expect(find.text('Authenticator accounts'), findsNothing);
-    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(ChangeNotifierProvider.value(
+        value: state, child: const XaiAuthenticatorApp()));
+    expect(find.text('Authentication, simplified'), findsOneWidget);
+    expect(find.byKey(const ValueKey('totp-code')), findsNothing);
   });
 }

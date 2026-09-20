@@ -32,6 +32,20 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 # tracking table. Only metadata is inspected; migration SQL is never re-run when
 # all of its characteristic objects are already present.
 LEGACY_OBJECTS = {
+    "000": {
+        "tables": {"users", "files", "share_codes", "audit_events"},
+        "columns": {
+            ("users", "id"), ("users", "email"), ("users", "password_hash"),
+            ("files", "id"), ("files", "owner_id"), ("files", "sha256"),
+            ("share_codes", "id"), ("share_codes", "file_id"), ("share_codes", "code_hash"),
+            ("audit_events", "id"), ("audit_events", "action"), ("audit_events", "created_at"),
+        },
+        "indexes": {
+            "ix_users_email", "ix_files_owner_id", "ix_share_codes_file_id",
+            "ix_share_codes_recipient_email", "ix_share_codes_code_hash",
+            "ix_audit_events_user_id", "ix_audit_events_action",
+        },
+    },
     "001": {
         "tables": {"totp_enrollments"},
         "columns": {
@@ -81,6 +95,11 @@ LEGACY_OBJECTS = {
             ("refresh_tokens", "revoked"), ("refresh_tokens", "created_at"),
         },
         "indexes": {"ix_refresh_tokens_user_id", "ix_refresh_tokens_token_hash"},
+    },
+    "005": {
+        "tables": {"audit_events"},
+        "columns": {("audit_events", "updated_at")},
+        "indexes": set(),
     },
 }
 
@@ -194,6 +213,29 @@ def _legacy_present(cursor: Any, migration: Migration) -> bool:
     return required["tables"] <= tables and required["columns"] <= columns and required["indexes"] <= indexes
 
 
+def _validate_schema(cursor: Any, migrations: list[Migration]) -> None:
+    """Fail closed if a recorded migration's required schema objects drift."""
+    cursor.execute(
+        "SELECT table_name FROM information_schema.tables "
+        "WHERE table_schema = current_schema() AND table_type = 'BASE TABLE'"
+    )
+    tables = {row[0] for row in cursor.fetchall()}
+    cursor.execute(
+        "SELECT table_name, column_name FROM information_schema.columns "
+        "WHERE table_schema = current_schema()"
+    )
+    columns = {(row[0], row[1]) for row in cursor.fetchall()}
+    cursor.execute("SELECT indexname FROM pg_catalog.pg_indexes WHERE schemaname = current_schema()")
+    indexes = {row[0] for row in cursor.fetchall()}
+    for migration in migrations:
+        required = LEGACY_OBJECTS.get(migration.version)
+        if required is None:
+            continue
+        if not (required["tables"] <= tables and required["columns"] <= columns
+                and required["indexes"] <= indexes):
+            raise MigrationError("SCHEMA_DRIFT", migration.version)
+
+
 def _record(cursor: Any, migration: Migration) -> None:
     cursor.execute(
         "INSERT INTO schema_migrations (version, filename, checksum) VALUES (%s, %s, %s)",
@@ -276,6 +318,9 @@ def run(argv: list[str] | None = None) -> int:
 
         if args.check_only:
             outstanding = sorted(baseline + pending, key=lambda migration: int(migration.version))
+            if not outstanding:
+                with connection.cursor() as cursor:
+                    _validate_schema(cursor, migrations)
             print("DATABASE_CONNECTION = PASS")
             print(f"MIGRATIONS_TOTAL = {len(migrations)}")
             print(f"MIGRATIONS_PENDING = {len(outstanding)}")
@@ -296,6 +341,9 @@ def run(argv: list[str] | None = None) -> int:
             status = "APPLIED" if execute_sql else "BASELINED"
             print(f"MIGRATION_{migration.version} = {status}")
             active_version = None
+        with connection.cursor() as cursor:
+            _validate_schema(cursor, migrations)
+        connection.rollback()
         print("AUTOMATIC_MIGRATIONS = PASS")
         return 0
     except Exception as error:

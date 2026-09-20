@@ -67,10 +67,10 @@ def health():
 def register(body:RegisterRequest,db:Session=Depends(get_db)):
     if settings.app_env=='production' and body.email.lower() in {x.strip().lower() for x in settings.admin_emails.split(',') if x.strip()}: raise HTTPException(403,'Administrator accounts must be provisioned by the operator')
     email=body.email.strip().lower()
-    try:phone=normalize_phone(body.phone_number)
+    try:phone=normalize_phone(body.phone_number) if body.phone_number else None
     except ValueError:raise HTTPException(422,'Invalid authentication request')
     if db.scalar(select(User).where(User.email==email)): raise HTTPException(409,'Account could not be created')
-    if db.scalar(select(User).where(User.phone_number==phone)): raise HTTPException(409,'Account could not be created')
+    if phone and db.scalar(select(User).where(User.phone_number==phone)): raise HTTPException(409,'Account could not be created')
     user=User(email=email,password_hash=hash_password(body.password),display_name=body.full_name,
               full_name=body.full_name,phone_number=phone,email_verified=False,phone_verified=False,
               account_status='PENDING_VERIFICATION')

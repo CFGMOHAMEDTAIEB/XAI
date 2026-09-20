@@ -3,6 +3,7 @@
 __pycache__/
 *.pyc
 node_modules/
+.next/
 .dart_tool/
 build/
 bin/
@@ -16,6 +17,19 @@ infrastructure/data/
 *.db
 *.tsbuildinfo
 .flutter-plugins-dependencies
+.ipynb_checkpoints/
+.xai-runtime/
+
+# Transient local logs and document previews. Tracked audit evidence is unaffected.
+.tmp/*.log
+.tmp/pdf_render*/
+.tmp/pytest-*/
+
+# Local release binaries are reproducible; manifests remain trackable.
+releases/**/*.apk
+releases/**/*.aab
+releases/**/*.zip
+releases/**/*.whl
 
 # Local integration test basetemps are rebuildable and may contain symlinks.
 scratch/*pytest*/

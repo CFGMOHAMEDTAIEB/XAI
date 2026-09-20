@@ -1,1 +1,2 @@
-$ErrorActionPreference='Stop'; Set-Location (Split-Path $PSScriptRoot -Parent); docker compose down
+& (Join-Path $PSScriptRoot 'stop-all.ps1') @args
+exit $LASTEXITCODE

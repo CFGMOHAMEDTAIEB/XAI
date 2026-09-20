@@ -1,0 +1,6 @@
+import 'server-only';
+import fs from 'node:fs';
+import path from 'node:path';
+export type LocalArtifact={product:string;platform:string;version:string;filename:string;relativePath:string;size:number;sha256:string;buildDate:string;status:string;architecture:string;minimumRequirements:string;signed:boolean;downloadAvailable:boolean};
+export function releasesDirectory(){return path.resolve(process.env.XAI_RELEASES_DIR??path.join(process.cwd(),'..','..','releases'))}
+export function localArtifacts():LocalArtifact[]{try{const root=releasesDirectory();const parsed=JSON.parse(fs.readFileSync(path.join(root,'manifest.json'),'utf8')) as {schemaVersion?:number;artifacts?:LocalArtifact[]};if(parsed.schemaVersion!==1||!Array.isArray(parsed.artifacts))return[];return parsed.artifacts.filter(item=>{if(!item||!/^[a-zA-Z0-9._-]+$/.test(item.filename)||!/^[a-fA-F0-9]{64}$/.test(item.sha256))return false;if(!Number.isSafeInteger(item.size)||item.size<=0||!item.downloadAvailable)return false;const candidate=path.resolve(root,item.relativePath);return candidate.startsWith(root+path.sep)&&fs.existsSync(candidate)&&fs.statSync(candidate).isFile()&&fs.statSync(candidate).size===item.size})}catch{return[]}}

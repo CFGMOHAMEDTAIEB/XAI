@@ -50,13 +50,14 @@ Open **Settings** and provide:
 1. Python executable, for example `C:\XAI\engines\ai_compression\XAI-Compress\.venv\Scripts\python.exe`
 2. Engine directory containing `xai_compress`
 3. Neural checkpoint `checkpoints\gru_v3.pt`
-4. Development FastAPI URL `http://localhost:8000`
 
 ## Windows release configuration
 
-Release builds use `https://xai-1-be9s.onrender.com` by default, with the existing
-`--dart-define=XAI_API_URL=...` override. Release mode rejects non-HTTPS and known
-local backend URLs and ignores saved development API URLs. Cloud mode is the
+All desktop builds use `https://xai-1-be9s.onrender.com` by default, with the
+existing `--dart-define=XAI_API_URL=...` override. Local development must opt in
+explicitly, for example `flutter run -d windows --dart-define=XAI_API_URL=http://localhost:8000`.
+The API origin is compile-time configuration and is never overridden by stale
+saved desktop settings. Release mode rejects non-HTTPS and local backend URLs. Cloud mode is the
 initial mode; failures are displayed without falling back to a local engine.
 The explicit static and neural local engine modes remain available and require
 the separately installed Python engine and relevant checkpoint.

@@ -12,6 +12,7 @@ class AuthenticatorAccount {
     this.status = 'active',
     this.managed = false,
     this.backendDeviceId,
+    this.displayName,
   });
 
   final String id;
@@ -26,6 +27,7 @@ class AuthenticatorAccount {
   final String status;
   final bool managed;
   final String? backendDeviceId;
+  final String? displayName;
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -40,6 +42,7 @@ class AuthenticatorAccount {
         'status': status,
         'managed': managed,
         'backendDeviceId': backendDeviceId,
+        'displayName': displayName,
       };
 
   factory AuthenticatorAccount.fromJson(Map<String, dynamic> json) {
@@ -56,6 +59,7 @@ class AuthenticatorAccount {
       status: json['status'] as String? ?? 'active',
       managed: json['managed'] as bool? ?? false,
       backendDeviceId: json['backendDeviceId'] as String?,
+      displayName: json['displayName'] as String?,
     );
   }
 }

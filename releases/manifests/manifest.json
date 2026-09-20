@@ -1,0 +1,66 @@
+{
+    "schemaVersion":  1,
+    "generatedAt":  "2026-09-20T18:51:16.0962469Z",
+    "artifacts":  [
+                      {
+                          "product":  "XAI-Compress Mobile Authenticator",
+                          "platform":  "Android",
+                          "version":  "0.1.0",
+                          "filename":  "xai-compress-authenticator-0.1.0-debug.apk",
+                          "relativePath":  "android/xai-compress-authenticator-0.1.0-debug.apk",
+                          "size":  183559074,
+                          "sha256":  "4eba1698119be8545d4178888b78038e42fb159eae194ec433072aa884434778",
+                          "buildDate":  "2026-09-20T08:58:38.2372977Z",
+                          "status":  "TEST_ONLY_DEBUG_SIGNED",
+                          "architecture":  "Flutter multi-ABI APK",
+                          "minimumRequirements":  "Android supported by the current Flutter toolchain; installation not certified",
+                          "signed":  false,
+                          "downloadAvailable":  true
+                      },
+                      {
+                          "product":  "XAI-Compress Desktop",
+                          "platform":  "Windows",
+                          "version":  "0.1.0",
+                          "filename":  "xai-compress-desktop-0.1.0-windows-x64.zip",
+                          "relativePath":  "windows/xai-compress-desktop-0.1.0-windows-x64.zip",
+                          "size":  12341944,
+                          "sha256":  "8bb166ca2ee2601f9276050e501323a117bb5bb7a377a09b232cff83417a6208",
+                          "buildDate":  "2026-09-20T18:51:06.7464545Z",
+                          "status":  "TEST_ONLY_UNSIGNED",
+                          "architecture":  "x64",
+                          "minimumRequirements":  "Windows 10/11 x64; Visual C++ runtime may be required",
+                          "signed":  false,
+                          "downloadAvailable":  true
+                      },
+                      {
+                          "product":  "XAI-Compress CLI",
+                          "platform":  "Cross-platform Python",
+                          "version":  "0.2.0",
+                          "filename":  "xai_compress-0.2.0-py3-none-any.whl",
+                          "relativePath":  "cli/xai_compress-0.2.0-py3-none-any.whl",
+                          "size":  113883,
+                          "sha256":  "66f3255c7e80a9b90b6ce5dfe84306344edcb42ed34ef7a01f301763420fe2d9",
+                          "buildDate":  "2026-09-20T11:59:39.2088781Z",
+                          "status":  "LOCAL_PACKAGE_UNSIGNED",
+                          "architecture":  "py3-none-any",
+                          "minimumRequirements":  "Python \u003e=3.10 with declared PyTorch and NumPy dependencies",
+                          "signed":  false,
+                          "downloadAvailable":  true
+                      },
+                      {
+                          "product":  "XAI-Compress Administration",
+                          "platform":  "Windows",
+                          "version":  "0.1.0",
+                          "filename":  "xai-compress-admin-0.1.0-win-x64.zip",
+                          "relativePath":  "windows/xai-compress-admin-0.1.0-win-x64.zip",
+                          "size":  534335,
+                          "sha256":  "710bcf6fe678fbf8fc389907894fced27dace59f599318b7a0197badc473e6c4",
+                          "buildDate":  "2026-09-20T18:51:15.7226141Z",
+                          "status":  "TEST_ONLY_UNSIGNED",
+                          "architecture":  "win-x64 framework-dependent",
+                          "minimumRequirements":  ".NET 8 runtime; local API access",
+                          "signed":  false,
+                          "downloadAvailable":  true
+                      }
+                  ]
+}

@@ -3,7 +3,11 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 class FileSelector extends StatefulWidget {
-  const FileSelector({super.key, required this.value, required this.onChanged, required this.label});
+  const FileSelector(
+      {super.key,
+      required this.value,
+      required this.onChanged,
+      required this.label});
 
   final String? value;
   final ValueChanged<String?> onChanged;
@@ -27,7 +31,9 @@ class _FileSelectorState extends State<FileSelector> {
         onDragExited: (_) => setState(() => drag = false),
         onDragDone: (detail) {
           setState(() => drag = false);
-          if (detail.files.isNotEmpty) widget.onChanged(detail.files.first.path);
+          if (detail.files.isNotEmpty) {
+            widget.onChanged(detail.files.first.path);
+          }
         },
         child: InkWell(
           onTap: pick,
@@ -35,9 +41,12 @@ class _FileSelectorState extends State<FileSelector> {
             duration: const Duration(milliseconds: 150),
             padding: const EdgeInsets.all(30),
             decoration: BoxDecoration(
-              color: drag ? Theme.of(context).colorScheme.primaryContainer : null,
+              color:
+                  drag ? Theme.of(context).colorScheme.primaryContainer : null,
               border: Border.all(
-                color: drag ? Theme.of(context).colorScheme.primary : Theme.of(context).dividerColor,
+                color: drag
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).dividerColor,
                 width: 2,
               ),
               borderRadius: BorderRadius.circular(16),
@@ -50,9 +59,12 @@ class _FileSelectorState extends State<FileSelector> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(widget.label, style: Theme.of(context).textTheme.titleMedium),
+                      Text(widget.label,
+                          style: Theme.of(context).textTheme.titleMedium),
                       const SizedBox(height: 5),
-                      Text(widget.value ?? 'Drop a file here or click to browse', overflow: TextOverflow.ellipsis),
+                      Text(
+                          widget.value ?? 'Drop a file here or click to browse',
+                          overflow: TextOverflow.ellipsis),
                     ],
                   ),
                 ),

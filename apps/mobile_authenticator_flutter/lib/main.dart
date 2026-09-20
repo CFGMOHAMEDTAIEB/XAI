@@ -3,10 +3,12 @@ import 'package:provider/provider.dart';
 
 import 'core/app_state.dart';
 import 'screens/home_screen.dart';
+import 'screens/auth_screens.dart';
 import 'screens/lock_screen.dart';
 import 'services/api_service.dart';
 import 'services/biometric_service.dart';
 import 'services/secure_account_store.dart';
+import 'theme/xai_theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,18 +32,8 @@ class XaiAuthenticatorApp extends StatelessWidget {
     return MaterialApp(
       title: 'XAI',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF4054D6)),
-        useMaterial3: true,
-        cardTheme: const CardThemeData(margin: EdgeInsets.zero),
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF8C9BFF),
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-      ),
+      theme: XaiTheme.light(),
+      darkTheme: XaiTheme.dark(),
       home: Consumer<AppState>(
         builder: (context, state, _) {
           if (state.loading) {
@@ -51,15 +43,23 @@ class XaiAuthenticatorApp extends StatelessWidget {
           }
           if (!state.unlocked) {
             if (state.startupError != null) {
-              return Scaffold(body: Center(child: Column(
+              return Scaffold(
+                  body: Center(
+                      child: Column(
                 mainAxisSize: MainAxisSize.min,
-                children: [Text(state.startupError!),
-                  FilledButton(onPressed: state.initialize, child: const Text('Retry secure storage'))],
+                children: [
+                  Text(state.startupError!),
+                  FilledButton(
+                      onPressed: state.initialize,
+                      child: const Text('Retry secure storage'))
+                ],
               )));
             }
             return const LockScreen();
           }
-          return const HomeScreen();
+          return state.showAuthenticator
+              ? const HomeScreen()
+              : const LandingScreen();
         },
       ),
     );

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../core/app_state.dart';
-import '../widgets/account_code_card.dart';
-import 'add_account_screen.dart';
+import '../theme/xai_spacing.dart';
+import '../widgets/xai_card.dart';
+import '../widgets/xai_otp_circle.dart';
+import 'auth_screens.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -11,17 +13,73 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = context.watch<AppState>();
     return Scaffold(
-      appBar: AppBar(title: const Text('XAI'), actions: [
-        IconButton(onPressed: state.lock, icon: const Icon(Icons.lock_outline), tooltip: 'Lock'),
+      appBar: AppBar(title: const Text('XAI Authenticator'), actions: [
+        IconButton(
+            onPressed: () async {
+              await state.logout();
+              if (context.mounted) _goLanding(context);
+            },
+            icon: const Icon(Icons.logout),
+            tooltip: 'Logout'),
+        IconButton(
+            onPressed: state.lock,
+            icon: const Icon(Icons.lock_outline),
+            tooltip: 'Lock'),
       ]),
-      floatingActionButton: FloatingActionButton.extended(onPressed:()=>Navigator.push(context,MaterialPageRoute(builder:(_)=>const AddAccountScreen())),icon:const Icon(Icons.add),label:const Text('Add account')),
-      body: ListView(padding: const EdgeInsets.fromLTRB(16,16,16,96), children: [
-        Semantics(label:'Security status: app unlocked',child:Card(child:ListTile(leading:const Icon(Icons.verified_user_outlined),title:const Text('Authenticator protected'),subtitle:const Text('TOTP works offline. Push approvals require a network connection.')))),
-        const SizedBox(height: 24),Text('Authenticator accounts',style:Theme.of(context).textTheme.titleLarge),const SizedBox(height:12),
-        if (state.accounts.isEmpty) const Card(child:Padding(padding:EdgeInsets.all(24),child:Column(children:[Icon(Icons.key_outlined,size:36),SizedBox(height:12),Text('No accounts yet'),SizedBox(height:6),Text('Add an account by scanning the QR code issued by the service.',textAlign:TextAlign.center)]))),
-        for (final account in state.accounts)
-          Padding(padding: const EdgeInsets.only(bottom: 12), child: AccountCodeCard(account: account)),
-      ]),
+      body: SafeArea(
+          child: ListView(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 36),
+              children: [
+            if (state.accounts.isNotEmpty) ...[
+              const SizedBox(height: XaiSpacing.md),
+              Center(child: XaiOtpCircle(account: state.accounts.first)),
+              const SizedBox(height: XaiSpacing.xl),
+              XaiCard(
+                  child: Row(children: [
+                CircleAvatar(
+                    backgroundColor: Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withValues(alpha: .12),
+                    child: const Icon(Icons.person_outline)),
+                const SizedBox(width: 14),
+                Expanded(
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                      Text(
+                          state.accounts.first.displayName?.isNotEmpty == true
+                              ? state.accounts.first.displayName!
+                              : 'XAI account',
+                          style: Theme.of(context).textTheme.titleMedium),
+                      Text(state.accounts.first.accountName,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.bodyMedium),
+                    ])),
+              ])),
+              const SizedBox(height: 14),
+              Text(
+                  'Codes are generated securely on this device. No network request is made when the code changes.',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyMedium),
+            ] else
+              XaiCard(
+                  child: Column(children: [
+                const Icon(Icons.key_off_outlined, size: 44),
+                const SizedBox(height: 12),
+                const Text('No authenticator is stored on this device.'),
+                const SizedBox(height: 16),
+                FilledButton(
+                    onPressed: () => Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => const LoginScreen())),
+                    child: const Text('Login to enroll'))
+              ])),
+          ])),
     );
   }
+
+  void _goLanding(BuildContext context) =>
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const LandingScreen()),
+          (_) => false);
 }

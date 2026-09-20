@@ -12,8 +12,12 @@ psycopg[binary]>=3.2
 redis>=5.2
 email-validator>=2.2
 pytest>=8.0
+packaging>=22
 httpx>=0.28
 zstandard>=0.23
 brotli>=1.1
 numpy>=1.26
-torch>=2.2
+# The backend performs CPU inference only. Pin the CPU wheel so PyPI cannot
+# silently select a multi-gigabyte CUDA runtime when a new Torch is released.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.5.1+cpu

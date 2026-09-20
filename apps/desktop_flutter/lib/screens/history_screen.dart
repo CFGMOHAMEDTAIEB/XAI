@@ -31,13 +31,18 @@ class HistoryScreen extends StatelessWidget {
                 final item = state.items[index];
                 final inputName = item.inputPath.split(RegExp(r'[\\/]')).last;
                 final result = item.success
-                    ? (item.result == null ? 'Done' : '${item.result!.saving.toStringAsFixed(1)}%')
+                    ? (item.result == null
+                        ? 'Done'
+                        : '${item.result!.saving.toStringAsFixed(1)}%')
                     : 'Failed';
                 return Card(
                   child: ListTile(
-                    leading: CircleAvatar(child: Icon(item.success ? Icons.check : Icons.error_outline)),
+                    leading: CircleAvatar(
+                        child: Icon(
+                            item.success ? Icons.check : Icons.error_outline)),
                     title: Text('${item.action.toUpperCase()} · $inputName'),
-                    subtitle: Text('${item.mode} · ${DateFormat.yMMMd().add_Hm().format(item.createdAt)}\n${item.outputPath}'),
+                    subtitle: Text(
+                        '${item.mode} · ${DateFormat.yMMMd().add_Hm().format(item.createdAt)}\n${item.outputPath}'),
                     isThreeLine: true,
                     trailing: Text(result),
                   ),

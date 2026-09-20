@@ -17,11 +17,40 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-xai}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in an ignored local env file}
     volumes: [db-data:/var/lib/postgresql/data]
+    ports: ["127.0.0.1:${POSTGRES_PORT:-15432}:5432"]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 20
+    restart: unless-stopped
+    networks: [xai-network]
+  mailpit:
+    image: axllent/mailpit@sha256:98b916bd3c8d61f7633a52d3ea2f58d00620cb01ca57ab59edde68c347a95365
+    environment:
+      MP_MAX_MESSAGES: 200
+      MP_DISABLE_VERSION_CHECK: "true"
+    ports:
+      - "127.0.0.1:${MAILPIT_UI_PORT:-18025}:8025"
+      - "127.0.0.1:${MAILPIT_SMTP_PORT:-11025}:1025"
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+    networks: [xai-network]
+  pgadmin:
+    image: dpage/pgadmin4@sha256:c332c5f6dfba995d9ebc4af261d93506d6876085d712eaaa3defc8dd1a3f26de
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:?Set a local pgAdmin login in an ignored .env file}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:?Set a local pgAdmin password in an ignored .env file}
+      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "True"
+      PGADMIN_CONFIG_LOGIN_BANNER: "'LOCAL DEVELOPMENT ONLY'"
+    volumes: [pgadmin-data:/var/lib/pgadmin]
+    ports: ["127.0.0.1:${PGADMIN_PORT:-5051}:80"]
+    depends_on:
+      db: {condition: service_healthy}
     restart: unless-stopped
     networks: [xai-network]
   backend:
@@ -39,22 +68,27 @@ services:
       SELECTOR_MODEL_PATH: /opt/xai-compress/checkpoints/selector_v2/best.json
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:4200,http://localhost:3000,http://localhost:5050}
       ADMIN_EMAILS: ${ADMIN_EMAILS:-}
-      EMAIL_PROVIDER: ${EMAIL_PROVIDER:-smtp}
+      XAI_DEMO_WEB_EMAIL: ${XAI_DEMO_WEB_EMAIL:-}
+      XAI_DEMO_WEB_PASSWORD: ${XAI_DEMO_WEB_PASSWORD:-}
+      XAI_DEMO_DESKTOP_EMAIL: ${XAI_DEMO_DESKTOP_EMAIL:-}
+      XAI_DEMO_DESKTOP_PASSWORD: ${XAI_DEMO_DESKTOP_PASSWORD:-}
+      EMAIL_PROVIDER: ${EMAIL_PROVIDER:-mailpit}
       BREVO_API_KEY: ${BREVO_API_KEY:-}
       BREVO_SENDER_EMAIL: ${BREVO_SENDER_EMAIL:-}
       BREVO_SENDER_NAME: ${BREVO_SENDER_NAME:-XAI Compress}
-      SMTP_HOST: ${SMTP_HOST:-}
-      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_HOST: ${SMTP_HOST:-mailpit}
+      SMTP_PORT: ${SMTP_PORT:-1025}
       SMTP_USERNAME: ${SMTP_USERNAME:-}
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
-      SMTP_FROM: ${SMTP_FROM:-}
+      SMTP_FROM: ${SMTP_FROM:-noreply@xai.local}
       SMTP_FROM_NAME: ${SMTP_FROM_NAME:-XAI Compress}
-      SMTP_SECURITY: ${SMTP_SECURITY:-starttls}
+      SMTP_SECURITY: ${SMTP_SECURITY:-none}
     volumes: [xai-storage:/data]
     ports: ["${API_BIND_ADDRESS:-127.0.0.1}:${API_PORT:-8000}:8000"]
     depends_on:
       db: {condition: service_healthy}
       clamav: {condition: service_healthy}
+      mailpit: {condition: service_healthy}
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
       interval: 10s
@@ -76,11 +110,14 @@ services:
       NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
       NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:4200}
       NEXT_PUBLIC_API_URL: ${PUBLIC_API_URL:-http://localhost:8000}
+      XAI_RELEASES_DIR: /releases
+    volumes: [./releases:/releases:ro]
     ports: ["${NEXTJS_PORT:-3000}:3000"]
     depends_on:
       backend: {condition: service_healthy}
     restart: unless-stopped
     networks: [xai-network]
+
   admin:
     build: ./apps/admin_dotnet
     environment:
@@ -97,6 +134,7 @@ services:
 volumes:
   clamav-data:
   db-data:
+  pgadmin-data:
   xai-storage:
 networks:
   scanner-network:

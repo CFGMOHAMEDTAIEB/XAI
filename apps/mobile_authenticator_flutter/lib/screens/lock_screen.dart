@@ -37,7 +37,8 @@ class LockScreen extends StatelessWidget {
                     icon: const Icon(Icons.fingerprint),
                     label: const Text('Unlock'),
                   ),
-                  if (state.unlocking) const Text('Complete authentication on your phone.'),
+                  if (state.unlocking)
+                    const Text('Complete authentication on your phone.'),
                   if (state.unlockError != null) Text(state.unlockError!),
                 ],
               ),

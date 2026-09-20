@@ -2,28 +2,28 @@
 
 | Check | Result |
 | --- | --- |
-| MOBILE API CONFIG | PASS — release AOT and packaged APK checked |
-| DESKTOP API CONFIG | PASS — release AOT and packaged ZIP checked |
-| PRODUCTION /health | PASS — HTTP 200, model present |
-| PRODUCTION /public/status | PASS for endpoint — HTTP 200, degraded service status |
-| AUTH FLOW | PASS — direct API, both adapters, and actual Windows release sign-in |
-| PRODUCTION COMPRESSION | BLOCKED — HTTP 503 security verification unavailable |
-| FLUTTER ANALYZE | PASS — both apps, no issues |
-| FLUTTER TESTS | PASS — mobile 4; additional mobile live adapter 1 |
-| ANDROID RELEASE BUILD | PASS — release-mode APK, debug signed |
-| ANDROID SIGNING | BLOCKED for production — verified Android Debug certificate only |
-| DESKTOP TESTS | PASS — 2, 1 opt-in compression test skipped; additional live adapter 1 |
-| DESKTOP RELEASE BUILD | PASS — Windows x64 ZIP, 19 entries, ZIP integrity checked |
-| DESKTOP SIGNING | BLOCKED for production — EXE NotSigned |
+| MOBILE API CONFIG | PASS ï¿½ release AOT and packaged APK checked |
+| DESKTOP API CONFIG | PASS ï¿½ release AOT and packaged ZIP checked |
+| PRODUCTION /health | PASS ï¿½ HTTP 200, model present |
+| PRODUCTION /public/status | PASS for endpoint ï¿½ HTTP 200, degraded service status |
+| AUTH FLOW | PASS ï¿½ direct API, both adapters, and actual Windows release sign-in |
+| PRODUCTION COMPRESSION | BLOCKED ï¿½ HTTP 503 security verification unavailable |
+| FLUTTER ANALYZE | PASS ï¿½ both apps, no issues |
+| FLUTTER TESTS | PASS ï¿½ mobile 4; additional mobile live adapter 1 |
+| ANDROID RELEASE BUILD | PASS ï¿½ release-mode APK, debug signed |
+| ANDROID SIGNING | BLOCKED for production ï¿½ verified Android Debug certificate only |
+| DESKTOP TESTS | PASS ï¿½ 2, 1 opt-in compression test skipped; additional live adapter 1 |
+| DESKTOP RELEASE BUILD | PASS ï¿½ Windows x64 ZIP, 19 entries, ZIP integrity checked |
+| DESKTOP SIGNING | BLOCKED for production ï¿½ EXE NotSigned |
 
 Both release artifacts configure https://xai-1-be9s.onrender.com; no three development fallback URL strings in their compiled application binaries. Real Windows release login to production is confirmed. Mobile API-adapter login is confirmed, but installed APK startup/login is NOT confirmed: emulator package service failed, and current mobile UI has no backend login call site.
 
 Neither artifact is claimed production-ready: production scanning is unavailable, Android uses debug signing, Windows is unsigned, and mobile runtime validation remains blocked.
 
 Artifacts:
-- Android APK: C:\Users\ss\Desktop\XAI\XAI\apps\mobile_authenticator_flutter\build\app\outputs\flutter-apk\app-release.apk — 66,651,161 bytes; physical target E:\GradleCache\xai-mobile-build\app\outputs\flutter-apk\app-release.apk.
-- Windows ZIP: E:\GradleCache\xai-desktop-build\xai-windows-20260908-155201.zip — 12,258,005 bytes.
-- Windows executable folder: E:\GradleCache\xai-desktop-build\windows\x64\runner\Release (also apps\desktop_flutter\build\windows\x64\runner\Release through the existing junction).
+- Android APK: C:\Users\ss\Desktop\XAI\XAI\apps\mobile_authenticator_flutter\build\app\outputs\flutter-apk\app-release.apk ï¿½ 66,651,161 bytes; physical targeD:\GradleCachehe\xai-mobile-build\app\outputs\flutter-apk\app-release.apk.
+- Windows ZIP: D:\GradleCache\xai-desktop-build\xai-windows-20260908-155201.zip ï¿½ 12,258,005 bytes.
+- Windows executable folder: D:\GradleCache\xai-desktop-build\windows\x64\runner\Release (also apps\desktop_flutter\build\windows\x64\runner\Release through the existing junction).
 - Build-generated metadata: dist/production-artifacts/android.json and windows.json.
 
 Portability:
@@ -38,7 +38,7 @@ Modified tracked files:
 
 Added evidence/helpers: this scratch/production-client-validation directory (URL audit, report, backend/adapter/binary checks, one-run Windows UI helper, screenshots). No server secrets saved. Existing unrelated engine changes were left untouched.
 
-# Production client validation — 2026-09-08
+# Production client validation ï¿½ 2026-09-08
 
 Backend: https://xai-1-be9s.onrender.com
 
@@ -87,7 +87,7 @@ python scratch/production-client-validation/check_backend.py
 # These invoke, in the corresponding app directory:
 # flutter build apk --release --dart-define=XAI_API_URL=https://xai-1-be9s.onrender.com
 # flutter build windows --release --dart-define=XAI_API_URL=https://xai-1-be9s.onrender.com
-# Script sets GRADLE_USER_HOME=E:\GradleCache and Android XAI_ALLOW_DEBUG_SIGNING=true.
+# Script sets GRADLE_USER_HOME=D:\GradleCache and Android XAI_ALLOW_DEBUG_SIGNING=true.
 
 & 'C:\Users\ss\AppData\Local\Android\sdk\platform-tools\adb.exe' devices
 & 'C:\Users\ss\AppData\Local\Android\sdk\emulator\emulator.exe' -list-avds
@@ -115,7 +115,7 @@ Mobile runtime limitation: source search confirms ApiService.login/enrollTotp/co
 ATL remediation succeeded: elevated official installer exit code 0. Windows build retried with the exact same production build command; no plugin source or dependency versions changed.
 
 Android build PASS: existing script completed, 1561.0 seconds Gradle time.
-- Artifact: C:\Users\ss\Desktop\XAI\XAI\apps\mobile_authenticator_flutter\build\app\outputs\flutter-apk\app-release.apk (junction target E:\GradleCache\xai-mobile-build\app\outputs\flutter-apk\app-release.apk).
+- Artifact: C:\Users\ss\Desktop\XAI\XAI\apps\mobile_authenticator_flutter\build\app\outputs\flutter-apk\app-release.apk (junction target D:\GradleCache\xai-mobile-build\app\outputs\flutter-apk\app-release.apk).
 - Size: 66,651,161 bytes.
 - SHA256: 225D2E1881D43E61868ACD1B7231E2C837D34548B1685B2F900F0F773D7D9EE3.
 - apksigner verify --print-certs: verifies; signer C=US, O=Android, CN=Android Debug. This is test signing, not proper production signing.
@@ -125,10 +125,10 @@ Android build PASS: existing script completed, 1561.0 seconds Gradle time.
 
 ```powershell
 $env:JAVA_HOME='C:\Program Files\Android\Android Studio\jbr'
-& 'C:\Users\ss\AppData\Local\Android\sdk\build-tools\36.0.0\apksigner.bat' verify --print-certs 'E:\GradleCache\xai-mobile-build\app\outputs\flutter-apk\app-release.apk'
+& 'C:\Users\ss\AppData\Local\Android\sdk\build-tools\36.0.0\apksigner.bat' verify --print-certs 'D:\GradleCache\xai-mobile-build\app\outputs\flutter-apk\app-release.apk'
 python scratch/production-client-validation/check_apk.py
-& 'C:\Users\ss\AppData\Local\Android\sdk\build-tools\36.0.0\aapt.exe' dump badging 'E:\GradleCache\xai-mobile-build\app\outputs\flutter-apk\app-release.apk'
-& 'C:\Users\ss\AppData\Local\Android\sdk\platform-tools\adb.exe' -s emulator-5554 install -r 'E:\GradleCache\xai-mobile-build\app\outputs\flutter-apk\app-release.apk'
+& 'C:\Users\ss\AppData\Local\Android\sdk\build-tools\36.0.0\aapt.exe' dump badging 'D:\GradleCache\xai-mobile-build\app\outputs\flutter-apk\app-release.apk'
+& 'C:\Users\ss\AppData\Local\Android\sdk\platform-tools\adb.exe' -s emulator-5554 install -r 'D:\GradleCache\xai-mobile-build\app\outputs\flutter-apk\app-release.apk'
 & 'C:\Users\ss\AppData\Local\Android\sdk\platform-tools\adb.exe' -s emulator-5554 shell pm list packages com.example.xai_compress_authenticator
 & 'C:\Users\ss\AppData\Local\Android\sdk\platform-tools\adb.exe' -s emulator-5554 reboot
 ```
@@ -155,8 +155,8 @@ Additional exact verification commands:
 ```powershell
 python scratch/production-client-validation/check_release_urls.py
 python scratch/production-client-validation/check_windows_zip.py
-Get-AuthenticodeSignature -FilePath 'E:\GradleCache\xai-desktop-build\windows\x64\runner\Release\xai_compress_desktop.exe'
-Start-Process -FilePath 'E:\GradleCache\xai-desktop-build\windows\x64\runner\Release\xai_compress_desktop.exe' -WorkingDirectory 'E:\GradleCache\xai-desktop-build\windows\x64\runner\Release' -WindowStyle Hidden -PassThru
+Get-AuthenticodeSignature -FilePath 'D:\GradleCache\xai-desktop-build\windows\x64\runner\Release\xai_compress_desktop.exe'
+Start-Process -FilePath 'D:\GradleCache\xai-desktop-build\windows\x64\runner\Release\xai_compress_desktop.exe' -WorkingDirectory 'D:\GradleCache\xai-desktop-build\windows\x64\runner\Release' -WindowStyle Hidden -PassThru
 Get-Process -Id 20712 | Select-Object Id,Responding,MainWindowTitle,MainWindowHandle
 .\scratch\production-client-validation\desktop_ui.ps1 -ClickX 377 -ClickY 174
 # $testEmail and $testPassword were generated in memory using Guid.NewGuid().
@@ -165,6 +165,6 @@ Get-Process -Id 20712 | Select-Object Id,Responding,MainWindowTitle,MainWindowHa
 .\scratch\production-client-validation\desktop_ui.ps1 -ClickX 610 -ClickY 312 -ImageName desktop-login-result.png
 .\scratch\production-client-validation\desktop_ui.ps1 -ImageName desktop-login-result.png
 (Get-Process -Id 20712).CloseMainWindow()
-& 'C:\Program Files (x86)\Microsoft Visual Studio\18\BuildTools\VC\Tools\MSVC\14.51.36231\bin\Hostx64\x64\dumpbin.exe' /dependents 'E:\GradleCache\xai-desktop-build\windows\x64\runner\Release\xai_compress_desktop.exe'
-& 'C:\Program Files (x86)\Microsoft Visual Studio\18\BuildTools\VC\Tools\MSVC\14.51.36231\bin\Hostx64\x64\dumpbin.exe' /dependents 'E:\GradleCache\xai-desktop-build\windows\x64\runner\Release\flutter_windows.dll'
+& 'C:\Program Files (x86)\Microsoft Visual Studio\18\BuildTools\VC\Tools\MSVC\14.51.36231\bin\Hostx64\x64\dumpbin.exe' /dependents 'D:\GradleCache\xai-desktop-build\windows\x64\runner\Release\xai_compress_desktop.exe'
+& 'C:\Program Files (x86)\Microsoft Visual Studio\18\BuildTools\VC\Tools\MSVC\14.51.36231\bin\Hostx64\x64\dumpbin.exe' /dependents 'D:\GradleCache\xai-desktop-build\windows\x64\runner\Release\flutter_windows.dll'
 ```

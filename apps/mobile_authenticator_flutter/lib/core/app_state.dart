@@ -29,18 +29,23 @@ class AppState extends ChangeNotifier {
   String? startupError;
   bool unlocking = false;
   String? unlockError;
+  bool showAuthenticator = false;
 
   Future<void> initialize() async {
     loading = true;
     startupError = null;
     try {
-      accounts = await accountStore.loadAccounts().timeout(const Duration(seconds: 15));
+      accounts = await accountStore
+          .loadAccounts()
+          .timeout(const Duration(seconds: 15));
+      unlocked = accounts.isEmpty;
       _timer ??= Timer.periodic(const Duration(seconds: 1), (_) {
         now = DateTime.now();
         notifyListeners();
       });
     } catch (_) {
-      startupError = 'Secure storage could not be opened. Unlock your phone and retry.';
+      startupError =
+          'Secure storage could not be opened. Unlock your phone and retry.';
     } finally {
       loading = false;
       notifyListeners();
@@ -53,10 +58,16 @@ class AppState extends ChangeNotifier {
     unlockError = null;
     notifyListeners();
     try {
-      unlocked = await biometricService.authenticate().timeout(const Duration(seconds: 90));
-      if (!unlocked) unlockError = 'Authentication was not completed. Tap Unlock to retry.';
+      unlocked = await biometricService
+          .authenticate()
+          .timeout(const Duration(seconds: 90));
+      if (unlocked) showAuthenticator = true;
+      if (!unlocked) {
+        unlockError = 'Authentication was not completed. Tap Unlock to retry.';
+      }
     } catch (_) {
-      unlockError = 'Authentication unavailable. Retry with your device credential.';
+      unlockError =
+          'Authentication unavailable. Retry with your device credential.';
     } finally {
       unlocking = false;
       notifyListeners();
@@ -65,35 +76,61 @@ class AppState extends ChangeNotifier {
 
   void lock() {
     unlocked = false;
+    showAuthenticator = false;
     unawaited(apiService.logout());
     notifyListeners();
   }
 
   Future<void> addFromUri(String uri) async {
     final enrollment = TotpEnrollment.parse(uri);
-    if(accounts.any((a)=>a.issuer.toLowerCase()==enrollment.issuer.toLowerCase()&&a.accountName.toLowerCase()==enrollment.accountName.toLowerCase())){
+    if (accounts.any((a) =>
+        a.issuer.toLowerCase() == enrollment.issuer.toLowerCase() &&
+        a.accountName.toLowerCase() == enrollment.accountName.toLowerCase())) {
       throw const FormatException('This account is already enrolled.');
     }
     final id = DateTime.now().microsecondsSinceEpoch.toString();
     final updated = [...accounts, enrollment.toAccount(id)];
-    await accountStore.saveAccounts(updated).timeout(const Duration(seconds: 15));
+    await accountStore
+        .saveAccounts(updated)
+        .timeout(const Duration(seconds: 15));
     accounts = updated;
     notifyListeners();
   }
 
-  Future<void> provision(String uri, String enrollmentId) async {
+  Future<void> provision(String uri, String enrollmentId,
+      {String? displayName}) async {
     final enrollment = TotpEnrollment.parse(uri);
-    final account = enrollment.toAccount('xai-$enrollmentId');
-    final updated = [...accounts.where((a) => a.id != account.id &&
-        !(a.id.startsWith('xai-') && a.accountName == account.accountName)), account];
-    await accountStore.saveAccounts(updated).timeout(const Duration(seconds: 15));
+    final account =
+        enrollment.toAccount('xai-$enrollmentId', displayName: displayName);
+    final updated = [
+      ...accounts.where((a) =>
+          a.id != account.id &&
+          !(a.id.startsWith('xai-') && a.accountName == account.accountName)),
+      account
+    ];
+    await accountStore
+        .saveAccounts(updated)
+        .timeout(const Duration(seconds: 15));
     accounts = updated;
+    notifyListeners();
+  }
+
+  void openAuthenticator() {
+    showAuthenticator = true;
+    notifyListeners();
+  }
+
+  Future<void> logout() async {
+    await apiService.logout();
+    showAuthenticator = false;
     notifyListeners();
   }
 
   Future<void> remove(String id) async {
     final updated = accounts.where((account) => account.id != id).toList();
-    await accountStore.saveAccounts(updated).timeout(const Duration(seconds: 15));
+    await accountStore
+        .saveAccounts(updated)
+        .timeout(const Duration(seconds: 15));
     accounts = updated;
     notifyListeners();
   }

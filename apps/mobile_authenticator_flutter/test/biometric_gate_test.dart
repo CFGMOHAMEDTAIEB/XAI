@@ -9,14 +9,26 @@ class UnsupportedAuthentication extends LocalAuthentication {
 
 void main() {
   test('supported authentication unlocks only on success', () async {
-    expect(await BiometricService(authentication: SupportedAuthentication(true)).authenticate(), isTrue);
-    expect(await BiometricService(authentication: SupportedAuthentication(false)).authenticate(), isFalse);
+    expect(
+        await BiometricService(authentication: SupportedAuthentication(true))
+            .authenticate(),
+        isTrue);
+    expect(
+        await BiometricService(authentication: SupportedAuthentication(false))
+            .authenticate(),
+        isFalse);
   });
   test('authentication exceptions deny access', () async {
-    expect(await BiometricService(authentication: SupportedAuthentication(true, throws: true)).authenticate(), isFalse);
+    expect(
+        await BiometricService(
+                authentication: SupportedAuthentication(true, throws: true))
+            .authenticate(),
+        isFalse);
   });
-  test('unsupported device authentication never unlocks the factor store', () async {
-    final service = BiometricService(authentication: UnsupportedAuthentication());
+  test('unsupported device authentication never unlocks the factor store',
+      () async {
+    final service =
+        BiometricService(authentication: UnsupportedAuthentication());
     expect(await service.authenticate(), isFalse);
   });
 }

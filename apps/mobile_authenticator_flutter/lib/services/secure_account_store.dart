@@ -15,7 +15,8 @@ class SecureAccountStore {
     if (value == null || value.isEmpty) return [];
     final decoded = jsonDecode(value) as List<dynamic>;
     return decoded
-        .map((item) => AuthenticatorAccount.fromJson(item as Map<String, dynamic>))
+        .map((item) =>
+            AuthenticatorAccount.fromJson(item as Map<String, dynamic>))
         .toList();
   }
 

@@ -1,4 +1,4 @@
-# Remaining production blockers — 2026-09-08
+# Remaining production blockers ï¿½ 2026-09-08
 
 ## Outcome
 
@@ -124,7 +124,7 @@ mechanism. No signing material supplied, generated or fabricated. No rebuilt APK
 was produced in this turn. No Windows certificate was supplied/used.
 
 Unchanged Android artifact:
-- Path: E:\GradleCache\xai-mobile-build\app\outputs\flutter-apk\app-release.apk
+- Path: D:\GradleCache\xai-mobile-build\app\outputs\flutter-apk\app-release.apk
 - Workspace alias: apps/mobile_authenticator_flutter/build/app/outputs/flutter-apk/app-release.apk
 - Bytes: 66,651,161
 - APK SHA256: 225D2E1881D43E61868ACD1B7231E2C837D34548B1685B2F900F0F773D7D9EE3
@@ -134,7 +134,7 @@ Unchanged Android artifact:
 - Classification: TEST ONLY. User reports it did not open on their phone.
 
 Unchanged Windows artifact:
-- Path: E:\GradleCache\xai-desktop-build\xai-windows-20260908-155201.zip
+- Path: D:\GradleCache\xai-desktop-build\xai-windows-20260908-155201.zip
 - Bytes: 12,258,005
 - SHA256: D36433ABD21FD7DCDEA46DAA7CF10D763EB48CB5F049A8194C01158912A8DC95
 - Signing: unsigned EXE/DLL/data ZIP; no signed installer.
@@ -179,7 +179,7 @@ docker run --rm --network xai_scanner-network --mount 'type=bind,source=C:\Users
 
 docker run --rm --network xai_scanner-network --mount 'type=bind,source=C:\Users\ss\Desktop\XAI\XAI,target=/repo,readonly' --workdir /repo/services/api_fastapi --env PYTHONPATH=/repo/services/api_fastapi:/opt/xai-compress --env DATABASE_URL=sqlite:///:memory: --env STORAGE_PATH=/tmp/xai-diagnostic --env YARA_RULES_PATH=/repo/services/api_fastapi/security/yara/production xai-backend python security/diagnose_scanners.py | Tee-Object -FilePath scratch/production-blockers/local-diagnostic.json
 
-Get-FileHash 'E:\GradleCache\xai-mobile-build\app\outputs\flutter-apk\app-release.apk','E:\GradleCache\xai-desktop-build\xai-windows-20260908-155201.zip' -Algorithm SHA256
+Get-FileHash 'D:\GradleCache\xai-mobile-build\app\outputs\flutter-apk\app-release.apk','D:\GradleCache\xai-desktop-build\xai-windows-20260908-155201.zip' -Algorithm SHA256
 git diff --check -- services/api_fastapi deployment
 ```
 

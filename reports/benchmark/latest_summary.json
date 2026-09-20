@@ -1,0 +1,53 @@
+{
+  "source": "engines/XAI-Compress/results/hybrid_v3",
+  "benchmark_version": "hybrid-v3-final-140-v1",
+  "status": "ACCEPTED",
+  "files": 140,
+  "original_bytes": 368446658,
+  "methods": {
+    "hybrid_v1": {
+      "rows": 140,
+      "unique_sources": 140,
+      "compressed_bytes": 361712014,
+      "weighted_bpb": 7.853772178875348,
+      "compression_mib_s": 2.8161609470774387,
+      "decompression_mib_s": 20.17497601539691,
+      "median_file_bpb": 8.00415276736223,
+      "round_trip_success_rate": 1.0
+    },
+    "hybrid_v2": {
+      "rows": 140,
+      "unique_sources": 140,
+      "compressed_bytes": 365898448,
+      "weighted_bpb": 7.944671285361475,
+      "compression_mib_s": 5.62902515806179,
+      "decompression_mib_s": 30.124012845697088,
+      "median_file_bpb": 6.180728890069039,
+      "round_trip_success_rate": 1.0
+    },
+    "hybrid_v3_top3": {
+      "rows": 140,
+      "unique_sources": 140,
+      "compressed_bytes": 362188760,
+      "weighted_bpb": 7.864123658301713,
+      "compression_mib_s": 18.027348816844217,
+      "decompression_mib_s": 32.20272029137036,
+      "median_file_bpb": 6.180728890069039,
+      "round_trip_success_rate": 1.0
+    },
+    "brotli-11": {
+      "rows": 140,
+      "unique_sources": 140,
+      "compressed_bytes": 359459933,
+      "weighted_bpb": 7.804873247079364,
+      "compression_mib_s": 0.2513339202023637,
+      "decompression_mib_s": 194.82743345897097,
+      "median_file_bpb": 3.8083981678468772,
+      "round_trip_success_rate": 1.0
+    }
+  },
+  "limitations": {
+    "hybrid": "3 repetitions when original_bytes <= 4 MiB, else 1",
+    "brotli-11": "1 repetition for all files; additional Brotli-11 repetitions omitted because they are computationally prohibitive on this corpus"
+  }
+}

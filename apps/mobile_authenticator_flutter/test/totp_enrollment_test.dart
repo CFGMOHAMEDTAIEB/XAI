@@ -13,6 +13,7 @@ void main() {
   });
 
   test('rejects a non-TOTP URI', () {
-    expect(() => TotpEnrollment.parse('https://example.com'), throwsFormatException);
+    expect(() => TotpEnrollment.parse('https://example.com'),
+        throwsFormatException);
   });
 }

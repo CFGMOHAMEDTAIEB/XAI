@@ -39,11 +39,14 @@ services:
       DATABASE_URL: postgresql+psycopg://xai_devtest:${POSTGRES_PASSWORD:?Required}@db:5432/xai_devtest
       JWT_SECRET: ${JWT_SECRET:?Required}
       STORAGE_PATH: /data
-      EMAIL_PROVIDER: mailpit
-      SMTP_HOST: mailpit
-      SMTP_PORT: 1025
+      EMAIL_PROVIDER: ${EMAIL_PROVIDER:-mailpit}
+      SMTP_HOST: ${SMTP_HOST:-mailpit}
+      SMTP_PORT: ${SMTP_PORT:-1025}
       SMTP_FROM: ${SMTP_FROM:?Required}
-      SMTP_SECURITY: none
+      SMTP_SECURITY: ${SMTP_SECURITY:-none}
+      BREVO_API_KEY: ${BREVO_API_KEY:-}
+      BREVO_SENDER_EMAIL: ${BREVO_SENDER_EMAIL:-}
+      BREVO_SENDER_NAME: ${BREVO_SENDER_NAME:-XAI Compress}
       CLAMAV_HOST: clamav
       CLAMAV_PORT: 3310
       SECURITY_SCAN_REQUIRED: 'true'
@@ -52,7 +55,7 @@ services:
       XAI_SEED_ADMIN_EMAIL: ${XAI_SEED_ADMIN_EMAIL:-}
       XAI_SEED_ADMIN_PASSWORD: ${XAI_SEED_ADMIN_PASSWORD:-}
     volumes: [devtest-files:/data]
-    ports: ['127.0.0.1:18000:8000']
+    ports: ['0.0.0.0:18000:8000']
     depends_on:
       db: {condition: service_healthy}
       mailpit: {condition: service_healthy}

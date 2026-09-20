@@ -12,8 +12,8 @@ if ($uri.Scheme -ne 'https' -or $uri.Host -in @('localhost','127.0.0.1','10.0.2.
 $health=Invoke-RestMethod ($ApiUrl.TrimEnd('/')+'/health') -TimeoutSec 20
 if ($health.status -ne 'ok' -or -not $health.compression.selector_v2) { throw 'Backend is not ready; no production package built.' }
 $flutter='C:\src\flutter\bin\flutter.bat'
-$env:GRADLE_USER_HOME='E:\GradleCache'
-if (!(Test-Path -LiteralPath $env:GRADLE_USER_HOME)) { throw 'E:\GradleCache is required.' }
+$env:GRADLE_USER_HOME='D:\GradleCache'
+if (!(Test-Path -LiteralPath $env:GRADLE_USER_HOME)) { throw 'D:\GradleCache is required.' }
 if (!$Target) { throw 'Specify -Target android or windows.' }
 $project=Join-Path $repoRoot $(if($Target -eq 'android'){'apps/mobile_authenticator_flutter'}else{'apps/desktop_flutter'})
 $build=Join-Path $project 'build'
@@ -23,7 +23,7 @@ if (!(Test-Path -LiteralPath $build)) {
     New-Item -ItemType Junction -Path $build -Target $expectedBuild | Out-Null
 }
 $buildItem=Get-Item -LiteralPath $build
-if ($buildItem.LinkType -ne 'Junction' -or [string]$buildItem.Target -notlike 'E:\*') { throw 'Build directory must already point to E:. No existing files were moved.' }
+if ($buildItem.LinkType -ne 'Junction' -or [string]$buildItem.Target -notlike 'D:\*') { throw 'Build directory must already point to D:. No existing files were moved.' }
 Push-Location $project
 try {
     if ($Target -eq 'android') {

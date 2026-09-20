@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
-    [string]$AvdName = 'pixel_emulator',
+    [string]$AvdName = 'xai_mobile_x86_64',
+    [string]$ApiUrl = 'http://10.0.2.2:8000',
     [int]$AdbTimeoutSeconds = 180,
     [int]$BootTimeoutSeconds = 300
 )
@@ -13,7 +14,10 @@ $Flutter = Join-Path $FlutterRoot 'bin\flutter.bat'
 $AndroidSdk = 'C:\Users\ss\AppData\Local\Android\sdk'
 $Adb = Join-Path $AndroidSdk 'platform-tools\adb.exe'
 $Emulator = Join-Path $AndroidSdk 'emulator\emulator.exe'
-$ExpectedGradleHome = 'E:\GradleCache'
+$ExpectedGradleHome = 'D:\GradleCache'
+$AndroidUserHome = 'D:\Android'
+$AndroidAvdHome = 'D:\Android\Avd'
+$AndroidTemp = 'D:\Android\Temp'
 $ProjectRoot = $PSScriptRoot
 
 function Fail([string]$Message) {
@@ -55,10 +59,17 @@ if (-not (Test-Path -LiteralPath $Flutter)) { Fail "Flutter was not found at $Fl
 if (-not (Test-Path -LiteralPath $Adb)) { Fail "ADB was not found at $Adb." }
 if (-not (Test-Path -LiteralPath $Emulator)) { Fail "Android Emulator was not found at $Emulator." }
 if (-not (Test-Path -LiteralPath $ExpectedGradleHome)) { Fail "Gradle cache drive/path is unavailable: $ExpectedGradleHome." }
+foreach ($path in @($AndroidUserHome, $AndroidAvdHome, $AndroidTemp)) {
+    New-Item -ItemType Directory -Path $path -Force | Out-Null
+}
 
 $env:GRADLE_USER_HOME = $ExpectedGradleHome
 $env:ANDROID_HOME = $AndroidSdk
 $env:ANDROID_SDK_ROOT = $AndroidSdk
+$env:ANDROID_USER_HOME = $AndroidUserHome
+$env:ANDROID_AVD_HOME = $AndroidAvdHome
+$env:TEMP = $AndroidTemp
+$env:TMP = $AndroidTemp
 $env:Path = "$FlutterRoot\bin;$AndroidSdk\platform-tools;$AndroidSdk\emulator;$env:Path"
 
 $flutterVersion = (& $Flutter --version --machine | ConvertFrom-Json)
@@ -87,7 +98,10 @@ Invoke-Checked $Adb @('start-server')
 $deviceId = Get-RunningAvdDevice
 if (-not $deviceId) {
     Write-Host "Launching AVD '$AvdName' from its registered storage..."
-    $emulatorProcess = Start-Process -FilePath $Emulator -ArgumentList @('-avd', $AvdName) -PassThru
+    $emulatorProcess = Start-Process -FilePath $Emulator -ArgumentList @(
+        '-avd', $AvdName, '-memory', '2048', '-cores', '1', '-no-snapshot',
+        '-no-boot-anim', '-gpu', 'swiftshader_indirect', '-no-audio'
+    ) -PassThru
     $deadline = (Get-Date).AddSeconds($AdbTimeoutSeconds)
     do {
         if ($emulatorProcess.HasExited) { Fail "The emulator exited early with code $($emulatorProcess.ExitCode)." }
@@ -103,11 +117,15 @@ Write-Host "Waiting for $deviceId to finish booting..."
 Invoke-Checked $Adb @('-s', $deviceId, 'wait-for-device')
 $deadline = (Get-Date).AddSeconds($BootTimeoutSeconds)
 do {
-    $bootCompleted = (& $Adb -s $deviceId shell getprop sys.boot_completed 2>$null).Trim()
-    if ($bootCompleted -eq '1') { break }
+    $bootCompleted = ([string](& $Adb -s $deviceId shell getprop sys.boot_completed 2>$null)).Trim()
+    $deviceBootCompleted = ([string](& $Adb -s $deviceId shell getprop dev.bootcomplete 2>$null)).Trim()
+    $packageService = [string](& $Adb -s $deviceId shell service check package 2>$null)
+    if ($bootCompleted -eq '1' -and $deviceBootCompleted -eq '1' -and $packageService -match 'Service package: found') { break }
     Start-Sleep -Seconds 2
 } until ((Get-Date) -ge $deadline)
-if ($bootCompleted -ne '1') { Fail "Android did not finish booting within $BootTimeoutSeconds seconds." }
+if ($bootCompleted -ne '1' -or $deviceBootCompleted -ne '1' -or $packageService -notmatch 'Service package: found') {
+    Fail "Android did not finish booting with Package Manager ready within $BootTimeoutSeconds seconds."
+}
 
 Invoke-Checked $Adb @('-s', $deviceId, 'shell', 'input', 'keyevent', '82')
 $flutterDevices = (& $Flutter devices --machine | ConvertFrom-Json)
@@ -119,7 +137,7 @@ if (-not ($flutterDevices | Where-Object { $_.id -eq $deviceId -and $_.targetPla
 Write-Host "Android is ready as $deviceId. Starting the app..."
 Push-Location $ProjectRoot
 try {
-    & $Flutter run -d $deviceId --dart-define=XAI_API_URL=http://10.0.2.2:8000
+    & $Flutter run -d $deviceId --dart-define="XAI_API_URL=$ApiUrl"
     if ($LASTEXITCODE -ne 0) { Fail "'flutter run' exited with code $LASTEXITCODE." }
 } finally {
     Pop-Location

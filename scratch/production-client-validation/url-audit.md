@@ -1,6 +1,6 @@
-# Production client URL audit — 2026-09-08
+# Production client URL audit ï¿½ 2026-09-08
 
-Scope: apps/mobile_authenticator_flutter and apps/desktop_flutter. Both are Flutter applications. No application environment files or alternate production URL mechanism were found. Existing build workflow: scripts/build_production.ps1, C:\src\flutter\bin\flutter.bat, build junctions under E:\GradleCache.
+Scope: apps/mobile_authenticator_flutter and apps/desktop_flutter. Both are Flutter applications. No application environment files or alternate production URL mechanism were found. Existing build workflow: scripts/build_production.ps1, C:\src\flutter\bin\flutter.bat, build junctions under D:\GradleCache.
 
 | Location | Meaning and production impact |
 | --- | --- |

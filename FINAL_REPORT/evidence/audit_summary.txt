@@ -1,0 +1,1 @@
+Source audit: 43 API routes; 12 ORM tables; source test definitions backend=124, engine=146, desktop=36, Angular=24, mobile=12. Hybrid V3 artifact: 140 held-out files, 368446658 original bytes, selected hybrid_v3_top3. No secrets copied.

@@ -128,6 +128,42 @@ def test_idempotent_rerun_has_no_pending_work(tmp_path, monkeypatch):
     assert runner.migration_plan(object(), [migration], True) == ([], [])
 
 
+def test_recorded_migration_schema_drift_fails_closed():
+    class Cursor:
+        responses = iter(([("audit_events",)], [("audit_events", "created_at")], []))
+
+        def execute(self, sql, parameters=None):
+            self.rows = next(self.responses)
+
+        def fetchall(self):
+            return self.rows
+
+    migration = runner.Migration("005", "005_audit_event_invariant.sql", Path("unused"), "0" * 64)
+    with pytest.raises(runner.MigrationError, match="SCHEMA_DRIFT") as caught:
+        runner._validate_schema(Cursor(), [migration])
+    assert caught.value.version == "005"
+
+
+def test_audit_invariant_migration_is_additive_and_idempotent():
+    sql = (ROOT / "services" / "api_fastapi" / "migrations" /
+           "005_audit_event_invariant.sql").read_text(encoding="utf-8").upper()
+    assert "ADD COLUMN IF NOT EXISTS UPDATED_AT TIMESTAMP" in sql
+    assert "COALESCE(CREATED_AT, CURRENT_TIMESTAMP)" in sql
+    assert "ALTER COLUMN UPDATED_AT SET NOT NULL" in sql
+    for destructive in ("DROP TABLE", "DROP COLUMN", "TRUNCATE", "DELETE FROM"):
+        assert destructive not in sql
+
+
+def test_initial_schema_bootstraps_dependencies_before_existing_migrations():
+    migrations = runner.discover_migrations(ROOT / "services" / "api_fastapi" / "migrations")
+    assert [item.version for item in migrations[:2]] == ["000", "001"]
+    sql = migrations[0].path.read_text(encoding="utf-8").upper()
+    for table in ("USERS", "FILES", "SHARE_CODES", "AUDIT_EVENTS"):
+        assert f"CREATE TABLE IF NOT EXISTS {table}" in sql
+    for destructive in ("DROP TABLE", "DROP COLUMN", "TRUNCATE", "DELETE FROM"):
+        assert destructive not in sql
+
+
 def test_concurrent_startup_uses_session_advisory_lock_and_unlock(tmp_path, monkeypatch):
     class Cursor:
         def __init__(self, owner):
@@ -168,6 +204,7 @@ def test_concurrent_startup_uses_session_advisory_lock_and_unlock(tmp_path, monk
     monkeypatch.setattr(runner, "MIGRATIONS_DIR", migration_dir)
     monkeypatch.setattr(runner, "_tracking_exists", lambda cursor: True)
     monkeypatch.setattr(runner, "migration_plan", lambda cursor, migrations, exists: ([], []))
+    monkeypatch.setattr(runner, "_validate_schema", lambda cursor, migrations: None)
 
     assert runner.run(["--env-file", str(env_file), "--apply"]) == 0
     lock_calls = [call for call in connection.calls if "pg_advisory_lock" in call[0]]

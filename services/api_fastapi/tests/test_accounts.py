@@ -2,12 +2,13 @@
 from datetime import datetime, timedelta
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine, event, select
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 from sqlalchemy.pool import StaticPool
 from app import main, account
 from app.db import Base, get_db
-from app.models import User, AccountVerificationChallenge, RefreshToken
+from app.models import User, AccountVerificationChallenge, AuditEvent, RefreshToken
 from app.email_service import VerificationEmailError
 
 @pytest.fixture
@@ -43,6 +44,15 @@ def test_registration_pending_duplicate_normalization_and_activation(accounts):
     assert activate(client,sent).json()['account_status']=='ACTIVE'
     assert client.post('/auth/login',json={'email':'person@example.com','password':'correct-password'}).status_code==200
     assert activate(client,sent).status_code==400
+
+def test_registration_without_phone_supports_mobile_contract(accounts):
+    client,engine,sent=accounts
+    response=client.post('/auth/register',json={'full_name':'Mobile User','email':'mobile@example.com','password':'correct-password'})
+    assert response.status_code==201
+    with Session(engine) as db:
+        user=db.scalar(select(User).where(User.email=='mobile@example.com'))
+        assert user is not None and user.phone_number is None
+    assert activate(client,sent,'mobile@example.com').status_code==200
 
 def test_code_attempt_expiry_resend_and_disabled_login(accounts):
     client,engine,sent=accounts;register(client)
@@ -81,6 +91,31 @@ def test_forgot_password_is_generic_when_missing_or_provider_rejects(accounts,mo
     existing=client.post('/auth/password/forgot',json={'identifier':'person@example.com'})
     assert missing.status_code==existing.status_code==200 and missing.json()==existing.json()
     assert 'private provider detail' not in missing.text+existing.text+caplog.text
+
+def test_forgot_password_challenge_and_audit_commit_together(accounts):
+    client,engine,sent=accounts;register(client);activate(client,sent)
+    assert client.post('/auth/password/forgot',json={'identifier':'person@example.com'}).status_code==200
+    with Session(engine) as db:
+        challenge=db.scalar(select(AccountVerificationChallenge).where(AccountVerificationChallenge.purpose=='PASSWORD_RESET'))
+        audit=db.scalar(select(AuditEvent).where(AuditEvent.action=='password.reset.requested'))
+        assert challenge is not None and audit is not None and challenge.user_id==audit.user_id
+
+def test_forgot_password_audit_failure_rolls_back_challenge_and_logs_safely(accounts,caplog):
+    client,engine,sent=accounts;register(client);activate(client,sent)
+    def fail_audit(connection,cursor,statement,parameters,context,executemany):
+        if statement.lstrip().upper().startswith('INSERT INTO AUDIT_EVENTS'):
+            raise OperationalError('private statement',{},RuntimeError('private database detail'))
+    event.listen(engine,'before_cursor_execute',fail_audit)
+    try:
+        response=client.post('/auth/password/forgot',json={'identifier':'person@example.com'})
+    finally:
+        event.remove(engine,'before_cursor_execute',fail_audit)
+    assert response.status_code==200
+    with Session(engine) as db:
+        assert db.scalar(select(AccountVerificationChallenge).where(
+            AccountVerificationChallenge.purpose=='PASSWORD_RESET')) is None
+    assert 'password_reset_transaction_failed' in caplog.text
+    assert 'private database detail' not in caplog.text
 
 def test_password_reset_wrong_expired_and_exhausted_codes(accounts):
     client,engine,sent=accounts;register(client);activate(client,sent);client.post('/auth/password/forgot',json={'identifier':'person@example.com'})
