@@ -1,0 +1,4 @@
+XAI-Compress PFE demonstration file.
+This harmless UTF-8 text fixture is intended only for lossless compression evidence.
+It contains no credentials, personal data, executable content, or malware test signature.
+The expected result of a valid round trip is byte-for-byte equality with this original file.

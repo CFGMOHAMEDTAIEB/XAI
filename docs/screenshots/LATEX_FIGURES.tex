@@ -1,0 +1,118 @@
+% Requires \usepackage{graphicx} and \usepackage{float}.
+% Copy the genuine PNG files from docs/screenshots/report_ready/ to images/screenshots/.
+% No figure is generated for unavailable browser, USER 1 MFA enrollment,
+% admin, recipient download UI, or USER 2 decompression UI evidence.
+% Rechecked 2026-09-26: the local web services respond, but the supported
+% browser-control surface has no connected browser, so no web figure was added.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{images/screenshots/fig_registration.png}
+  \caption{Saisie de l'adresse électronique lors de la création d'un compte dans XAI-Compress.}
+  \label{fig:xai-registration}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{images/screenshots/fig_email_verification.png}
+  \caption{Étape de vérification de l'adresse électronique de l'utilisateur.}
+  \label{fig:xai-email-verification}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{images/screenshots/fig_login.png}
+  \caption{Authentification de l'utilisateur avec mot de passe masqué.}
+  \label{fig:xai-login}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.90\textwidth]{images/screenshots/fig_dashboard.png}
+  \caption{Tableau de bord authentifié de l'application Flutter Desktop.}
+  \label{fig:xai-dashboard}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.90\textwidth]{images/screenshots/fig_security_validation.png}
+  \caption{État du compte : adresse électronique vérifiée et authentificateur non encore activé.}
+  \label{fig:xai-security-state}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.90\textwidth]{images/screenshots/fig_compression.png}
+  \caption{Interface de compression de fichiers dans l'application de bureau.}
+  \label{fig:xai-compression-interface}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.90\textwidth]{images/screenshots/fig_compression_success.png}
+  \caption{Résultat réel de la compression du fichier de démonstration par la méthode hybride affichée.}
+  \label{fig:xai-compression-result}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.90\textwidth]{images/screenshots/fig_decompression.png}
+  \caption{Décompression réussie de l'archive de démonstration dans Flutter Desktop.}
+  \label{fig:xai-decompression}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.90\textwidth]{images/screenshots/fig_sha256_roundtrip.png}
+  \caption{Égalité des empreintes SHA-256 du fichier original et du fichier restauré lors du cycle local.}
+  \label{fig:xai-sha256-roundtrip}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.90\textwidth]{images/screenshots/fig_share_recipient.png}
+  \caption{Préparation du partage par USER 1 avec l'adresse de USER 2 ; aucun code de partage n'est visible.}
+  \label{fig:xai-share-recipient}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[height=0.78\textheight]{images/screenshots/fig_user2_registration.png}
+  \caption{Formulaire d'inscription de USER 2 avec mots de passe masqués. La réussite de l'inscription est établie séparément par le backend.}
+  \label{fig:xai-user2-registration}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.90\textwidth]{images/screenshots/fig_user2_login.png}
+  \caption{Formulaire de connexion Desktop de USER 2 avec mot de passe masqué. La connexion réussie concerne le backend local et non cette instance Desktop distante.}
+  \label{fig:xai-user2-login}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.94\textwidth]{images/screenshots/fig_user1_user2_sha256.png}
+  \caption{Preuve technique, distincte d'une capture d'interface : égalité SHA-256 entre le fichier original de USER 1 et le fichier restauré par USER 2.}
+  \label{fig:xai-cross-user-sha256}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{images/screenshots/fig_desktop.png}
+  \caption{Interface de connexion de l'application XAI-Compress pour Windows.}
+  \label{fig:xai-desktop}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[height=0.78\textheight]{images/screenshots/fig_mobile_home.png}
+  \caption{Écran d'accueil réel de l'application mobile XAI-Compress Authenticator sur Android 17.}
+  \label{fig:xai-mobile-home}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[height=0.78\textheight]{images/screenshots/fig_mobile_authenticator.png}
+  \caption{Protection locale de l'authentificateur mobile par biométrie ou identifiant de l'appareil, lorsque configuré.}
+  \label{fig:xai-mobile-local-auth}
+\end{figure}

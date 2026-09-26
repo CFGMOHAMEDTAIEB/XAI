@@ -4,8 +4,16 @@ for(const route of routes){
  const response=await fetch(origin+route,{signal:AbortSignal.timeout(20000)});assert.equal(response.status,200,route);const body=await response.text();
  if(route==='/'){assert.ok(body.includes('id="features"'));assert.ok(body.includes('XAI Desktop')&&body.includes('XAI Mobile')&&body.includes('XAI CLI'));assert.ok(!body.includes('/status'))}
  if(route==='/pricing'){assert.ok(body.includes('Commercial subscriptions are not live'));assert.ok(body.includes('Not yet available')&&body.includes('Coming later'))}
- if(route==='/downloads'){assert.ok(body.includes('XAI-Compress Desktop')&&body.includes('XAI-Compress CLI'));assert.ok(!/href="[^"]+\.(apk|exe|zip)"/.test(body))}
- for(const[,href]of body.matchAll(/href="(\/[^"#?]*)/g)){if(href.startsWith('/_next/')||href.includes('.svg')||href==='/'||href.startsWith('/#'))continue;assert.ok(routes.includes(href)||href==='/download',`Unmapped internal link: ${href} on ${route}`)}
+ if(route==='/downloads'){
+  assert.ok(body.includes('XAI-Compress Downloads')&&body.includes('Choose the client that matches your workflow.'));
+  for(const product of ['Mobile Authenticator','XAI-Compress Desktop','XAI-Compress CLI','Administration Client'])assert.ok(body.includes(product));
+  assert.ok(body.includes('Integrity details')&&body.includes('Evaluation build'));
+  assert.ok(body.includes('TEST_ONLY_DEBUG_SIGNED')&&body.includes('TEST_ONLY_UNSIGNED')&&body.includes('LOCAL_PACKAGE_UNSIGNED'));
+  assert.ok(!body.includes('Production ready')&&!body.includes('Official signed release'));
+  const binaryLinks=[...body.matchAll(/href="([^"]+\.(?:apk|exe|zip|whl))"/g)].map(match=>match[1]);
+  assert.equal(binaryLinks.length,4);assert.ok(binaryLinks.every(href=>href.startsWith('/api/releases/')));
+ }
+ for(const[,href]of body.matchAll(/href="(\/[^"#?]*)/g)){if(href.startsWith('/_next/')||href.startsWith('/api/releases/')||href.includes('.svg')||href==='/'||href.startsWith('/#'))continue;assert.ok(routes.includes(href)||href==='/download',`Unmapped internal link: ${href} on ${route}`)}
  results.push({route,status:'PASS',scope:'HTTP content and link checks'});
 }
 const removed=await fetch(origin+'/status');assert.equal(removed.status,404);results.push({route:'/status',status:'PASS',scope:'Removed public route'});

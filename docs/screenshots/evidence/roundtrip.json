@@ -1,0 +1,12 @@
+{
+  "application": "Flutter Desktop",
+  "original_file": "demo_xai_compress.txt",
+  "original_size": 305,
+  "compressed_file": "demo_xai_compress_roundtrip.xaic",
+  "compressed_size": 257,
+  "restored_file": "demo_xai_compress_roundtrip_restored.txt",
+  "restored_size": 305,
+  "original_sha256": "1b8302a372a817388db1c5569c2d61d12cea8dee2d220cd00eb9bb7d7d1540f6",
+  "restored_sha256": "1b8302a372a817388db1c5569c2d61d12cea8dee2d220cd00eb9bb7d7d1540f6",
+  "sha256_match": true
+}

@@ -47,7 +47,21 @@ services:
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:?Set a local pgAdmin password in an ignored .env file}
       PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "True"
       PGADMIN_CONFIG_LOGIN_BANNER: "'LOCAL DEVELOPMENT ONLY'"
-    volumes: [pgadmin-data:/var/lib/pgadmin]
+      PGADMIN_SERVER_JSON_FILE: /pgadmin4/servers.json
+      POSTGRES_DB: ${POSTGRES_DB:-xai}
+      POSTGRES_USER: ${POSTGRES_USER:-xai}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in an ignored local env file}
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - |
+        umask 077
+        printf 'db:5432:%s:%s:%s\n' "$${POSTGRES_DB}" "$${POSTGRES_USER}" "$${POSTGRES_PASSWORD}" > /var/lib/pgadmin/xai.pgpass
+        chown pgadmin:root /var/lib/pgadmin/xai.pgpass
+        exec /entrypoint.sh
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+      - ./servers.json:/pgadmin4/servers.json:ro
     ports: ["127.0.0.1:${PGADMIN_PORT:-5051}:80"]
     depends_on:
       db: {condition: service_healthy}
