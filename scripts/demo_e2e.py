@@ -14,6 +14,11 @@ def env_file(path):
 CFG=env_file(ROOT/'.env')
 if CFG.get('APP_ENV','development')!='development':raise SystemExit('Refusing non-development E2E')
 API=CFG.get('PUBLIC_API_URL') or f"http://127.0.0.1:{CFG.get('API_PORT','18000')}"
+MAILPIT=f"http://127.0.0.1:{CFG.get('MAILPIT_UI_PORT','18025')}"
+
+def get_json(url):
+    with urllib.request.urlopen(url,timeout=30) as response:
+        return json.loads(response.read())
 
 class Api:
     def __init__(self):self.token=None
@@ -39,17 +44,33 @@ def main():
         ta=a.call('/auth/login',{'email':CFG['XAI_DEMO_WEB_EMAIL'],'password':CFG['XAI_DEMO_WEB_PASSWORD']});a.token=ta['access_token'];refresh.append(ta['refresh_token'])
         tb=b.call('/auth/login',{'email':CFG['XAI_DEMO_DESKTOP_EMAIL'],'password':CFG['XAI_DEMO_DESKTOP_PASSWORD']});b.token=tb['access_token'];refresh.append(tb['refresh_token']);report['checks']['authentication']='PASS'
         original=(b'XAI-Compress harmless local demonstration fixture.\n'*256)
-        started=time.perf_counter();job=a.call('/compression/jobs',upload=('demo.txt',original));elapsed=time.perf_counter()-started
+        started=time.perf_counter();job=a.call('/compression/jobs',upload=('xaicd_final_demo.txt',original));elapsed=time.perf_counter()-started
         assert job['integrity_verified'] and job['sha256']==sha(original)
-        artifact=a.call(f"/files/{job['id']}/download");restored=a.call('/compression/decompress',upload=('demo.txt.xaic',artifact));assert restored==original
+        artifact=a.call(f"/files/{job['id']}/download");restored=a.call('/compression/decompress',upload=('xaicd_final_demo.txt.xaic',artifact));assert restored==original
         report['compression']={'original_size':len(original),'compressed_size':len(artifact),'codec':job['codec'],'route':job.get('engine',{}).get('strategy') if isinstance(job.get('engine'),dict) else None,'compression_seconds':elapsed,'original_sha256':sha(original),'decompressed_sha256':sha(restored),'sha256_match':True}
         report['checks']['round_trip']='PASS'
         anon.call(f"/files/{job['id']}/download",expected=401);b.call(f"/files/{job['id']}/download",expected=404);report['checks']['anonymous_and_owner_boundaries']='PASS'
-        share=a.call('/shares',{'file_id':job['id'],'recipient_email':CFG['XAI_DEMO_DESKTOP_EMAIL'],'expires_minutes':60,'max_downloads':2});code=share['share_code']
-        redeemed=b.call('/shares/redeem',{'code':code});assert redeemed['file']['sha256']==sha(original)
+        share=a.call('/shares',{'file_id':job['id'],'recipient_email':CFG['XAI_DEMO_DESKTOP_EMAIL'],'expires_minutes':60,'max_downloads':1});code=share['share_code']
+        assert share['email_delivery']=='captured_by_mailpit'
+        mailbox=get_json(MAILPIT+'/api/v1/messages')
+        candidates=[message for message in mailbox['messages']
+            if message.get('Subject')=='XAICD — You received a secure file'
+            and any(item.get('Address','').lower()==CFG['XAI_DEMO_DESKTOP_EMAIL'].lower() for item in message.get('To',[]))]
+        assert candidates
+        captured=get_json(MAILPIT+'/api/v1/message/'+candidates[0]['ID'])
+        content=(captured.get('Text','')+captured.get('HTML',''))
+        assert code in content and 'xaicd_final_demo.txt' in content and 'Receive a file' in content
+        report['checks']['share_email_captured_by_mailpit']='PASS'
+        a.call('/shares/redeem',{'code':code},expected=403)
+        b.call('/shares/redeem',{'code':'XC-NOT-A-REAL-CODE'},expected=404)
+        redeemed=b.call('/shares/redeem',{'code':code})
+        assert redeemed['file']=={'name':'xaicd_final_demo.txt.xaic','size':len(artifact)}
+        assert redeemed['sender']['email'].lower()==CFG['XAI_DEMO_WEB_EMAIL'].lower()
+        assert redeemed['remaining_downloads']==1 and redeemed['max_downloads']==1
         shared=b.call('/shares/download',{'code':code});assert shared==artifact
+        b.call('/shares/redeem',{'code':code},expected=409)
         restored_by_b=b.call('/compression/decompress',upload=('shared.xaic',shared));assert restored_by_b==original
-        report['checks']['share_recipient_access']='PASS';report['checks']['recipient_round_trip']='PASS';report['result']='PASS'
+        report['checks']['share_recipient_access']='PASS';report['checks']['invalid_unauthorized_and_exhausted']='PASS';report['checks']['recipient_round_trip']='PASS';report['result']='PASS'
     finally:
         for client,token in zip((a,b),refresh):
             try:client.call('/auth/logout',{'refresh_token':token})

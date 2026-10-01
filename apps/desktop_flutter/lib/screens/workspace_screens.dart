@@ -109,7 +109,7 @@ class _MfaDashboardGateState extends State<MfaDashboardGate> {
                                 ?.copyWith(fontWeight: FontWeight.w700)),
                         const SizedBox(height: 10),
                         const Text(
-                            'Enter the 6-digit code shown in XAI Authenticator on your phone.',
+                            'Enter the 6-digit code shown in XAICD Authenticator on your phone.',
                             textAlign: TextAlign.center),
                         const SizedBox(height: 22),
                         TextField(
@@ -153,7 +153,7 @@ class _MfaDashboardGateState extends State<MfaDashboardGate> {
                                 label: const Text('Verify code'))),
                         const SizedBox(height: 12),
                         const Text(
-                            'Open XAI Authenticator on your phone. Codes refresh automatically.',
+                            'Open XAICD Authenticator on your phone. Codes refresh automatically.',
                             textAlign: TextAlign.center,
                             style: TextStyle(color: XaiColors.muted))
                       ]))))));
@@ -358,7 +358,10 @@ class _SharesScreenState extends ReloadingState<SharesScreen> {
   int? selected;
   int expiry = 60;
   final recipient = TextEditingController();
-  bool creating = false;
+  final shareCode = TextEditingController();
+  Map<String, dynamic>? received;
+  String? receiveMessage;
+  bool creating = false, receiving = false, downloading = false;
   @override
   void initState() {
     super.initState();
@@ -371,7 +374,9 @@ class _SharesScreenState extends ReloadingState<SharesScreen> {
   Future<List<dynamic>> loadRemote() async {
     final api = context.read<AppState>().api;
     final result = await Future.wait([api.shares(), api.history()]);
-    files = result[1];
+    files = result[1]
+        .where((row) => row['status'] == 'completed')
+        .toList(growable: false);
     return result[0];
   }
 
@@ -379,22 +384,55 @@ class _SharesScreenState extends ReloadingState<SharesScreen> {
     if (selected == null || recipient.text.trim().isEmpty) return;
     setState(() => creating = true);
     try {
+      ApiService.validateEmail(recipient.text);
       final result = await context
           .read<AppState>()
           .api
           .createShare(selected!, recipient.text.trim(), expiry);
       if (mounted) {
+        final file = files.firstWhere((row) => row['id'] == selected);
         await showDialog<void>(
             context: context,
             barrierDismissible: false,
             builder: (d) => AlertDialog(
-                    title: const Text('Share created'),
-                    content: SelectableText(
-                        'Share code: ${result['share_code']}\n\nThis code is shown once. Copy it now; XAI Desktop will not store it.'),
+                    title: const Text('Share created successfully'),
+                    content: SizedBox(
+                        width: 440,
+                        child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('File: ${file['name']}'),
+                              Text('Recipient: ${result['recipient_email']}'),
+                              const SizedBox(height: 16),
+                              const Text('Share code',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.w600)),
+                              SelectableText('${result['share_code']}',
+                                  style: Theme.of(d)
+                                      .textTheme
+                                      .headlineSmall
+                                      ?.copyWith(letterSpacing: 2)),
+                              const SizedBox(height: 12),
+                              Text(
+                                  'Expires: ${_date(result['expires_at']) ?? 'Unavailable'}'),
+                              Text(
+                                  'Email: ${_emailDeliveryLabel(result['email_delivery'])}'),
+                              const SizedBox(height: 12),
+                              const Text(
+                                  'This code is shown once. Keep it private.')
+                            ])),
                     actions: [
+                      OutlinedButton.icon(
+                          onPressed: () async {
+                            await Clipboard.setData(ClipboardData(
+                                text: '${result['share_code']}'));
+                          },
+                          icon: const Icon(Icons.copy),
+                          label: const Text('Copy code')),
                       FilledButton(
                           onPressed: () => Navigator.pop(d),
-                          child: const Text('I saved the code'))
+                          child: const Text('Done'))
                     ]));
       }
       recipient.clear();
@@ -407,6 +445,55 @@ class _SharesScreenState extends ReloadingState<SharesScreen> {
       }
     } finally {
       if (mounted) setState(() => creating = false);
+    }
+  }
+
+  Future<void> receive() async {
+    final code = shareCode.text.trim();
+    if (code.length < 8 || receiving || downloading) return;
+    setState(() {
+      receiving = true;
+      received = null;
+      receiveMessage = null;
+    });
+    try {
+      final value = await context.read<AppState>().api.redeem(code);
+      if (mounted) setState(() => received = value);
+    } on ApiException catch (e) {
+      if (mounted) setState(() => receiveMessage = _shareError(e));
+    } finally {
+      if (mounted) setState(() => receiving = false);
+    }
+  }
+
+  Future<void> downloadReceived() async {
+    final share = received;
+    if (share == null || downloading) return;
+    final file = Map<String, dynamic>.from(share['file']);
+    final path = await FilePicker.platform.saveFile(
+        dialogTitle: 'Save shared XAICD file', fileName: '${file['name']}');
+    if (path == null || !mounted) return;
+    setState(() {
+      downloading = true;
+      receiveMessage = null;
+    });
+    try {
+      await context
+          .read<AppState>()
+          .api
+          .downloadShare(shareCode.text.trim(), path);
+      if (mounted) {
+        setState(() {
+          received = {...share,
+            'remaining_downloads':
+                ((share['remaining_downloads'] as int?) ?? 1) - 1};
+          receiveMessage = 'Download complete.';
+        });
+      }
+    } on ApiException catch (e) {
+      if (mounted) setState(() => receiveMessage = _shareError(e));
+    } finally {
+      if (mounted) setState(() => downloading = false);
     }
   }
 
@@ -471,6 +558,13 @@ class _SharesScreenState extends ReloadingState<SharesScreen> {
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           SizedBox(
+                              width: 180,
+                              child: Text('SHARE FILE',
+                                  style: Theme.of(c)
+                                      .textTheme
+                                      .titleMedium
+                                      ?.copyWith(fontWeight: FontWeight.w700))),
+                          SizedBox(
                               width: 240,
                               child: DropdownButtonFormField<int>(
                                   initialValue: selected,
@@ -488,10 +582,12 @@ class _SharesScreenState extends ReloadingState<SharesScreen> {
                               width: 260,
                               child: TextField(
                                   controller: recipient,
+                                  enabled: !creating,
+                                  onChanged: (_) => setState(() {}),
                                   decoration: const InputDecoration(
                                       labelText: 'Recipient email'))),
                           SizedBox(
-                              width: 150,
+                              width: 190,
                               child: DropdownButtonFormField<int>(
                                   initialValue: expiry,
                                   decoration: const InputDecoration(
@@ -509,9 +605,92 @@ class _SharesScreenState extends ReloadingState<SharesScreen> {
                                   onChanged: (v) =>
                                       setState(() => expiry = v ?? 60))),
                           FilledButton.icon(
-                              onPressed: creating ? null : create,
+                              onPressed: creating ||
+                                      selected == null ||
+                                      recipient.text.trim().isEmpty
+                                  ? null
+                                  : create,
                               icon: const Icon(Icons.add_link),
-                              label: const Text('Create'))
+                              label: Text(creating ? 'Creating…' : 'Create share'))
+                        ]))),
+            const SizedBox(height: 16),
+            Card(
+                child: Padding(
+                    padding: const EdgeInsets.all(18),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text('RECEIVE FILE',
+                              style: Theme.of(c)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.w700)),
+                          const SizedBox(height: 6),
+                          const Text(
+                              'Someone shared a file with you. Enter the code you received by email to access it.'),
+                          const SizedBox(height: 12),
+                          Row(children: [
+                            Expanded(
+                                child: TextField(
+                                    controller: shareCode,
+                                    enabled: !receiving && !downloading,
+                                    autocorrect: false,
+                                    onChanged: (_) => setState(() {
+                                          received = null;
+                                          receiveMessage = null;
+                                        }),
+                                    decoration: const InputDecoration(
+                                        labelText: 'Share code',
+                                        hintText: 'XC-XXXX-XXXX-XXXX'))),
+                            const SizedBox(width: 12),
+                            FilledButton.icon(
+                                onPressed: receiving ||
+                                        downloading ||
+                                        shareCode.text.trim().length < 8
+                                    ? null
+                                    : receive,
+                                icon: const Icon(Icons.download_outlined),
+                                label: Text(receiving
+                                    ? 'Checking…'
+                                    : 'Receive file'))
+                          ]),
+                          if (receiveMessage != null) ...[
+                            const SizedBox(height: 12),
+                            Text(receiveMessage!,
+                                style: TextStyle(
+                                    color: received == null
+                                        ? Theme.of(c).colorScheme.error
+                                        : XaiColors.success))
+                          ],
+                          if (received != null) ...[
+                            const Divider(height: 28),
+                            Wrap(spacing: 28, runSpacing: 8, children: [
+                              Text('Filename: ${received!['file']['name']}'),
+                              Text(
+                                  'Size: ${_formatBytes(received!['file']['size'] as int)}'),
+                              if (received!['sender'] != null)
+                                Text(
+                                    'Sender: ${received!['sender']['name']} (${received!['sender']['email']})'),
+                              Text(
+                                  'Expires: ${_date(received!['expires_at']) ?? 'Unavailable'}'),
+                              Text(
+                                  'Downloads remaining: ${received!['remaining_downloads']} / ${received!['max_downloads']}')
+                            ]),
+                            const SizedBox(height: 12),
+                            Align(
+                                alignment: Alignment.centerLeft,
+                                child: FilledButton.icon(
+                                    onPressed: downloading ||
+                                            (received!['remaining_downloads']
+                                                    as int) <
+                                                1
+                                        ? null
+                                        : downloadReceived,
+                                    icon: const Icon(Icons.save_alt),
+                                    label: Text(downloading
+                                        ? 'Downloading…'
+                                        : 'Download')))
+                          ]
                         ]))),
             const SizedBox(height: 16),
             Expanded(
@@ -530,6 +709,7 @@ class _SharesScreenState extends ReloadingState<SharesScreen> {
   @override
   void dispose() {
     recipient.dispose();
+    shareCode.dispose();
     super.dispose();
   }
 }
@@ -657,3 +837,24 @@ String? _date(dynamic value) {
       ? '$value'
       : DateFormat.yMMMd().add_jm().format(parsed.toLocal());
 }
+
+String _formatBytes(int value) {
+  if (value < 1024) return '$value B';
+  if (value < 1024 * 1024) return '${(value / 1024).toStringAsFixed(1)} KiB';
+  return '${(value / (1024 * 1024)).toStringAsFixed(1)} MiB';
+}
+
+String _emailDeliveryLabel(dynamic status) => switch (status) {
+      'captured_by_mailpit' => 'Captured by Mailpit (local/demo environment)',
+      'accepted_by_provider' || 'accepted_by_smtp' => 'Accepted by provider',
+      'failed' => 'Delivery failed',
+      _ => 'Email service not configured'
+    };
+
+String _shareError(ApiException error) => switch (error.kind) {
+      'gone' => 'This share has expired.',
+      'conflict' => 'This share has no downloads remaining.',
+      'forbidden' => 'This share is not authorized for your account.',
+      'not_found' => 'This share code is invalid or no longer available.',
+      _ => 'The share could not be checked right now. Please try again.'
+    };

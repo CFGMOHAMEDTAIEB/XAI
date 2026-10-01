@@ -1,11 +1,9 @@
 """Device-bound authenticator APIs. Local polling is the only push provider here."""
-from base64 import b64decode, b64encode
-from io import BytesIO
+from base64 import b64decode
 from datetime import datetime, timedelta
 import hashlib, hmac, json, secrets
 
 import pyotp
-import qrcode
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 from fastapi import Depends, HTTPException, Response
 from pydantic import BaseModel, Field, field_validator
@@ -34,7 +32,7 @@ class DeviceCreate(BaseModel):
 class ChallengeCreate(BaseModel):
     model_config={'extra':'forbid'}
     device_id:str
-    application:str=Field(default='XAI',min_length=1,max_length=120)
+    application:str=Field(default='XAICD',min_length=1,max_length=120)
     context:dict=Field(default_factory=dict)
 
 class ChallengeDecision(BaseModel):
@@ -48,7 +46,7 @@ class EnrollmentConfirm(BaseModel):
     enrollment_id:str=Field(pattern=r'^[0-9a-f]{32}$')
     code:str=Field(pattern=r'^\d{6}$')
 
-def event(db,user_id,event_type,result='success',device_id=None,application='XAI',details=None):
+def event(db,user_id,event_type,result='success',device_id=None,application='XAICD',details=None):
     db.add(AuthEvent(user_id=user_id,device_id=device_id,event_type=event_type,result=result,
                      application=application,details=json.dumps(details or {},separators=(',',':'))))
 
@@ -56,31 +54,47 @@ def public_device(row):
     return {'device_id':row.device_id,'platform':row.platform,'app_version':row.app_version,
             'status':row.status,'registered_at':row.registered_at,'last_activity':row.last_activity_at}
 
-def register_authenticator_routes(app,current_user,require_admin):
+def register_authenticator_routes(app,current_user,require_admin,enrollment_user,token_pair):
     @app.post('/auth/authenticator/enroll/start')
-    def start_enrollment(response:Response,user:User=Depends(current_user),db:Session=Depends(get_db)):
+    def start_enrollment(response:Response,user:User=Depends(enrollment_user),db:Session=Depends(get_db)):
         response.headers['Cache-Control']='no-store';lock_user(db,user);now=datetime.utcnow()
         row=db.get(TotpEnrollment,user.id)
         if row is None:
             row=TotpEnrollment(user_id=user.id,send_count=0,send_window_at=now,last_sent_at=now)
             db.add(row)
-        row.enrollment_id=secrets.token_hex(16);row.secret=pyotp.random_base32();row.expires_at=now+timedelta(minutes=10)
-        row.code_hash=None;row.code_expires_at=row.expires_at;row.disclosed=True;row.attempts=row.totp_attempts=0
-        user.totp_secret=None;db.commit()
-        uri=pyotp.TOTP(row.secret).provisioning_uri(name=user.email,issuer_name='XAI')
-        image=BytesIO();qrcode.make(uri).save(image,format='PNG')
-        return {'enrollment_id':row.enrollment_id,'otpauth_uri':uri,
-                'qr_data_uri':'data:image/png;base64,'+b64encode(image.getvalue()).decode(),'expires_in_seconds':600}
+        if not row.secret or row.expires_at<=now:
+            row.enrollment_id=secrets.token_hex(16);row.secret=pyotp.random_base32();row.expires_at=now+timedelta(minutes=20)
+            row.code_hash=None;row.code_expires_at=row.expires_at;row.disclosed=False;row.attempts=row.totp_attempts=0
+            user.totp_secret=None
+        db.commit()
+        return {'enrollment_id':row.enrollment_id,'expires_in_seconds':max(0,int((row.expires_at-now).total_seconds())),
+                'mobile_ready':row.disclosed}
+
+    @app.post('/auth/authenticator/enroll/mobile')
+    def claim_enrollment(response:Response,user:User=Depends(enrollment_user),db:Session=Depends(get_db)):
+        response.headers['Cache-Control']='no-store';lock_user(db,user);now=datetime.utcnow()
+        row=db.get(TotpEnrollment,user.id)
+        if not row or not row.secret or row.expires_at<=now:
+            if row is None:
+                row=TotpEnrollment(user_id=user.id,send_count=0,send_window_at=now,last_sent_at=now)
+                db.add(row)
+            row.enrollment_id=secrets.token_hex(16);row.secret=pyotp.random_base32();row.expires_at=now+timedelta(minutes=20)
+            row.code_hash=None;row.code_expires_at=row.expires_at;row.attempts=row.totp_attempts=0
+        row.disclosed=True;db.commit()
+        return {'enrollment_id':row.enrollment_id,'otpauth_uri':pyotp.TOTP(row.secret).provisioning_uri(name=user.email,issuer_name='XAICD'),
+                'email':user.email,'expires_in_seconds':max(0,int((row.expires_at-now).total_seconds()))}
 
     @app.post('/auth/authenticator/enroll/confirm')
-    def confirm_enrollment(body:EnrollmentConfirm,user:User=Depends(current_user),db:Session=Depends(get_db)):
+    def confirm_enrollment(body:EnrollmentConfirm,user:User=Depends(enrollment_user),db:Session=Depends(get_db)):
         row=pending(db,user,body.enrollment_id)
         if not row.disclosed:raise HTTPException(409,'Enrollment is not ready')
         if row.totp_attempts>=5:raise HTTPException(429,'Too many incorrect codes; restart setup')
         if not verify_totp(row.secret,body.code):
             row.totp_attempts+=1;db.commit();raise HTTPException(400,'Invalid or expired TOTP code')
         user.totp_secret=row.secret;user.totp_enabled=True;row.secret=row.code_hash=None
-        event(db,user.id,'mfa_enabled');db.commit();return {'enabled':True}
+        event(db,user.id,'mfa_enabled');db.commit()
+        session=token_pair(db,user).model_dump()
+        return {'enabled':True,**session}
 
     @app.post('/auth/devices')
     def register_device(body:DeviceCreate,user:User=Depends(current_user),db:Session=Depends(get_db)):

@@ -1,0 +1,12 @@
+[
+    {
+        "Algorithm":  "SHA256",
+        "Hash":  "0538F6BDF0C32C93D9ED0EA7854215BE7BB85ACD193E866219A0D0E72ABCAA08",
+        "Path":  "D:\\Android\\Avd\\xai_mobile_x86_64.ini"
+    },
+    {
+        "Algorithm":  "SHA256",
+        "Hash":  "DE951670802BC1E98694CA4065B51A095D5158CBD11618BC91AA07B1CFA24ABB",
+        "Path":  "D:\\Android\\Avd\\xai_mobile_x86_64.avd\\config.ini"
+    }
+]

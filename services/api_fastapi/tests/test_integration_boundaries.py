@@ -39,7 +39,7 @@ def test_smtp_attachment_preserves_bytes_and_requires_tls(monkeypatch, tmp_path)
     monkeypatch.setattr(smtplib, 'SMTP', Transport)
     result = email_service.send_artifact(path, 'original.bin.xaic', 'receiver@example.com')
     attachment = list(captured['message'].iter_attachments())[0]
-    assert captured['message']['Subject'] == 'XAI Compress file attachment'
+    assert captured['message']['Subject'] == 'XAICD file attachment'
     assert captured['tls'] and captured['timeout'] > 0
     assert attachment.get_payload(decode=True) == payload
     assert attachment.get_filename() == 'original.bin.xaic'

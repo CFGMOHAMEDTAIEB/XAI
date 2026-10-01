@@ -39,7 +39,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const Text(
                 'Privacy and data use — draft: settings and history, including local file paths, are stored on this computer. Cloud operations send file contents and account credentials to the configured API. Clearing local history does not delete server files. Operator retention, contact and deletion procedures are not finalized.'),
             field(python, 'Python executable'),
-            field(engine, 'XAI-Compress engine directory', pick: () async {
+            field(engine, 'XAICD engine directory', pick: () async {
               final path = await FilePicker.platform.getDirectoryPath();
               if (path != null) engine.text = path;
             }),

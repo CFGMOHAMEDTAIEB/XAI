@@ -13,7 +13,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = context.watch<AppState>();
     return Scaffold(
-      appBar: AppBar(title: const Text('XAI Authenticator'), actions: [
+      appBar: AppBar(title: const Text('XAICD Authenticator'), actions: [
         IconButton(
             onPressed: () async {
               await state.logout();
@@ -50,7 +50,7 @@ class HomeScreen extends StatelessWidget {
                       Text(
                           state.accounts.first.displayName?.isNotEmpty == true
                               ? state.accounts.first.displayName!
-                              : 'XAI account',
+                              : 'XAICD account',
                           style: Theme.of(context).textTheme.titleMedium),
                       Text(state.accounts.first.accountName,
                           overflow: TextOverflow.ellipsis,

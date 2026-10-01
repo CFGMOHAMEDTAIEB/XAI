@@ -8,7 +8,7 @@ import '../services/local_engine_service.dart';
 import '../services/secure_session_store.dart';
 import '../services/settings_service.dart';
 
-enum AuthStage { loading, login, mfa, verifyEmail, authenticated }
+enum AuthStage { loading, login, mfa, enroll, verifyEmail, authenticated }
 
 class AppState extends ChangeNotifier {
   AppState(
@@ -29,7 +29,7 @@ class AppState extends ChangeNotifier {
   double progress = 0;
   String status = 'Ready';
   String? inputPath, outputPath, pendingEmail;
-  String? _pendingMfaPassword;
+  String? _verificationPassword, _enrollmentId;
   String mode = 'cloud';
   EngineResult? lastResult;
   List<HistoryItem> items = [];
@@ -37,7 +37,7 @@ class AppState extends ChangeNotifier {
   late DesktopSettings config;
   bool get authenticated => authStage == AuthStage.authenticated;
   bool get mfaPending => authStage == AuthStage.mfa;
-  bool get shellVisible => authenticated || mfaPending;
+  bool get shellVisible => authenticated;
   bool get workspaceUnlocked => authenticated;
   Future<void> initialize() async {
     config = DesktopSettings();
@@ -69,22 +69,28 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> login(String email, String password, {String? totp}) async {
-    _pendingMfaPassword = null;
+    api.clearPendingMfa();
     pendingEmail = email;
     try {
       account = await api.login(email, password, totp: totp);
-      _pendingMfaPassword = null;
+      _verificationPassword = null;
+      if (api.enrollmentRequired) {
+        final enrollment = await api.startAuthenticatorEnrollment();
+        _enrollmentId = enrollment['enrollment_id'] as String?;
+        authStage = AuthStage.enroll;
+        page = 0;
+        return;
+      }
       await _persistSession();
       pendingEmail = null;
       authStage = AuthStage.authenticated;
       page = 0;
     } on ApiException catch (e) {
       if (e.kind == 'mfa_required') {
-        _pendingMfaPassword = password;
         authStage = AuthStage.mfa;
         page = 0;
       } else if (e.kind == 'verification_required') {
-        _pendingMfaPassword = null;
+        _verificationPassword = password;
         authStage = AuthStage.verifyEmail;
       }
       rethrow;
@@ -98,23 +104,20 @@ class AppState extends ChangeNotifier {
       throw const ApiException('Enter exactly 6 numeric digits.',
           kind: 'invalid_input');
     }
-    final email = pendingEmail;
-    final password = _pendingMfaPassword;
-    if (!mfaPending || email == null || password == null) {
+    if (!mfaPending) {
       throw const ApiException('Sign in again to verify MFA.',
           kind: 'authentication');
     }
     try {
-      account = await api.login(email, password, totp: code);
+      account = await api.verifyMfa(code);
       await _persistSession();
-      _pendingMfaPassword = null;
       pendingEmail = null;
       authStage = AuthStage.authenticated;
       page = 0;
     } on ApiException catch (error) {
       authStage = AuthStage.mfa;
       if (error.kind == 'mfa_required' || error.kind == 'authentication') {
-        throw const ApiException('The code is invalid or expired.',
+        throw const ApiException('Invalid verification code. Please try again.',
             kind: 'invalid_mfa');
       }
       rethrow;
@@ -123,22 +126,49 @@ class AppState extends ChangeNotifier {
     }
   }
 
+  Future<void> verifyEnrollment(String code) async {
+    if (!RegExp(r'^\d{6}$').hasMatch(code)) {
+      throw const ApiException('Enter exactly 6 numeric digits.', kind: 'invalid_input');
+    }
+    if (authStage != AuthStage.enroll || _enrollmentId == null) {
+      throw const ApiException('Restart authenticator setup.', kind: 'conflict');
+    }
+    try {
+      account = await api.confirmAuthenticatorEnrollment(_enrollmentId!, code);
+      await _persistSession();
+      _enrollmentId = null;
+      pendingEmail = null;
+      authStage = AuthStage.authenticated;
+      page = 0;
+    } finally {
+      notifyListeners();
+    }
+  }
+
   Future<void> completeEmailVerification(String code) async {
     await api.confirmEmail(pendingEmail!, code);
-    _pendingMfaPassword = null;
-    authStage = AuthStage.login;
-    notifyListeners();
+    final email = pendingEmail;
+    final password = _verificationPassword;
+    _verificationPassword = null;
+    if (email != null && password != null) {
+      await login(email, password);
+    } else {
+      authStage = AuthStage.login;
+      notifyListeners();
+    }
   }
 
   void backToLogin() {
     authStage = AuthStage.login;
     pendingEmail = null;
-    _pendingMfaPassword = null;
+    _verificationPassword = null;
+    _enrollmentId = null;
+    api.clearPendingMfa();
     notifyListeners();
   }
 
-  void requireEmailVerification(String email) {
-    _pendingMfaPassword = null;
+  void requireEmailVerification(String email, String password) {
+    _verificationPassword = password;
     pendingEmail = email;
     authStage = AuthStage.verifyEmail;
     notifyListeners();
@@ -149,7 +179,8 @@ class AppState extends ChangeNotifier {
     await sessionStore.clear();
     account = null;
     pendingEmail = null;
-    _pendingMfaPassword = null;
+    _verificationPassword = null;
+    _enrollmentId = null;
     page = 0;
     authStage = AuthStage.login;
     notifyListeners();
@@ -313,7 +344,7 @@ class AppState extends ChangeNotifier {
 
   @override
   void dispose() {
-    _pendingMfaPassword = null;
+    _verificationPassword = null;
     api.dispose();
     engine.cancel();
     super.dispose();

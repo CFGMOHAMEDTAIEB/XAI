@@ -1,0 +1,12 @@
+[
+    {
+        "Algorithm":  "SHA256",
+        "Hash":  "81979CB6565150FBD6BDAAAA3F265185FCB858473977E75E7B661E3EDB3A1A9D",
+        "Path":  "C:\\Users\\ss\\Desktop\\XAI\\XAI\\scripts\\run-all.ps1"
+    },
+    {
+        "Algorithm":  "SHA256",
+        "Hash":  "598D524E0A03377F19D4CFD89041EAE24FB3DF58BBEA581B0AB3BF141424050D",
+        "Path":  "C:\\Users\\ss\\Desktop\\XAI\\XAI\\scripts\\launch-emulator.ps1"
+    }
+]

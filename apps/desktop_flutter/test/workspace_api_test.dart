@@ -59,6 +59,50 @@ void main() {
     expect(calls, ['/shares', '/shares', '/shares/3/revoke']);
   });
 
+  test('share redeem returns metadata and download writes exact XAIC bytes',
+      () async {
+    final api = ApiService(client: MockClient((request) async {
+      expect(request.headers['authorization'], 'Bearer access');
+      expect(jsonDecode(request.body)['code'], 'XC-SAFE-CODE');
+      if (request.url.path == '/shares/redeem') {
+        return http.Response(
+            '{"file":{"name":"owned.bin.xaic","size":4},"sender":{"name":"Test Sender","email":"sender@example.com"},"expires_at":"2026-10-01T18:30:00","remaining_downloads":1,"max_downloads":1}',
+            200);
+      }
+      expect(request.url.path, '/shares/download');
+      return http.Response.bytes([88, 65, 73, 67], 200);
+    }));
+    api.token = 'access';
+    final share = await api.redeem('XC-SAFE-CODE');
+    expect(share['file']['name'], 'owned.bin.xaic');
+    expect(share['remaining_downloads'], 1);
+    final directory =
+        await Directory.systemTemp.createTemp('xai-share-test-');
+    addTearDown(() => directory.delete(recursive: true));
+    final output = '${directory.path}${Platform.pathSeparator}owned.bin.xaic';
+    await api.downloadShare('XC-SAFE-CODE', output);
+    expect(await File(output).readAsBytes(), [88, 65, 73, 67]);
+  });
+
+  for (final state in <(int, String)>[
+    (403, 'forbidden'),
+    (404, 'not_found'),
+    (409, 'conflict'),
+    (410, 'gone')
+  ]) {
+    test('share redemption maps HTTP ${state.$1} to ${state.$2}', () async {
+      final api = ApiService(client: MockClient((_) async =>
+          http.Response('{"detail":"sensitive backend detail"}', state.$1)));
+      api.token = 'access';
+      await expectLater(
+          api.redeem('XC-SAFE-CODE'),
+          throwsA(isA<ApiException>()
+              .having((error) => error.kind, 'kind', state.$2)
+              .having((error) => error.message, 'message',
+                  isNot(contains('sensitive')))));
+    });
+  }
+
   test('security device list and revoke expose no secret fields', () async {
     final api = ApiService(client: MockClient((request) async {
       if (request.method == 'GET') {

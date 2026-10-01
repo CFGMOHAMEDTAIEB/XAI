@@ -25,7 +25,7 @@ android {
     defaultConfig {
         manifestPlaceholders["allowCleartext"] = "false"
         applicationId = "com.example.xai_compress_authenticator"
-        minSdk = flutter.minSdkVersion
+        minSdk = 24
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

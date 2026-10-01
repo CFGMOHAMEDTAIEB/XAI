@@ -13,8 +13,8 @@ from sqlalchemy.orm import Session
 from .config import settings
 from .db import Base, engine, get_db
 from .models import User, FileRecord, ShareCode, AuditEvent, RefreshToken, TotpEnrollment, AuthenticatorDevice
-from .schemas import RegisterRequest, LoginRequest, TokenResponse, RefreshRequest, FileCreate, ShareCreate, ShareRedeem
-from .security import hash_password, verify_password, create_token, create_refresh_token, hash_refresh_token, decode_token, generate_share_code, hash_share_code
+from .schemas import RegisterRequest, LoginRequest, MfaVerifyRequest, TokenResponse, RefreshRequest, FileCreate, ShareCreate, ShareRedeem
+from .security import hash_password, verify_password, create_token, create_refresh_token, hash_refresh_token, decode_token_claims, generate_share_code, hash_share_code
 from .schemas import EmailSend
 from .mfa import register_mfa_routes, verify_totp
 from .email_service import send_artifact, configuration_missing
@@ -23,11 +23,11 @@ from .security_scanner import enforce_scan, scanner_health
 from .resource_guard import ResourceGuard, cleanup_work
 from .authenticator import register_authenticator_routes
 from .account import register_account_routes, normalize_phone, issue, EMAIL_VERIFY
-from .email_service import VerificationEmailError
+from .email_service import VerificationEmailError, send_share_notification, verification_configuration_missing
 
 if settings.app_env == 'development':
     Base.metadata.create_all(engine)
-app=FastAPI(title='XAI-Compress Platform API',version='0.1.0')
+app=FastAPI(title='XAICD Platform API',version='0.1.0')
 app.add_middleware(ResourceGuard)
 app.add_middleware(CORSMiddleware,allow_origins=settings.allowed_origins,allow_credentials=True,allow_methods=['*'],allow_headers=['*'])
 settings.storage_root.mkdir(parents=True,exist_ok=True)
@@ -42,13 +42,26 @@ def token_pair(db:Session,user:User):
     raw=create_refresh_token()
     db.add(RefreshToken(user_id=user.id,token_hash=hash_refresh_token(raw),expires_at=datetime.utcnow()+timedelta(days=settings.refresh_token_days)))
     db.commit()
-    return TokenResponse(access_token=create_token(user.id),refresh_token=raw)
+    return TokenResponse(access_token=create_token(user.id),refresh_token=raw,mfa_enabled=user.totp_enabled)
 
 def current_user(authorization:str=Header(default=''),db:Session=Depends(get_db)):
     if not authorization.startswith('Bearer '): raise HTTPException(401,'Bearer token required')
-    uid=decode_token(authorization[7:]); user=db.get(User,uid)
-    if not user or user.account_status=='DISABLED': raise HTTPException(401,'Invalid session')
+    claims=decode_token_claims(authorization[7:]); user=db.get(User,claims['sub'])
+    if not user or user.account_status!='ACTIVE' or not user.email_verified or not user.totp_enabled or claims.get('scope','full')!='full': raise HTTPException(401,'MFA verification required')
     return user
+
+def enrollment_user(authorization:str=Header(default=''),db:Session=Depends(get_db)):
+    if not authorization.startswith('Bearer '): raise HTTPException(401,'Bearer token required')
+    claims=decode_token_claims(authorization[7:]); user=db.get(User,claims['sub'])
+    if not user or user.account_status!='ACTIVE' or not user.email_verified or user.totp_enabled or claims.get('scope')!='enrollment': raise HTTPException(401,'Enrollment session required')
+    return user
+
+def account_user(authorization:str=Header(default=''),db:Session=Depends(get_db)):
+    if not authorization.startswith('Bearer '): raise HTTPException(401,'Bearer token required')
+    claims=decode_token_claims(authorization[7:]); user=db.get(User,claims['sub'])
+    if not user or user.account_status!='ACTIVE' or not user.email_verified: raise HTTPException(401,'Invalid session')
+    if claims.get('scope','full')=='full' and user.totp_enabled or claims.get('scope')=='enrollment' and not user.totp_enabled:return user
+    raise HTTPException(401,'Invalid session')
 
 def audit(db,user_id,action,resource='',result='success',details=''):
     db.add(AuditEvent(user_id=user_id,action=action,resource=resource,result=result,details=details)); db.commit()
@@ -85,9 +98,22 @@ def login(body:LoginRequest,db:Session=Depends(get_db)):
     if not user or not verify_password(body.password,user.password_hash): raise HTTPException(401,'Invalid credentials')
     if user.account_status=='DISABLED':raise HTTPException(401,'Invalid credentials')
     if user.account_status!='ACTIVE' or not user.email_verified:raise HTTPException(403,'Account verification required')
-    if user.totp_enabled and not verify_totp(user.totp_secret, body.totp_code):
-        raise HTTPException(401,'Valid TOTP code required')
+    if not user.totp_enabled:
+        audit(db,user.id,'user.enrollment_login')
+        return TokenResponse(access_token=create_token(user.id,'enrollment',10),mfa_enabled=False,enrollment_required=True)
+    if not body.totp_code:
+        raise HTTPException(401,{'message':'Valid TOTP code required','mfa_token':create_token(user.id,'mfa',5)})
+    if not verify_totp(user.totp_secret,body.totp_code):raise HTTPException(401,'Invalid verification code')
     audit(db,user.id,'user.login'); return token_pair(db,user)
+
+@app.post('/auth/login/mfa/verify',response_model=TokenResponse)
+def verify_login_mfa(body:MfaVerifyRequest,db:Session=Depends(get_db)):
+    claims=decode_token_claims(body.mfa_token)
+    if claims.get('scope')!='mfa':raise HTTPException(401,'Invalid MFA session')
+    user=db.get(User,claims['sub'])
+    if not user or user.account_status!='ACTIVE' or not user.email_verified or not user.totp_enabled:raise HTTPException(401,'Invalid MFA session')
+    if not verify_totp(user.totp_secret,body.code):raise HTTPException(401,'Invalid verification code')
+    audit(db,user.id,'user.login');return token_pair(db,user)
 
 @app.post('/auth/refresh',response_model=TokenResponse)
 def refresh(body:RefreshRequest,db:Session=Depends(get_db)):
@@ -97,7 +123,7 @@ def refresh(body:RefreshRequest,db:Session=Depends(get_db)):
         RefreshToken.revoked.is_(False),RefreshToken.expires_at>=datetime.utcnow()).values(revoked=True))
     if consumed.rowcount != 1: raise HTTPException(401,'Invalid refresh token')
     user=db.get(User,row.user_id)
-    if not user or user.account_status!='ACTIVE' or not user.email_verified: raise HTTPException(401,'Invalid refresh token')
+    if not user or user.account_status!='ACTIVE' or not user.email_verified or not user.totp_enabled: raise HTTPException(401,'Invalid refresh token')
     return token_pair(db,user)
 
 @app.post('/auth/logout')
@@ -107,14 +133,14 @@ def logout(body:RefreshRequest,db:Session=Depends(get_db)):
     return {'logged_out':True}
 
 @app.get('/auth/me')
-def me(user:User=Depends(current_user)):
+def me(user:User=Depends(account_user)):
     return {'id':user.id,'email':user.email,'display_name':user.display_name,'full_name':user.full_name,
             'phone_number':user.phone_number,'email_verified':user.email_verified,'phone_verified':user.phone_verified,
             'account_status':user.account_status,'role':user.role,'mfa_enabled':user.totp_enabled,'is_admin':user.role=='admin'}
 
 register_account_routes(app,current_user)
-register_mfa_routes(app, current_user)
-register_authenticator_routes(app, current_user, require_admin)
+register_mfa_routes(app, current_user, account_user)
+register_authenticator_routes(app, current_user, require_admin, enrollment_user, token_pair)
 
 @app.post('/files')
 def create_file(body:FileCreate,user:User=Depends(current_user),db:Session=Depends(get_db)):
@@ -232,7 +258,16 @@ def create_share(body:ShareCreate,user:User=Depends(current_user),db:Session=Dep
     code,digest=generate_share_code(); row=ShareCode(file_id=file.id,sender_id=user.id,recipient_email=body.recipient_email.lower(),code_hash=digest,
         expires_at=datetime.utcnow()+timedelta(minutes=body.expires_minutes),max_downloads=body.max_downloads,anonymous_sender=body.anonymous_sender)
     db.add(row); db.commit(); audit(db,user.id,'share.created',str(file.id))
-    return {'share_code':code,'expires_at':row.expires_at,'recipient_email':row.recipient_email,'email_delivery':'not_configured_in_mvp'}
+    delivery='not_configured'
+    if not verification_configuration_missing():
+        try:
+            sender_identity=None if row.anonymous_sender else (user.full_name or user.display_name or user.email)
+            delivery=send_share_notification(row.recipient_email,file.name,code,row.expires_at,sender_identity)
+            audit(db,user.id,'share.notification.accepted',str(row.id))
+        except VerificationEmailError:
+            delivery='failed'
+            audit(db,user.id,'share.notification.failed',str(row.id),'failure','Email provider submission failed')
+    return {'share_code':code,'expires_at':row.expires_at,'recipient_email':row.recipient_email,'email_delivery':delivery}
 
 @app.get('/shares')
 def list_shares(user:User=Depends(current_user),db:Session=Depends(get_db)):
@@ -258,11 +293,19 @@ def revoke_share(share_id:int,user:User=Depends(current_user),db:Session=Depends
 @app.post('/shares/redeem')
 def redeem(body:ShareRedeem,user:User=Depends(current_user),db:Session=Depends(get_db)):
     row=db.scalar(select(ShareCode).where(ShareCode.code_hash==hash_share_code(body.code)))
-    if not row or row.revoked or row.expires_at<datetime.utcnow() or row.download_count>=row.max_downloads: raise HTTPException(404,'Invalid or expired code')
-    if row.recipient_email!=user.email: raise HTTPException(403,'Code is not assigned to this account')
-    file=db.get(FileRecord,row.file_id); audit(db,user.id,'share.inspected',str(row.id))
-    return {'file':{'id':file.id,'name':file.name,'sha256':file.sha256,'original_size':file.original_size,'compressed_size':file.compressed_size,'codec':file.codec},
-            'sender':None if row.anonymous_sender else row.sender_id,'remaining_downloads':row.max_downloads-row.download_count}
+    if not row or row.revoked: raise HTTPException(404,'Share code not found')
+    if row.recipient_email!=user.email: raise HTTPException(403,'Share is not assigned to this account')
+    if row.expires_at<=datetime.utcnow(): raise HTTPException(410,'Share has expired')
+    if row.download_count>=row.max_downloads: raise HTTPException(409,'Share download limit reached')
+    file=db.get(FileRecord,row.file_id)
+    if not file: raise HTTPException(404,'Shared file not found')
+    sender=db.get(User,row.sender_id) if not row.anonymous_sender else None
+    artifact_name=file.name if file.name.lower().endswith('.xaic') else f'{file.name}.xaic'
+    audit(db,user.id,'share.inspected',str(row.id))
+    return {'file':{'name':artifact_name,'size':file.compressed_size},
+            'sender':None if not sender else {'name':sender.full_name or sender.display_name or sender.email,'email':sender.email},
+            'expires_at':row.expires_at,'remaining_downloads':row.max_downloads-row.download_count,
+            'max_downloads':row.max_downloads}
 
 @app.get('/public/shares/{code}')
 def public_share(code:str,db:Session=Depends(get_db)):
@@ -352,7 +395,10 @@ def email_configuration(_:User=Depends(require_admin)):
 @app.post('/shares/download')
 def download_share(body:ShareRedeem,user:User=Depends(current_user),db:Session=Depends(get_db)):
     row=db.scalar(select(ShareCode).where(ShareCode.code_hash==hash_share_code(body.code)))
-    if not row or row.recipient_email!=user.email: raise HTTPException(404,'Share not found')
+    if not row or row.revoked: raise HTTPException(404,'Share not found')
+    if row.recipient_email!=user.email: raise HTTPException(403,'Share is not assigned to this account')
+    if row.expires_at<=datetime.utcnow(): raise HTTPException(410,'Share has expired')
+    if row.download_count>=row.max_downloads: raise HTTPException(409,'Share download limit reached')
     file=db.get(FileRecord,row.file_id)
     if not file or not file.artifact_path or not Path(file.artifact_path).is_file(): raise HTTPException(404,'Artifact not found')
     result=db.execute(update(ShareCode).where(ShareCode.id==row.id,ShareCode.revoked==False,
@@ -360,4 +406,5 @@ def download_share(body:ShareRedeem,user:User=Depends(current_user),db:Session=D
         .values(download_count=ShareCode.download_count+1))
     if result.rowcount!=1: db.rollback(); raise HTTPException(404,'Invalid or exhausted share')
     db.commit(); audit(db,user.id,'share.downloaded',str(row.id))
-    return FileResponse(file.artifact_path,filename=f'{file.name}.xaic',media_type='application/octet-stream')
+    filename=file.name if file.name.lower().endswith('.xaic') else f'{file.name}.xaic'
+    return FileResponse(file.artifact_path,filename=filename,media_type='application/octet-stream')

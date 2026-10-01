@@ -103,16 +103,25 @@ class AppState extends ChangeNotifier {
     final account =
         enrollment.toAccount('xai-$enrollmentId', displayName: displayName);
     final updated = [
+      account,
       ...accounts.where((a) =>
           a.id != account.id &&
           !(a.id.startsWith('xai-') && a.accountName == account.accountName)),
-      account
     ];
     await accountStore
         .saveAccounts(updated)
         .timeout(const Duration(seconds: 15));
     accounts = updated;
     notifyListeners();
+  }
+
+  void focusAccount(String email) {
+    final index = accounts.indexWhere((a) => a.accountName.toLowerCase() == email.toLowerCase());
+    if (index > 0) {
+      final account = accounts.removeAt(index);
+      accounts.insert(0, account);
+      notifyListeners();
+    }
   }
 
   void openAuthenticator() {

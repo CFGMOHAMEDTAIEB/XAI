@@ -2,6 +2,7 @@
 import io
 import json
 import urllib.error
+from datetime import datetime
 import pytest
 from app import email_service
 from app.config import settings, Settings
@@ -38,9 +39,9 @@ def test_verification_contract(monkeypatch):
     email_service.send_verification_code('registered@example.com', '123456')
 
 @pytest.mark.parametrize('purpose,expected_subject',[
-    ('ACCOUNT_EMAIL_VERIFY','Verify your XAI-Compress account'),
-    ('PASSWORD_RESET','Reset your XAI-Compress password'),
-    ('PASSWORD_RESET_SUCCESS','Your XAI-Compress password was changed')])
+    ('ACCOUNT_EMAIL_VERIFY','Verify your XAICD account'),
+    ('PASSWORD_RESET','Reset your XAICD password'),
+    ('PASSWORD_RESET_SUCCESS','Your XAICD password was changed')])
 def test_account_email_templates_are_accepted_without_secret_leak(monkeypatch,purpose,expected_subject):
     captured=[]
     monkeypatch.setattr(email_service,'_send_brevo',lambda body:captured.append(body) or '<unit-test>')
@@ -94,9 +95,25 @@ def test_delivery_smoke_test_uses_brevo_transport_without_attachments(monkeypatc
     monkeypatch.setattr(email_service, '_send_brevo',
                         lambda body, email_settings=settings: captured.append(body) or '<unit-test>')
     email_service.send_delivery_smoke_test('diagnostic@example.com')
-    assert captured[0]['subject'] == 'XAI-Compress email delivery smoke test'
-    assert 'XAI-Compress email delivery smoke test' in captured[0]['textContent']
+    assert captured[0]['subject'] == 'XAICD email delivery smoke test'
+    assert 'XAICD email delivery smoke test' in captured[0]['textContent']
     assert 'attachment' not in captured[0]
+
+def test_share_notification_is_recipient_bound_and_professional(monkeypatch):
+    captured=[]
+    monkeypatch.setattr(email_service,'_send_brevo',lambda body:captured.append(body) or '<unit-test>')
+    expires=datetime(2026,10,1,18,30)
+    result=email_service.send_share_notification('recipient@example.com','quarterly-report.xaic','XC-SAFE-CODE',expires,'Test Sender')
+    assert result=='accepted_by_provider'
+    message=captured[0]
+    assert message['to']==[{'email':'recipient@example.com'}]
+    assert message['subject']=='XAICD — You received a secure file'
+    assert 'quarterly-report.xaic' in message['textContent']
+    assert 'Test Sender' in message['textContent']
+    assert 'XC-SAFE-CODE' in message['textContent'] and '01 Oct 2026 at 18:30 UTC' in message['textContent']
+    assert 'Receive a file' in message['textContent']
+    assert 'Do not share it with anyone else' in message['textContent']
+    assert 'password' not in message['textContent'].lower()
 
 def test_invalid_configuration():
     with pytest.raises(ValueError, match='EMAIL_PROVIDER'):

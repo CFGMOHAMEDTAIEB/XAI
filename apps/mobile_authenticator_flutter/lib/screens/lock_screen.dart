@@ -22,7 +22,7 @@ class LockScreen extends StatelessWidget {
                   const Icon(Icons.shield_outlined, size: 72),
                   const SizedBox(height: 20),
                   Text(
-                    'XAI-Compress Authenticator',
+                    'XAICD Authenticator',
                     style: Theme.of(context).textTheme.headlineSmall,
                     textAlign: TextAlign.center,
                   ),

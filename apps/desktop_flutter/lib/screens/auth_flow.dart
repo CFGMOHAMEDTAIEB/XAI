@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../core/app_state.dart';
 import '../services/api_service.dart';
@@ -11,6 +12,7 @@ class AuthFlow extends StatelessWidget {
   Widget build(BuildContext context) =>
       switch (context.watch<AppState>().authStage) {
         AuthStage.mfa => const LoginPanel(mfa: true),
+        AuthStage.enroll => const EnrollmentPanel(),
         AuthStage.verifyEmail => const VerificationPanel(),
         _ => const LoginPanel(),
       };
@@ -43,7 +45,7 @@ class AuthFrame extends StatelessWidget {
                                       Icon(Icons.shield_outlined,
                                           color: XaiColors.brand, size: 38),
                                       SizedBox(width: 10),
-                                      Text('XAI Compress',
+                                      Text('XAICD',
                                           style: TextStyle(
                                               fontSize: 22,
                                               fontWeight: FontWeight.w700))
@@ -76,6 +78,7 @@ class LoginPanel extends StatefulWidget {
 class _LoginPanelState extends State<LoginPanel> {
   final email = TextEditingController(),
       password = TextEditingController(),
+      confirmPassword = TextEditingController(),
       code = TextEditingController();
   bool busy = false, hidden = true, register = false;
   String? error;
@@ -87,14 +90,17 @@ class _LoginPanelState extends State<LoginPanel> {
     });
     final s = context.read<AppState>();
     try {
-      if (register) {
+      if (widget.mfa) {
+        await s.verifyMfa(code.text.trim());
+      } else if (register) {
+        if (password.text != confirmPassword.text) {
+          throw const ApiException('Passwords do not match.', kind: 'invalid_input');
+        }
         await s.api.register(
             email.text.split('@').first, email.text.trim(), password.text);
-        s.requireEmailVerification(email.text.trim());
+        s.requireEmailVerification(email.text.trim(), password.text);
       } else {
-        await s.login(
-            widget.mfa ? s.pendingEmail! : email.text.trim(), password.text,
-            totp: widget.mfa ? code.text.trim() : null);
+        await s.login(email.text.trim(), password.text);
       }
     } on ApiException catch (e) {
       if (mounted) setState(() => error = e.message);
@@ -112,7 +118,7 @@ class _LoginPanelState extends State<LoginPanel> {
               ? 'Create account'
               : 'Welcome back',
       subtitle: widget.mfa
-          ? 'Enter the 6-digit code from XAI Authenticator'
+          ? 'Enter the 6-digit code from XAICD Authenticator'
           : 'Authenticate before accessing your private workspace.',
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         if (!widget.mfa)
@@ -123,29 +129,41 @@ class _LoginPanelState extends State<LoginPanel> {
               decoration: const InputDecoration(
                   labelText: 'Email', prefixIcon: Icon(Icons.mail_outline))),
         if (!widget.mfa) const SizedBox(height: 14),
-        TextField(
-            controller: password,
-            obscureText: hidden,
-            onSubmitted: (_) => submit(),
-            decoration: InputDecoration(
-                labelText: 'Password',
-                prefixIcon: const Icon(Icons.lock_outline),
-                suffixIcon: IconButton(
-                    tooltip: 'Show or hide password',
-                    onPressed: () => setState(() => hidden = !hidden),
-                    icon: Icon(hidden
-                        ? Icons.visibility_outlined
-                        : Icons.visibility_off_outlined)))),
+        if (!widget.mfa)
+          TextField(
+              controller: password,
+              obscureText: hidden,
+              onSubmitted: (_) => submit(),
+              decoration: InputDecoration(
+                  labelText: 'Password',
+                  prefixIcon: const Icon(Icons.lock_outline),
+                  suffixIcon: IconButton(
+                      tooltip: 'Show or hide password',
+                      onPressed: () => setState(() => hidden = !hidden),
+                      icon: Icon(hidden
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined)))),
         if (widget.mfa) ...[
-          const SizedBox(height: 14),
           TextField(
               controller: code,
               autofocus: true,
               maxLength: 6,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              onChanged: (_) => setState(() {}),
               onSubmitted: (_) => submit(),
               decoration: const InputDecoration(
                   labelText: '6-digit code',
                   prefixIcon: Icon(Icons.shield_outlined)))
+        ],
+        if (register && !widget.mfa) ...[
+          const SizedBox(height: 14),
+          TextField(
+              controller: confirmPassword,
+              obscureText: hidden,
+              decoration: const InputDecoration(
+                  labelText: 'Confirm password',
+                  prefixIcon: Icon(Icons.lock_outline)))
         ],
         if (error != null)
           Padding(
@@ -154,14 +172,20 @@ class _LoginPanelState extends State<LoginPanel> {
                   style: const TextStyle(color: XaiColors.danger))),
         const SizedBox(height: 18),
         FilledButton(
-            onPressed: busy ? null : submit,
+            onPressed: busy || (widget.mfa && code.text.length != 6)
+                ? null
+                : submit,
             child: Text(widget.mfa
-                ? 'Verify and continue'
+                ? busy
+                    ? 'Verifying…'
+                    : 'Verify'
                 : register
                     ? 'Create account'
                     : 'Login')),
         if (widget.mfa)
-          TextButton(onPressed: safeBack, child: const Text('Back to login'))
+          TextButton(
+              onPressed: busy ? null : safeBack,
+              child: const Text('Back to sign in'))
         else ...[
           TextButton(
               onPressed: () => Navigator.push(
@@ -179,9 +203,56 @@ class _LoginPanelState extends State<LoginPanel> {
   void dispose() {
     email.dispose();
     password.dispose();
+    confirmPassword.dispose();
     code.dispose();
     super.dispose();
   }
+}
+
+class EnrollmentPanel extends StatefulWidget {
+  const EnrollmentPanel({super.key});
+  @override
+  State<EnrollmentPanel> createState() => _EnrollmentPanelState();
+}
+
+class _EnrollmentPanelState extends State<EnrollmentPanel> {
+  final code = TextEditingController();
+  bool busy = false;
+  String? error;
+
+  Future<void> confirm() async {
+    if (busy) return;
+    setState(() { busy = true; error = null; });
+    try {
+      await context.read<AppState>().verifyEnrollment(code.text.trim());
+    } on ApiException catch (e) {
+      if (mounted) setState(() => error = e.message);
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => AuthFrame(
+      title: 'Set up XAICD Authenticator',
+      subtitle: 'On the Android emulator, sign in with the same XAICD account. The setup key is sent directly to the app; no QR code is needed. Enter the current 6-digit code shown there.',
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        TextField(
+            controller: code,
+            autofocus: true,
+            maxLength: 6,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            onSubmitted: (_) => confirm(),
+            decoration: const InputDecoration(labelText: '6-digit authenticator code')),
+        if (error != null) Text(error!, style: const TextStyle(color: XaiColors.danger)),
+        FilledButton(onPressed: busy ? null : confirm, child: const Text('Activate authenticator')),
+        TextButton(onPressed: busy ? null : context.read<AppState>().backToLogin,
+            child: const Text('Back to sign in'))
+      ]));
+
+  @override
+  void dispose() { code.dispose(); super.dispose(); }
 }
 
 class VerificationPanel extends StatefulWidget {

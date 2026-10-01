@@ -1,0 +1,895 @@
+Current user: 0
+
+Users:
+  UserInfo{0:null:4c13} serialNo=0 isPrimary=true
+    Type: android.os.usertype.full.SYSTEM
+    Flags: 19475 (ADMIN|FULL|INITIALIZED|MAIN|PRIMARY|SYSTEM)
+    State: RUNNING_LOCKED
+    Created: <unknown>
+    Last logged in: +3d12h5m57s966ms ago
+    Last logged in fingerprint: 39238be690f98d3907ca65b59f6f0601f185e8fe
+    Start time: +1h38m8s833ms ago
+    Unlock time: <unknown>
+    Last entered foreground: +12h46m43s278ms ago
+    Restrictions:
+      none
+    Device policy restrictions:
+      none
+    Effective restrictions:
+      none
+    UserProperties:
+        mPropertiesPresent=0
+        mShowInLauncher=0
+        mStartWithParent=false
+        mShowInSettings=0
+        mInheritDevicePolicy=0
+        mUseParentsContacts=false
+        mUpdateCrossProfileIntentFiltersOnOTA=false
+        mCrossProfileIntentFilterAccessControl=0
+        mCrossProfileIntentResolutionStrategy=0
+        mMediaSharedWithParent=false
+        mCredentialShareableWithParent=false
+        mAuthAlwaysRequiredToDisableQuietMode=false
+        mAllowStoppingUserWithDelayedLocking=false
+        mDeleteAppWithParent=false
+        mAlwaysVisible=false
+        mCrossProfileContentSharingStrategy=0
+        mProfileApiVisibility=0
+        mItemsRestrictedOnHomeScreen=false
+        mShowInUserSwitcher=1
+    Ignore errors preparing storage: false
+
+Device properties:
+  Device policy global restrictions:
+    none
+  Guest restrictions:
+    no_sms
+    no_config_wifi_shared
+    no_install_unknown_sources
+    no_config_credentials
+    no_outgoing_calls
+
+  Started users state: [0=RUNNING_LOCKED]
+  Cached user IDs: [0]
+  Cached user IDs (including pre-created): [0]
+
+  Supports switchable users: true
+  Max switchable users: 4
+  All guests ephemeral: false
+  Force ephemeral users: false
+  Is headless-system mode: false
+  Is main user permanent admin: true
+  User version: 11
+  Owner name: Owner
+  Guest name: Guest
+  Unnamed user name: User
+  Boot user: N/A
+  Device owner user: N/A
+
+UserVisibilityMediator
+  DBG: false
+  Current user id: 0
+  Visible users: [0]
+  Number of started visible user / profile group mappings: 1
+    u:0 -> pg:0
+  Supports visible background users on displays: false
+  Supports visible background users on default display: false
+  No user / display mappings
+  No extra display / user mappings
+  Visible users per display cache: {}
+  Number of listeners: 1
+    0: com.android.server.location.injector.SystemUserInfoHelper$$ExternalSyntheticLambda0@62275ee
+
+
+Number of listeners for
+  restrictions: 10
+  user lifecycle events: 7
+
+User types version: 0
+User types (12 types):
+    android.os.usertype.profile.TEST: 
+        mName: android.os.usertype.profile.TEST
+        mBaseType: PROFILE
+        mEnabled: true
+        mMaxAllowed: 4
+        mMaxAllowedPerParent: 2
+        mDefaultUserInfoFlags: 0
+        UserProperties:
+            mPropertiesPresent=11111111111111111111
+            mShowInLauncher=0
+            mStartWithParent=false
+            mShowInSettings=0
+            mInheritDevicePolicy=0
+            mUseParentsContacts=false
+            mUpdateCrossProfileIntentFiltersOnOTA=false
+            mCrossProfileIntentFilterAccessControl=0
+            mCrossProfileIntentResolutionStrategy=0
+            mMediaSharedWithParent=false
+            mCredentialShareableWithParent=false
+            mAuthAlwaysRequiredToDisableQuietMode=false
+            mAllowStoppingUserWithDelayedLocking=false
+            mDeleteAppWithParent=false
+            mAlwaysVisible=false
+            mCrossProfileContentSharingStrategy=0
+            mProfileApiVisibility=0
+            mItemsRestrictedOnHomeScreen=false
+            mShowInUserSwitcher=1
+        mDefaultRestrictions: 
+            no_fun
+            no_wallpaper
+        mProfileParentRequired: true
+        mIconBadge: 17303070
+        mBadgePlain: 17303068
+        mBadgeNoBackground: 17303069
+        mStatusBarIcon: 17303068
+        mBadgeLabels.length: 3
+        mBadgeColors.length: 3
+        mDarkThemeBadgeColors.length: 3
+        mLabels.length: 3
+        mActivitiesAllowlist: 0
+        mActivitiesAllowlistMode: 0 (ALLOWLIST_MODE_0)
+    android.os.usertype.profile.COMMUNAL: 
+        mName: android.os.usertype.profile.COMMUNAL
+        mBaseType: PROFILE
+        mEnabled: false
+        mMaxAllowed: 1
+        mMaxAllowedPerParent: 0
+        mDefaultUserInfoFlags: 0
+        UserProperties:
+            mPropertiesPresent=11111111111111111111
+            mShowInLauncher=1
+            mStartWithParent=false
+            mShowInSettings=1
+            mInheritDevicePolicy=0
+            mUseParentsContacts=false
+            mUpdateCrossProfileIntentFiltersOnOTA=false
+            mCrossProfileIntentFilterAccessControl=0
+            mCrossProfileIntentResolutionStrategy=0
+            mMediaSharedWithParent=false
+            mCredentialShareableWithParent=false
+            mAuthAlwaysRequiredToDisableQuietMode=false
+            mAllowStoppingUserWithDelayedLocking=false
+            mDeleteAppWithParent=false
+            mAlwaysVisible=true
+            mCrossProfileContentSharingStrategy=0
+            mProfileApiVisibility=0
+            mItemsRestrictedOnHomeScreen=false
+            mShowInUserSwitcher=1
+        mDefaultRestrictions: 
+            no_wallpaper
+        mProfileParentRequired: false
+        mIconBadge: 17303070
+        mBadgePlain: 17303068
+        mBadgeNoBackground: 17303069
+        mStatusBarIcon: 17303068
+        mBadgeLabels.length: 3
+        mBadgeColors.length: 3
+        mDarkThemeBadgeColors.length: 3
+        mLabels.length: 1
+        mActivitiesAllowlist: 0
+        mActivitiesAllowlistMode: 0 (ALLOWLIST_MODE_0)
+    android.os.usertype.profile.PRIVATE: 
+        mName: android.os.usertype.profile.PRIVATE
+        mBaseType: PROFILE
+        mEnabled: true
+        mMaxAllowed: 4
+        mMaxAllowedPerParent: 1
+        mDefaultUserInfoFlags: 0
+        UserProperties:
+            mPropertiesPresent=11111111111111111111
+            mShowInLauncher=1
+            mStartWithParent=true
+            mShowInSettings=1
+            mInheritDevicePolicy=1
+            mUseParentsContacts=false
+            mUpdateCrossProfileIntentFiltersOnOTA=true
+            mCrossProfileIntentFilterAccessControl=10
+            mCrossProfileIntentResolutionStrategy=0
+            mMediaSharedWithParent=false
+            mCredentialShareableWithParent=true
+            mAuthAlwaysRequiredToDisableQuietMode=true
+            mAllowStoppingUserWithDelayedLocking=true
+            mDeleteAppWithParent=false
+            mAlwaysVisible=false
+            mCrossProfileContentSharingStrategy=1
+            mProfileApiVisibility=1
+            mItemsRestrictedOnHomeScreen=true
+            mShowInUserSwitcher=1
+        mDefaultRestrictions: 
+            no_bluetooth_sharing
+            no_wallpaper
+        mProfileParentRequired: true
+        mIconBadge: 17303005
+        mBadgePlain: 17303004
+        mBadgeNoBackground: 17303004
+        mStatusBarIcon: 17304069
+        mBadgeLabels.length: 1
+        mBadgeColors.length: 1
+        mDarkThemeBadgeColors.length: 1
+        mLabels.length: 1
+        mActivitiesAllowlist: 0
+        mActivitiesAllowlistMode: 0 (ALLOWLIST_MODE_0)
+    android.os.usertype.full.GUEST: 
+        mName: android.os.usertype.full.GUEST
+        mBaseType: FULL
+        mEnabled: true
+        mMaxAllowed: 1
+        mMaxAllowedPerParent: 0
+        mDefaultUserInfoFlags: GUEST
+        UserProperties:
+            mPropertiesPresent=11111111111111111111
+            mShowInLauncher=0
+            mStartWithParent=false
+            mShowInSettings=0
+            mInheritDevicePolicy=0
+            mUseParentsContacts=false
+            mUpdateCrossProfileIntentFiltersOnOTA=false
+            mCrossProfileIntentFilterAccessControl=0
+            mCrossProfileIntentResolutionStrategy=0
+            mMediaSharedWithParent=false
+            mCredentialShareableWithParent=false
+            mAuthAlwaysRequiredToDisableQuietMode=false
+            mAllowStoppingUserWithDelayedLocking=false
+            mDeleteAppWithParent=false
+            mAlwaysVisible=false
+            mCrossProfileContentSharingStrategy=0
+            mProfileApiVisibility=0
+            mItemsRestrictedOnHomeScreen=false
+            mShowInUserSwitcher=1
+        mDefaultRestrictions: 
+            no_sms
+            no_config_wifi_shared
+            no_install_unknown_sources
+            no_config_credentials
+            no_outgoing_calls
+        mProfileParentRequired: false
+        mIconBadge: 0
+        mBadgePlain: 0
+        mBadgeNoBackground: 0
+        mStatusBarIcon: 0
+        mBadgeLabels.length: 0(null)
+        mBadgeColors.length: 0(null)
+        mDarkThemeBadgeColors.length: 0(null)
+        mLabels.length: 0(null)
+        mActivitiesAllowlist: 0
+        mActivitiesAllowlistMode: 0 (ALLOWLIST_MODE_0)
+    android.os.usertype.profile.SUPERVISING: 
+        mName: android.os.usertype.profile.SUPERVISING
+        mBaseType: PROFILE
+        mEnabled: true
+        mMaxAllowed: 1
+        mMaxAllowedPerParent: 0
+        mDefaultUserInfoFlags: 0
+        UserProperties:
+            mPropertiesPresent=11111111111111111111
+            mShowInLauncher=2
+            mStartWithParent=false
+            mShowInSettings=2
+            mInheritDevicePolicy=0
+            mUseParentsContacts=false
+            mUpdateCrossProfileIntentFiltersOnOTA=false
+            mCrossProfileIntentFilterAccessControl=0
+            mCrossProfileIntentResolutionStrategy=0
+            mMediaSharedWithParent=false
+            mCredentialShareableWithParent=false
+            mAuthAlwaysRequiredToDisableQuietMode=false
+            mAllowStoppingUserWithDelayedLocking=false
+            mDeleteAppWithParent=false
+            mAlwaysVisible=true
+            mCrossProfileContentSharingStrategy=0
+            mProfileApiVisibility=0
+            mItemsRestrictedOnHomeScreen=false
+            mShowInUserSwitcher=1
+        mDefaultRestrictions: 
+            no_install_apps
+            no_wallpaper
+        mProfileParentRequired: false
+        mIconBadge: 0
+        mBadgePlain: 0
+        mBadgeNoBackground: 0
+        mStatusBarIcon: 0
+        mBadgeLabels.length: 0(null)
+        mBadgeColors.length: 0(null)
+        mDarkThemeBadgeColors.length: 0(null)
+        mLabels.length: 1
+        mActivitiesAllowlist: 0
+        mActivitiesAllowlistMode: 0 (ALLOWLIST_MODE_0)
+    android.os.usertype.profile.MANAGED: 
+        mName: android.os.usertype.profile.MANAGED
+        mBaseType: PROFILE
+        mEnabled: true
+        mMaxAllowed: 1
+        mMaxAllowedPerParent: 1
+        mDefaultUserInfoFlags: MANAGED_PROFILE
+        UserProperties:
+            mPropertiesPresent=11111111111111111111
+            mShowInLauncher=1
+            mStartWithParent=true
+            mShowInSettings=1
+            mInheritDevicePolicy=0
+            mUseParentsContacts=false
+            mUpdateCrossProfileIntentFiltersOnOTA=false
+            mCrossProfileIntentFilterAccessControl=0
+            mCrossProfileIntentResolutionStrategy=0
+            mMediaSharedWithParent=false
+            mCredentialShareableWithParent=true
+            mAuthAlwaysRequiredToDisableQuietMode=false
+            mAllowStoppingUserWithDelayedLocking=false
+            mDeleteAppWithParent=false
+            mAlwaysVisible=false
+            mCrossProfileContentSharingStrategy=0
+            mProfileApiVisibility=0
+            mItemsRestrictedOnHomeScreen=false
+            mShowInUserSwitcher=1
+        mDefaultRestrictions: 
+            no_wallpaper
+        mProfileParentRequired: true
+        mIconBadge: 17302562
+        mBadgePlain: 17302557
+        mBadgeNoBackground: 17302559
+        mStatusBarIcon: 17304068
+        mBadgeLabels.length: 3
+        mBadgeColors.length: 3
+        mDarkThemeBadgeColors.length: 3
+        mLabels.length: 3
+        mActivitiesAllowlist: 0
+        mActivitiesAllowlistMode: 0 (ALLOWLIST_MODE_0)
+    android.os.usertype.system.HEADLESS: 
+        mName: android.os.usertype.system.HEADLESS
+        mBaseType: SYSTEM
+        mEnabled: true
+        mMaxAllowed: 1
+        mMaxAllowedPerParent: 0
+        mDefaultUserInfoFlags: PRIMARY
+        UserProperties:
+            mPropertiesPresent=11111111111111111111
+            mShowInLauncher=0
+            mStartWithParent=false
+            mShowInSettings=0
+            mInheritDevicePolicy=0
+            mUseParentsContacts=false
+            mUpdateCrossProfileIntentFiltersOnOTA=false
+            mCrossProfileIntentFilterAccessControl=0
+            mCrossProfileIntentResolutionStrategy=0
+            mMediaSharedWithParent=false
+            mCredentialShareableWithParent=false
+            mAuthAlwaysRequiredToDisableQuietMode=false
+            mAllowStoppingUserWithDelayedLocking=false
+            mDeleteAppWithParent=false
+            mAlwaysVisible=false
+            mCrossProfileContentSharingStrategy=0
+            mProfileApiVisibility=0
+            mItemsRestrictedOnHomeScreen=false
+            mShowInUserSwitcher=1
+        mDefaultRestrictions: 
+            no_modify_accounts
+            no_share_location
+        mProfileParentRequired: false
+        mIconBadge: 17302631
+        mBadgePlain: 17302629
+        mBadgeNoBackground: 17302630
+        mStatusBarIcon: 0
+        mBadgeLabels.length: 1
+        mBadgeColors.length: 1
+        mDarkThemeBadgeColors.length: 1
+        mLabels.length: 0(null)
+        mActivitiesAllowlist: 17236266
+        mActivitiesAllowlistMode: 0 (ALLOWLIST_MODE_0)
+    android.os.usertype.full.SYSTEM: 
+        mName: android.os.usertype.full.SYSTEM
+        mBaseType: FULL|SYSTEM
+        mEnabled: true
+        mMaxAllowed: 1
+        mMaxAllowedPerParent: 0
+        mDefaultUserInfoFlags: ADMIN|MAIN|PRIMARY
+        UserProperties:
+            mPropertiesPresent=11111111111111111111
+            mShowInLauncher=0
+            mStartWithParent=false
+            mShowInSettings=0
+            mInheritDevicePolicy=0
+            mUseParentsContacts=false
+            mUpdateCrossProfileIntentFiltersOnOTA=false
+            mCrossProfileIntentFilterAccessControl=0
+            mCrossProfileIntentResolutionStrategy=0
+            mMediaSharedWithParent=false
+            mCredentialShareableWithParent=false
+            mAuthAlwaysRequiredToDisableQuietMode=false
+            mAllowStoppingUserWithDelayedLocking=false
+            mDeleteAppWithParent=false
+            mAlwaysVisible=false
+            mCrossProfileContentSharingStrategy=0
+            mProfileApiVisibility=0
+            mItemsRestrictedOnHomeScreen=false
+            mShowInUserSwitcher=1
+        mDefaultRestrictions: 
+            none
+        mProfileParentRequired: false
+        mIconBadge: 0
+        mBadgePlain: 0
+        mBadgeNoBackground: 0
+        mStatusBarIcon: 0
+        mBadgeLabels.length: 0(null)
+        mBadgeColors.length: 0(null)
+        mDarkThemeBadgeColors.length: 0(null)
+        mLabels.length: 0(null)
+        mActivitiesAllowlist: 0
+        mActivitiesAllowlistMode: 0 (ALLOWLIST_MODE_0)
+    android.os.usertype.full.SECONDARY: 
+        mName: android.os.usertype.full.SECONDARY
+        mBaseType: FULL
+        mEnabled: true
+        mMaxAllowed: 3
+        mMaxAllowedPerParent: 0
+        mDefaultUserInfoFlags: 0
+        UserProperties:
+            mPropertiesPresent=11111111111111111111
+            mShowInLauncher=0
+            mStartWithParent=false
+            mShowInSettings=0
+            mInheritDevicePolicy=0
+            mUseParentsContacts=false
+            mUpdateCrossProfileIntentFiltersOnOTA=false
+            mCrossProfileIntentFilterAccessControl=0
+            mCrossProfileIntentResolutionStrategy=0
+            mMediaSharedWithParent=false
+            mCredentialShareableWithParent=false
+            mAuthAlwaysRequiredToDisableQuietMode=false
+            mAllowStoppingUserWithDelayedLocking=false
+            mDeleteAppWithParent=false
+            mAlwaysVisible=false
+            mCrossProfileContentSharingStrategy=0
+            mProfileApiVisibility=0
+            mItemsRestrictedOnHomeScreen=false
+            mShowInUserSwitcher=1
+        mDefaultRestrictions: 
+            no_sms
+            no_outgoing_calls
+        mProfileParentRequired: false
+        mIconBadge: 0
+        mBadgePlain: 0
+        mBadgeNoBackground: 0
+        mStatusBarIcon: 0
+        mBadgeLabels.length: 0(null)
+        mBadgeColors.length: 0(null)
+        mDarkThemeBadgeColors.length: 0(null)
+        mLabels.length: 0(null)
+        mActivitiesAllowlist: 0
+        mActivitiesAllowlistMode: 0 (ALLOWLIST_MODE_0)
+    android.os.usertype.full.RESTRICTED: 
+        mName: android.os.usertype.full.RESTRICTED
+        mBaseType: FULL
+        mEnabled: true
+        mMaxAllowed: 3
+        mMaxAllowedPerParent: 0
+        mDefaultUserInfoFlags: RESTRICTED
+        UserProperties:
+            mPropertiesPresent=11111111111111111111
+            mShowInLauncher=0
+            mStartWithParent=false
+            mShowInSettings=0
+            mInheritDevicePolicy=0
+            mUseParentsContacts=false
+            mUpdateCrossProfileIntentFiltersOnOTA=false
+            mCrossProfileIntentFilterAccessControl=0
+            mCrossProfileIntentResolutionStrategy=0
+            mMediaSharedWithParent=false
+            mCredentialShareableWithParent=false
+            mAuthAlwaysRequiredToDisableQuietMode=false
+            mAllowStoppingUserWithDelayedLocking=false
+            mDeleteAppWithParent=false
+            mAlwaysVisible=false
+            mCrossProfileContentSharingStrategy=0
+            mProfileApiVisibility=0
+            mItemsRestrictedOnHomeScreen=false
+            mShowInUserSwitcher=1
+        mDefaultRestrictions: 
+            no_modify_accounts
+            no_share_location
+        mProfileParentRequired: false
+        mIconBadge: 0
+        mBadgePlain: 0
+        mBadgeNoBackground: 0
+        mStatusBarIcon: 0
+        mBadgeLabels.length: 0(null)
+        mBadgeColors.length: 0(null)
+        mDarkThemeBadgeColors.length: 0(null)
+        mLabels.length: 0(null)
+        mActivitiesAllowlist: 0
+        mActivitiesAllowlistMode: 0 (ALLOWLIST_MODE_0)
+    android.os.usertype.full.DEMO: 
+        mName: android.os.usertype.full.DEMO
+        mBaseType: FULL
+        mEnabled: true
+        mMaxAllowed: 3
+        mMaxAllowedPerParent: 0
+        mDefaultUserInfoFlags: DEMO
+        UserProperties:
+            mPropertiesPresent=11111111111111111111
+            mShowInLauncher=0
+            mStartWithParent=false
+            mShowInSettings=0
+            mInheritDevicePolicy=0
+            mUseParentsContacts=false
+            mUpdateCrossProfileIntentFiltersOnOTA=false
+            mCrossProfileIntentFilterAccessControl=0
+            mCrossProfileIntentResolutionStrategy=0
+            mMediaSharedWithParent=false
+            mCredentialShareableWithParent=false
+            mAuthAlwaysRequiredToDisableQuietMode=false
+            mAllowStoppingUserWithDelayedLocking=false
+            mDeleteAppWithParent=false
+            mAlwaysVisible=false
+            mCrossProfileContentSharingStrategy=0
+            mProfileApiVisibility=0
+            mItemsRestrictedOnHomeScreen=false
+            mShowInUserSwitcher=1
+        mDefaultRestrictions: 
+            null
+        mProfileParentRequired: false
+        mIconBadge: 0
+        mBadgePlain: 0
+        mBadgeNoBackground: 0
+        mStatusBarIcon: 0
+        mBadgeLabels.length: 0(null)
+        mBadgeColors.length: 0(null)
+        mDarkThemeBadgeColors.length: 0(null)
+        mLabels.length: 0(null)
+        mActivitiesAllowlist: 0
+        mActivitiesAllowlistMode: 0 (ALLOWLIST_MODE_0)
+    android.os.usertype.profile.CLONE: 
+        mName: android.os.usertype.profile.CLONE
+        mBaseType: PROFILE
+        mEnabled: true
+        mMaxAllowed: 4
+        mMaxAllowedPerParent: 1
+        mDefaultUserInfoFlags: 0
+        UserProperties:
+            mPropertiesPresent=11111111111111111111
+            mShowInLauncher=0
+            mStartWithParent=true
+            mShowInSettings=0
+            mInheritDevicePolicy=1
+            mUseParentsContacts=true
+            mUpdateCrossProfileIntentFiltersOnOTA=true
+            mCrossProfileIntentFilterAccessControl=10
+            mCrossProfileIntentResolutionStrategy=1
+            mMediaSharedWithParent=true
+            mCredentialShareableWithParent=true
+            mAuthAlwaysRequiredToDisableQuietMode=false
+            mAllowStoppingUserWithDelayedLocking=false
+            mDeleteAppWithParent=true
+            mAlwaysVisible=false
+            mCrossProfileContentSharingStrategy=1
+            mProfileApiVisibility=0
+            mItemsRestrictedOnHomeScreen=false
+            mShowInUserSwitcher=1
+        mDefaultRestrictions: 
+            null
+        mProfileParentRequired: true
+        mIconBadge: 17302537
+        mBadgePlain: 17302536
+        mBadgeNoBackground: 17302536
+        mStatusBarIcon: 0
+        mBadgeLabels.length: 1
+        mBadgeColors.length: 1
+        mDarkThemeBadgeColors.length: 1
+        mLabels.length: 1
+        mActivitiesAllowlist: 0
+        mActivitiesAllowlistMode: 0 (ALLOWLIST_MODE_0)
+
+Allowlisted packages per user type
+  Mode: 13 (enforced) (implicit)
+  Legend
+    0 -> android.os.usertype.full.DEMO
+    1 -> android.os.usertype.full.GUEST
+    2 -> android.os.usertype.full.RESTRICTED
+    3 -> android.os.usertype.full.SECONDARY
+    4 -> android.os.usertype.full.SYSTEM
+    5 -> android.os.usertype.profile.CLONE
+    6 -> android.os.usertype.profile.COMMUNAL
+    7 -> android.os.usertype.profile.MANAGED
+    8 -> android.os.usertype.profile.PRIVATE
+    9 -> android.os.usertype.profile.SUPERVISING
+    10 -> android.os.usertype.profile.TEST
+    11 -> android.os.usertype.system.HEADLESS
+  206 packages:
+    com.android.internal.display.cutout.emulation.noCutout: 0 1 2 3 4 
+    com.google.android.networkstack.tethering: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.cts.priv.ctsshim: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.internal.display.cutout.emulation.corner: 0 1 2 3 4 
+    com.android.internal.display.cutout.emulation.double: 0 1 2 3 4 
+    com.android.providers.telephony: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.theme.color.amethyst: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.theme.icon.pebble: 0 1 2 3 4 5 6 7 8 9 10 
+    com.google.android.cellbroadcastservice: 0 1 2 3 4 11 
+    com.android.providers.calendar: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.internal.systemui.navbar.gestural_wide_back: 0 1 2 3 4 
+    com.android.theme.color.sand: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.wallpapercropper: 0 1 2 3 4 
+    com.android.theme.icon.vessel: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.theme.color.cinnamon: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.theme.icon_pack.victor.settings: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.virtualdevicemanager: 0 1 2 3 4 
+    com.android.theme.icon_pack.rounded.systemui: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.theme.icon.taperedrect: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.documentsui: 0 1 2 3 4 6 7 8 9 10 11 
+    com.android.crossdevicesync: 0 1 2 3 4 11 
+    com.android.externalstorage: 0 1 2 3 4 7 8 11 
+    com.google.android.telecomui: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.companiondevicemanager: 0 1 2 3 4 7 8 
+    com.android.quicksearchbox: 0 1 2 3 4 6 7 9 10 11 
+    com.android.providers.downloads: 0 1 2 3 4 7 8 11 
+    com.android.messaging: 0 1 2 3 4 6 7 9 10 
+    com.google.android.health.connect.backuprestore: 0 1 2 3 4 
+    com.google.android.soundpicker: 0 1 2 3 4 7 8 
+    com.android.theme.icon_pack.rounded.android: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.internal.systemui.onehanded.gestural: 0 1 2 3 4 
+    com.google.android.trichromelibrary: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.google.android.signature: 0 1 2 3 4 6 7 8 9 10 
+    com.android.multiuser: 0 1 2 3 4 
+    com.android.theme.icon_pack.victor.systemui: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.theme.icon_pack.circular.themepicker: 0 1 2 3 4 5 6 7 8 9 10 
+    com.google.android.configupdater: 0 1 2 3 4 11 
+    com.google.android.providers.media.module: 0 1 2 3 4 6 7 8 9 10 11 
+    com.android.contactspicker: 0 1 2 3 4 7 8 
+    com.android.avatarpicker: 0 1 2 3 4 
+    com.android.theme.color.tangerine: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.eyedropper: 0 1 2 3 4 5 7 8 
+    com.android.providers.downloads.ui: 0 1 2 3 4 7 8 
+    com.google.android.hotspot2.osulogin: 0 1 2 3 4 11 
+    com.android.pacprocessor: 4 11 
+    com.google.android.adservices.api: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.theme.color.aquamarine: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.internal.display.cutout.emulation.hole: 0 1 2 3 4 
+    com.android.internal.display.cutout.emulation.tall: 0 1 2 3 4 
+    com.android.modulemetadata: 0 1 2 3 4 7 11 
+    com.android.certinstaller: 0 1 2 3 4 7 
+    com.android.theme.color.black: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.carrierconfig: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.google.android.marvin.talkback: 0 1 2 3 4 
+    com.android.theme.color.green: 0 1 2 3 4 5 6 7 8 9 10 
+    com.google.android.apps.accessibility.voiceaccess: 0 1 2 3 4 
+    com.android.theme.color.ocean: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.theme.color.space: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.internal.systemui.navbar.threebutton: 0 1 2 3 4 
+    android: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.hotwordenrollment.xgoogle: 0 1 2 3 4 
+    com.android.contacts: 0 1 2 3 4 6 7 8 9 10 
+    com.android.camera2: 0 1 2 3 4 6 7 8 9 10 
+    com.android.theme.icon_pack.rounded.launcher: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.appsearch.aiseal.config: 4 11 
+    com.android.theme.icon_pack.kai.settings: 0 1 2 3 4 5 6 7 8 9 10 
+    com.google.android.sdksandbox: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.egg: 0 1 2 3 4 
+    com.android.mtp: 0 1 2 3 4 7 11 
+    com.android.nfc: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.ons: 0 1 2 3 4 7 8 11 
+    com.android.stk: 0 1 2 3 4 6 7 9 10 11 
+    com.android.launcher3: 0 1 2 3 4 11 
+    com.android.backupconfirm: 0 1 2 3 4 7 
+    com.android.internal.systemui.navbar.twobutton: 0 1 2 3 4 
+    com.android.statementservice: 4 11 
+    com.google.android.as: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.theme.icon_pack.sam.settings: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.calendar: 0 1 2 3 4 6 7 9 10 
+    com.android.internal.systemui.navbar.gestural_extra_wide_back: 0 1 2 3 4 
+    com.android.systemui.accessibility.accessibilitymenu: 0 1 2 3 4 
+    com.google.android.permissioncontroller: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.theme.icon_pack.kai.themepicker: 0 1 2 3 4 5 6 7 8 9 10 
+    com.google.android.bluetooth: 0 1 2 3 4 11 
+    com.android.providers.settings: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.sharedstoragebackup: 0 1 2 3 4 7 
+    com.android.theme.icon_pack.victor.launcher: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.printspooler: 0 1 2 3 4 5 7 8 
+    com.android.hotwordenrollment.okgoogle: 0 1 2 3 4 
+    com.android.theme.icon_pack.filled.settings: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.dreams.basic: 0 1 2 3 4 
+    com.google.android.as.oss: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.theme.icon_pack.kai.systemui: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.webview: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.se: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.google.android.apps.wellbeing: 0 1 2 3 4 7 
+    com.android.bips: 0 1 2 3 4 5 7 8 
+    com.android.theme.icon_pack.circular.settings: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.privatespace: 8 
+    com.google.android.appsearch.apk: 4 11 
+    com.android.theme.icon_pack.sam.systemui: 0 1 2 3 4 5 6 7 8 9 10 
+    com.google.android.modulemetadata: 0 1 2 3 4 7 11 
+    com.google.android.avatarpicker: 0 1 2 3 4 
+    com.google.android.markup: 0 1 2 3 4 7 
+    com.android.cellbroadcastreceiver: 0 1 2 3 4 11 
+    com.google.android.webview: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.theme.icon.teardrop: 0 1 2 3 4 5 6 7 8 9 10 
+    com.google.android.rkpdapp: 4 11 
+    com.android.server.telecom: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.theme.icon_pack.rounded.themepicker: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.keychain: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.chrome: 0 1 2 3 4 7 8 
+    com.android.printservice.recommendation: 0 1 2 3 4 5 7 8 
+    com.android.dialer: 0 1 2 3 4 6 7 9 10 11 
+    com.android.gallery3d: 0 1 2 3 4 6 7 9 10 
+    com.android.theme.icon_pack.filled.systemui: 0 1 2 3 4 5 6 7 8 9 10 
+    com.google.android.packageinstaller: 0 1 2 3 4 5 7 8 11 
+    com.google.android.apps.customization.pixel: 0 1 2 3 4 
+    com.google.android.gms: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.google.android.gsf: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.google.android.nfc: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.google.android.tag: 0 1 2 3 4 5 6 7 8 9 10 
+    com.google.android.tts: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.calllogbackup: 0 1 2 3 4 7 8 11 
+    com.android.cameraextensions: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.localtransport: 0 1 2 3 4 7 
+    com.android.carrierdefaultapp: 0 1 2 3 4 11 
+    com.android.credentialmanager: 0 1 2 3 4 5 7 8 
+    com.android.theme.icon_pack.sam.android: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.theme.font.notoserifsource: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.DeviceAsWebcam: 4 
+    com.android.theme.icon_pack.filled.android: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.proxyhandler: 4 11 
+    com.google.android.safetycenter.resources: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.internal.display.cutout.emulation.waterfall: 0 1 2 3 4 
+    com.android.intentresolver: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.theme.icon_pack.circular.systemui: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.inputmethod.latin: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.internal.systemui.navbar.transparent: 0 1 2 3 4 
+    com.android.providers.contactkeys: 0 1 2 3 4 
+    com.google.android.connectivity.resources: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.google.android.printservice.recommendation: 0 1 2 3 4 5 7 8 
+    com.android.theme.icon_pack.kai.android: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.managedprovisioning: 0 1 2 3 4 7 11 
+    com.android.soundpicker: 0 1 2 3 4 7 8 
+    com.google.android.accessibility.switchaccess: 0 1 2 3 4 
+    com.google.mainline.telemetry: 0 1 2 3 4 7 11 
+    com.android.theme.icon_pack.kai.launcher: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.devicediagnostics: 0 1 2 3 4 11 
+    com.android.providers.partnerbookmarks: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.role.notes.enabled: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.wallpaper.livepicker: 0 1 2 3 4 
+    com.android.apps.tag: 0 1 2 3 4 5 6 7 8 9 10 
+    com.google.mainline.adservices: 0 1 2 3 4 7 11 
+    com.android.imsserviceentitlement: 0 1 2 3 4 11 
+    com.android.theme.icon_pack.sam.launcher: 0 1 2 3 4 5 6 7 8 9 10 
+    com.google.android.telecomresources: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.google.android.healthconnect.controller: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.internal.display.cutout.emulation.avoidAppsInCutout: 0 1 2 3 4 
+    com.android.theme.icon.squircle: 0 1 2 3 4 5 6 7 8 9 10 
+    com.google.android.gms.supervision: 0 1 2 3 4 
+    com.google.android.webapp.service: 0 1 2 3 4 
+    com.android.theme.icon_pack.victor.android: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.theme.color.palette: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.settings: 0 1 2 3 4 5 7 8 9 
+    com.android.theme.icon_pack.filled.launcher: 0 1 2 3 4 5 6 7 8 9 10 
+    com.google.android.settings.intelligence: 0 1 2 3 4 7 8 
+    com.google.android.apps.pulse: 4 11 
+    com.google.android.uwb.resources: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.cts.ctsshim: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.theme.color.carbon: 0 1 2 3 4 5 6 7 8 9 10 
+    com.google.android.wifi.resources: 0 1 2 3 4 11 
+    com.google.android.wifi.dialog: 0 1 2 3 4 11 
+    com.android.theme.icon_pack.circular.launcher: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.wallpaper: 0 1 2 3 4 
+    com.android.vpndialogs: 0 1 2 3 4 5 7 8 
+    com.google.android.apps.wallpaper: 0 1 2 3 4 
+    com.google.android.odad: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.phone: 0 1 2 3 4 5 7 8 9 11 
+    com.android.shell: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.theme.icon_pack.filled.themepicker: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.wallpaperbackup: 0 1 2 3 4 
+    com.android.providers.blockednumber: 0 1 2 3 4 7 
+    com.android.emergency: 0 1 2 3 4 
+    com.android.internal.systemui.navbar.gestural: 0 1 2 3 4 
+    com.android.location.fused: 0 1 2 3 4 5 7 8 11 
+    com.android.theme.icon_pack.victor.themepicker: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.theme.color.orchid: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.deskclock: 0 1 2 3 4 
+    com.android.systemui: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.theme.color.purple: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.bluetoothmidiservice: 0 1 2 3 4 5 7 8 
+    com.android.traceur: 0 1 2 3 4 
+    com.google.android.cellbroadcastreceiver: 0 1 2 3 4 11 
+    com.android.theme.icon_pack.sam.themepicker: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.bluetooth: 0 1 2 3 4 6 7 9 10 11 
+    com.android.wallpaperpicker: 0 1 2 3 4 
+    com.android.providers.contacts: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.android.theme.icon.roundedrect: 0 1 2 3 4 5 6 7 8 9 10 
+    com.android.internal.systemui.navbar.gestural_narrow_back: 0 1 2 3 4 
+    com.android.devicelockcontroller: 0 1 2 3 4 5 6 7 8 9 10 11 
+    com.google.android.photopicker: 0 1 2 3 4 6 7 8 9 10 11 
+    com.android.theme.icon_pack.rounded.settings: 0 1 2 3 4 5 6 7 8 9 10 
+    com.google.android.inputmethod.latin: 0 1 2 3 4 5 7 8 9 
+    com.android.theme.icon_pack.circular.android: 0 1 2 3 4 5 6 7 8 9 10 
+    com.google.android.apps.restore: 0 1 2 3 4 7 
+  No errors
+  78 warnings
+    com.android.internal.display.cutout.emulation.noCutout is allowlisted but not present.
+    com.android.theme.color.amethyst is allowlisted but not present.
+    com.android.theme.icon.pebble is allowlisted but not present.
+    com.android.internal.systemui.navbar.gestural_wide_back is allowlisted but not present.
+    com.android.theme.color.sand is allowlisted but not present.
+    com.android.theme.icon.vessel is allowlisted but not present.
+    com.android.theme.color.cinnamon is allowlisted but not present.
+    com.android.theme.icon_pack.victor.settings is allowlisted but not present.
+    com.android.virtualdevicemanager is allowlisted but not present.
+    com.android.theme.icon_pack.rounded.systemui is allowlisted but not present.
+    com.android.theme.icon.taperedrect is allowlisted but not present.
+    com.android.documentsui is allowlisted but not present.
+    com.android.crossdevicesync is allowlisted but not present.
+    com.android.quicksearchbox is allowlisted but not present.
+    com.android.messaging is allowlisted but not present.
+    com.android.theme.icon_pack.rounded.android is allowlisted but not present.
+    com.android.internal.systemui.onehanded.gestural is allowlisted but not present.
+    com.android.multiuser is allowlisted but not present.
+    com.android.theme.icon_pack.victor.systemui is allowlisted but not present.
+    com.android.theme.icon_pack.circular.themepicker is allowlisted but not present.
+    com.android.avatarpicker is allowlisted but not present.
+    com.android.theme.color.tangerine is allowlisted but not present.
+    com.android.theme.color.aquamarine is allowlisted but not present.
+    com.android.modulemetadata is allowlisted but not present.
+    com.android.theme.color.black is allowlisted but not present.
+    com.android.theme.color.green is allowlisted but not present.
+    com.android.theme.color.ocean is allowlisted but not present.
+    com.android.theme.color.space is allowlisted but not present.
+    com.android.hotwordenrollment.xgoogle is allowlisted but not present.
+    com.android.contacts is allowlisted but not present.
+    com.android.theme.icon_pack.rounded.launcher is allowlisted but not present.
+    com.android.theme.icon_pack.kai.settings is allowlisted but not present.
+    com.android.launcher3 is allowlisted but not present.
+    com.android.statementservice is allowlisted but not present.
+    com.android.theme.icon_pack.sam.settings is allowlisted but not present.
+    com.android.calendar is allowlisted but not present.
+    com.android.internal.systemui.navbar.gestural_extra_wide_back is allowlisted but not present.
+    com.android.theme.icon_pack.kai.themepicker is allowlisted but not present.
+    com.android.theme.icon_pack.victor.launcher is allowlisted but not present.
+    com.android.hotwordenrollment.okgoogle is allowlisted but not present.
+    com.android.theme.icon_pack.filled.settings is allowlisted but not present.
+    com.android.theme.icon_pack.kai.systemui is allowlisted but not present.
+    com.android.webview is allowlisted but not present.
+    com.android.theme.icon_pack.circular.settings is allowlisted but not present.
+    com.android.theme.icon_pack.sam.systemui is allowlisted but not present.
+    com.android.theme.icon.teardrop is allowlisted but not present.
+    com.android.theme.icon_pack.rounded.themepicker is allowlisted but not present.
+    com.android.printservice.recommendation is allowlisted but not present.
+    com.android.dialer is allowlisted but not present.
+    com.android.gallery3d is allowlisted but not present.
+    com.android.theme.icon_pack.filled.systemui is allowlisted but not present.
+    com.android.theme.icon_pack.sam.android is allowlisted but not present.
+    com.android.theme.icon_pack.filled.android is allowlisted but not present.
+    com.android.theme.icon_pack.circular.systemui is allowlisted but not present.
+    com.android.inputmethod.latin is allowlisted but not present.
+    com.android.theme.icon_pack.kai.android is allowlisted but not present.
+    com.android.theme.icon_pack.kai.launcher is allowlisted but not present.
+    com.android.apps.tag is allowlisted but not present.
+    com.android.theme.icon_pack.sam.launcher is allowlisted but not present.
+    com.android.internal.display.cutout.emulation.avoidAppsInCutout is allowlisted but not present.
+    com.android.theme.icon.squircle is allowlisted but not present.
+    com.android.theme.icon_pack.victor.android is allowlisted but not present.
+    com.android.theme.color.palette is allowlisted but not present.
+    com.android.theme.icon_pack.filled.launcher is allowlisted but not present.
+    com.android.theme.color.carbon is allowlisted but not present.
+    com.android.theme.icon_pack.circular.launcher is allowlisted but not present.
+    com.android.theme.icon_pack.filled.themepicker is allowlisted but not present.
+    com.android.theme.icon_pack.victor.themepicker is allowlisted but not present.
+    com.android.theme.color.orchid is allowlisted but not present.
+    com.android.deskclock is allowlisted but not present.
+    com.android.theme.color.purple is allowlisted but not present.
+    com.android.theme.icon_pack.sam.themepicker is allowlisted but not present.
+    com.android.bluetooth is allowlisted but not present.
+    com.android.wallpaperpicker is allowlisted but not present.
+    com.android.theme.icon.roundedrect is allowlisted but not present.
+    com.android.internal.systemui.navbar.gestural_narrow_back is allowlisted but not present.
+    com.android.theme.icon_pack.rounded.settings is allowlisted but not present.
+    com.android.theme.icon_pack.circular.android is allowlisted but not present.
+
+Non-compliant events:
+  3 apps called getMainUser()
+    UID 1000 (shared): 1 calls
+    UID 1001 (shared): 2 calls
+    UID 10190 (com.android.systemui): 1 calls
+  
+  1 apps called isMainUser()
+    UID 1000 (shared): 4 calls
+  
+  0 apps made Context calls on system process without explicit user:
+  
+  0 apps had context storage issues (limit 10/UID):

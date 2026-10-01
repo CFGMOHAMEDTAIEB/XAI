@@ -1,5 +1,6 @@
 import {Injectable,computed,signal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
+import {HttpErrorResponse} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {firstValueFrom} from 'rxjs';
 import {environment} from '../../environments/environment';
@@ -10,6 +11,7 @@ export class AuthService {
   private readonly refreshKey='xai_refresh_token';
   private readonly value=signal<string|null>(sessionStorage.getItem(this.key));
   private refreshing:Promise<string>|null=null;
+  private mfaChallenge:string|null=null;
   private generation=0;
   readonly token=this.value.asReadonly();
   readonly authenticated=computed(()=>this.value()!==null);
@@ -26,9 +28,24 @@ export class AuthService {
     return firstValueFrom(this.http.post<{verification_required:boolean}>(`${environment.apiUrl}/auth/register`,{full_name,email,phone_number,password}));
   }
   async login(email:string,password:string,totp?:string){
-    const r=await firstValueFrom(this.http.post<AuthToken>(`${environment.apiUrl}/auth/login`,{email,password,totp_code:totp||null}));
-    this.save(r.access_token,r.refresh_token);
+    this.mfaChallenge=null;
+    try{
+      const r=await firstValueFrom(this.http.post<AuthToken>(`${environment.apiUrl}/auth/login`,{email,password,totp_code:totp||null}));
+      this.save(r.access_token,r.refresh_token);return r;
+    }catch(error){
+      const detail=(error as HttpErrorResponse)?.error?.detail;
+      if((error as HttpErrorResponse)?.status===401&&typeof detail==='object'&&typeof detail?.mfa_token==='string')this.mfaChallenge=detail.mfa_token;
+      throw error;
+    }
   }
+  hasMfaChallenge(){return !!this.mfaChallenge}
+  async verifyMfa(code:string){
+    if(!this.mfaChallenge)throw new Error('MFA session expired');
+    const r=await firstValueFrom(this.http.post<AuthToken>(`${environment.apiUrl}/auth/login/mfa/verify`,{mfa_token:this.mfaChallenge,code}));
+    this.mfaChallenge=null;this.save(r.access_token,r.refresh_token);return r;
+  }
+  completeEnrollment(r:AuthToken){if(!r.mfa_enabled||!r.refresh_token)throw new Error('Enrollment incomplete');this.save(r.access_token,r.refresh_token)}
+  cancelMfa(){this.mfaChallenge=null}
   refresh():Promise<string>{
     if(this.refreshing)return this.refreshing;
     const generation=this.generation;
@@ -46,11 +63,13 @@ export class AuthService {
     return this.refreshing;
   }
   logout(){
+    this.mfaChallenge=null;
     const refresh_token=sessionStorage.getItem(this.refreshKey);
     this.clearSession();
     if(refresh_token)this.http.post(`${environment.apiUrl}/auth/logout`,{refresh_token}).subscribe({error:()=>{}});
   }
   clearSession(){
+    this.mfaChallenge=null;
     this.generation++;
     sessionStorage.removeItem(this.key);sessionStorage.removeItem(this.refreshKey);
     this.value.set(null);void this.router.navigateByUrl('/login');

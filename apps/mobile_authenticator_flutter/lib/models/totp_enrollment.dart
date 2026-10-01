@@ -38,7 +38,7 @@ class TotpEnrollment {
     final label = Uri.decodeComponent(uri.pathSegments.join('/'));
     final labelParts = label.split(':');
     final issuer = (uri.queryParameters['issuer'] ??
-            (labelParts.length > 1 ? labelParts.first : 'XAI-Compress'))
+            (labelParts.length > 1 ? labelParts.first : 'XAICD'))
         .trim();
     final account =
         labelParts.length > 1 ? labelParts.sublist(1).join(':') : label;
@@ -88,7 +88,7 @@ class TotpEnrollment {
         digits: digits,
         period: period,
         enrolledAt: DateTime.now().toUtc(),
-        managed: issuer.toUpperCase() == 'XAI',
+        managed: {'XAI', 'XAICD'}.contains(issuer.toUpperCase()),
         displayName: displayName,
       );
 }

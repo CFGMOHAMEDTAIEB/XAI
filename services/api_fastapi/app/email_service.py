@@ -37,25 +37,25 @@ def send_verification_code(recipient: str, code: str) -> None:
     """Send only the email challenge, never TOTP material. No provider bodies escape."""
     if verification_configuration_missing():
         raise VerificationEmailError('Verification email is not configured; contact support')
-    text = (f'Your XAI Compress MFA verification code is {code}. It expires in at most 10 minutes. '
-            'Enter it in the XAI application where you started MFA setup. Never share this code. '
+    text = (f'Your XAICD MFA verification code is {code}. It expires in at most 10 minutes. '
+            'Enter it in the XAICD application where you started MFA setup. Never share this code. '
             'If you did not request this, ignore this email.')
     if settings.email_provider in ('smtp','mailpit'):
         message=EmailMessage()
         message['From']=formataddr((settings.smtp_from_name,settings.smtp_from))
         message['To']=recipient
-        message['Subject']='XAI Compress MFA verification'
+        message['Subject']='XAICD MFA verification'
         message['Message-ID']=make_msgid()
         message.set_content(text)
         _send_smtp_message(message)
         return
     if settings.email_provider == 'brevo':
         _send_brevo({'sender': {'email': settings.brevo_sender_email, 'name': settings.brevo_sender_name},
-                     'to': [{'email': recipient}], 'subject': 'XAI Compress MFA verification',
+                     'to': [{'email': recipient}], 'subject': 'XAICD MFA verification',
                      'textContent': text})
         return
     body = {'from': settings.resend_from_email, 'to': [recipient],
-            'subject': 'XAI Authenticator verification',
+            'subject': 'XAICD Authenticator verification',
             'text': text}
     _send_resend(body)
 
@@ -77,26 +77,67 @@ def send_account_email(recipient: str, code: str|None, purpose: str) -> None:
                   'html':html_content})
 
 
+def send_share_notification(recipient: str, filename: str, code: str, expires_at,
+                            sender_identity: str|None = None) -> str:
+    """Notify the assigned recipient without claiming external inbox delivery."""
+    if verification_configuration_missing():
+        raise VerificationEmailError('Share notification email is not configured')
+    expiry = expires_at.strftime('%d %b %Y at %H:%M UTC')
+    subject = 'XAICD — You received a secure file'
+    sender_text = f'Sender: {sender_identity}\n' if sender_identity else ''
+    sender_html = (f'<p style="line-height:1.6"><strong>Sender:</strong> '
+                   f'{html.escape(sender_identity)}</p>') if sender_identity else ''
+    text = (f'XAICD\n\nA secure file has been shared with this account.\n\n'
+            f'File: {filename}\n{sender_text}Expires: {expiry}\nShare code: {code}\n\n'
+            'Open XAICD, go to Secure sharing, and enter this code in "Receive a file".\n\n'
+            'Security notice: this code grants access to the shared file. Do not share it with anyone else. '
+            'If you were not expecting this share, ignore this message.')
+    html_content = (f'<!doctype html><html><body style="margin:0;background:#f8fafc;color:#172033;font-family:Arial,sans-serif">'
+        f'<div style="max-width:560px;margin:24px auto;padding:28px;background:#fff;border:1px solid #dbe3ee;border-radius:12px">'
+        f'<div style="font-size:18px;font-weight:700;color:#3154d5">XAICD</div>'
+        f'<h1 style="font-size:24px;margin:24px 0 12px">A secure file was shared with you</h1>'
+        f'<p style="line-height:1.6">A secure file has been shared with this account.</p>'
+        f'<p style="line-height:1.6"><strong>File:</strong> {html.escape(filename)}</p>'
+        f'{sender_html}'
+        f'<p style="line-height:1.6"><strong>Expires:</strong> {html.escape(expiry)}</p>'
+        f'<div style="margin:24px 0;padding:16px;background:#f1f5f9;border-radius:8px;font:700 24px/1.2 monospace;letter-spacing:3px;text-align:center">{html.escape(code)}</div>'
+        f'<p style="line-height:1.6">Open XAICD, go to <strong>Secure sharing</strong>, and enter this code in <strong>Receive a file</strong>.</p>'
+        f'<p style="line-height:1.6;color:#4b5563"><strong>Security notice:</strong> this code grants access to the shared file. Do not share it with anyone else. If you were not expecting this share, ignore this message.</p>'
+        f'</div></body></html>')
+    if settings.email_provider in ('smtp','mailpit'):
+        message=EmailMessage();message['From']=formataddr((settings.smtp_from_name,settings.smtp_from))
+        message['To']=recipient;message['Subject']=subject;message['Message-ID']=make_msgid()
+        message.set_content(text);message.add_alternative(html_content,subtype='html')
+        _send_smtp_message(message)
+        return 'captured_by_mailpit' if settings.email_provider=='mailpit' else 'accepted_by_smtp'
+    if settings.email_provider=='brevo':
+        _send_brevo({'sender':{'email':settings.brevo_sender_email,'name':settings.brevo_sender_name},
+                     'to':[{'email':recipient}],'subject':subject,'textContent':text,'htmlContent':html_content})
+    else:
+        _send_resend({'from':settings.resend_from_email,'to':[recipient],'subject':subject,'text':text,'html':html_content})
+    return 'accepted_by_provider'
+
+
 def _account_email_template(purpose: str, code: str|None) -> tuple[str,str,str]:
     """Return matching plaintext and self-contained HTML account-security mail."""
     templates={
-        'ACCOUNT_EMAIL_VERIFY': ('Verify your XAI-Compress account','Account verification',
-            'Enter this code to verify your email and activate your XAI-Compress account.',
+        'ACCOUNT_EMAIL_VERIFY': ('Verify your XAICD account','Account verification',
+            'Enter this code to verify your email and activate your XAICD account.',
             'This code expires in 10 minutes. Never share it. If you did not create an account, ignore this email.'),
-        'PASSWORD_RESET': ('Reset your XAI-Compress password','Password reset',
-            'Enter this code in XAI-Compress to continue resetting your password.',
+        'PASSWORD_RESET': ('Reset your XAICD password','Password reset',
+            'Enter this code in XAICD to continue resetting your password.',
             'This code expires in 10 minutes. Never share it. If you did not request a reset, ignore this email.'),
-        'PASSWORD_RESET_SUCCESS': ('Your XAI-Compress password was changed','Password changed',
-            'Your XAI-Compress password was changed successfully.',
+        'PASSWORD_RESET_SUCCESS': ('Your XAICD password was changed','Password changed',
+            'Your XAICD password was changed successfully.',
             'If you did not make this change, contact support immediately to recover your account.')}
     subject,heading,intro,notice=templates[purpose]
     code_line=f'\n\nCode: {code}' if code is not None else ''
-    text=f'XAI-Compress\n\n{heading}\n\n{intro}{code_line}\n\n{notice}'
+    text=f'XAICD\n\n{heading}\n\n{intro}{code_line}\n\n{notice}'
     code_html=(f'<div style="margin:24px 0;padding:16px;background:#f1f5f9;border-radius:8px;'
                f'font:700 30px/1.2 monospace;letter-spacing:6px;text-align:center">{html.escape(code)}</div>') if code is not None else ''
     html_content=(f'<!doctype html><html><body style="margin:0;background:#f8fafc;color:#172033;font-family:Arial,sans-serif">'
         f'<div style="max-width:560px;margin:24px auto;padding:28px;background:#fff;border:1px solid #dbe3ee;border-radius:12px">'
-        f'<div style="font-size:18px;font-weight:700;color:#3154d5">XAI-Compress</div>'
+        f'<div style="font-size:18px;font-weight:700;color:#3154d5">XAICD</div>'
         f'<h1 style="font-size:24px;margin:24px 0 12px">{html.escape(heading)}</h1>'
         f'<p style="line-height:1.6">{html.escape(intro)}</p>{code_html}'
         f'<p style="line-height:1.6;color:#4b5563">{html.escape(notice)}</p>'
@@ -168,8 +209,8 @@ def send_delivery_smoke_test(recipient: str, email_settings=settings) -> str:
     return _send_brevo({
         'sender': {'email': email_settings.brevo_sender_email, 'name': email_settings.brevo_sender_name},
         'to': [{'email': recipient}],
-        'subject': 'XAI-Compress email delivery smoke test',
-        'textContent': ('This is an XAI-Compress email delivery smoke test. '
+        'subject': 'XAICD email delivery smoke test',
+        'textContent': ('This is an XAICD email delivery smoke test. '
                         'It is a non-production diagnostic message and requires no action.'),
     }, email_settings)
 
@@ -206,9 +247,9 @@ def send_smtp_artifact(path: Path, filename: str, recipient: str) -> dict:
     message = EmailMessage()
     message['From'] = formataddr((settings.smtp_from_name,settings.smtp_from))
     message['To'] = recipient
-    message['Subject'] = 'XAI Compress file attachment'
+    message['Subject'] = 'XAICD file attachment'
     message['Message-ID'] = make_msgid()
-    message.set_content('Attached is an XAI compressed file. Import it in XAI Inbox for validated decompression. '
+    message.set_content('Attached is an XAICD compressed file. Import it in XAICD Inbox for validated decompression. '
                         'Treat attachments as untrusted regardless of their sender.\n'
                         f'Attachment SHA-256: {hashlib.sha256(payload).hexdigest()}\n')
     message.add_attachment(payload, maintype='application', subtype='octet-stream', filename=filename)
@@ -238,8 +279,8 @@ def send_artifact(path: Path, filename: str, recipient: str) -> dict:
         payload = path.read_bytes()
         digest = hashlib.sha256(payload).hexdigest()
         message_id = _send_resend({'from': settings.resend_from_email, 'to': [recipient],
-            'subject': 'XAI E2E Compressed Artifact Test',
-            'text': 'XAI compressed attachment. Treat it as untrusted and validate before use. SHA-256: ' + digest,
+            'subject': 'XAICD E2E Compressed Artifact Test',
+            'text': 'XAICD compressed attachment. Treat it as untrusted and validate before use. SHA-256: ' + digest,
             'attachments': [{'filename': filename, 'content': base64.b64encode(payload).decode('ascii')}]})
         return {'email_delivery': 'accepted_by_provider', 'provider': 'resend', 'message_id': message_id,
                 'recipient_email': recipient, 'filename': filename, 'size': len(payload),
@@ -251,8 +292,8 @@ def send_artifact(path: Path, filename: str, recipient: str) -> dict:
     payload = path.read_bytes()
     digest = hashlib.sha256(payload).hexdigest()
     body = {'sender': {'email': settings.brevo_sender_email, 'name': settings.brevo_sender_name}, 'to': [{'email': recipient}],
-            'subject': 'XAI E2E Compressed Artifact Test',
-            'textContent': 'XAI compressed attachment. Treat it as untrusted and validate before use. SHA-256: ' + digest,
+            'subject': 'XAICD E2E Compressed Artifact Test',
+            'textContent': 'XAICD compressed attachment. Treat it as untrusted and validate before use. SHA-256: ' + digest,
             'attachment': [{'name': filename, 'content': base64.b64encode(payload).decode('ascii')}]}
     message_id = _send_brevo(body)
     return {'email_delivery': 'accepted_by_provider', 'provider': 'brevo', 'message_id': message_id,

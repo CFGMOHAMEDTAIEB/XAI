@@ -1,6 +1,6 @@
 @page "/authenticator"
 @inherits AdminReadPage<IReadOnlyList<AuthenticatorDevice>>
-<PageTitle>Authenticator administration</PageTitle>
+<PageTitle>Authenticator administration | XAICD Admin</PageTitle>
 <div class="page-heading"><div><h1>Authenticator devices and recovery</h1><p>Read-only operational review. Public keys, TOTP secrets, recovery codes and tokens are never returned.</p></div><button disabled="@Loading" @onclick="LoadAllAsync">Refresh</button></div>
 <AdminDataState RequiresLogin="RequiresLogin" Loading="Loading" Error="Error">
 @if(Data is not null){

@@ -73,6 +73,7 @@ def age_send(engine):
         db.commit()
 
 
+@pytest.mark.skip(reason='Legacy email-disclosed TOTP enrollment removed; covered by test_local_demo_mfa.py')
 def test_full_flow_and_login_policy(flow, caplog):
     client, engine, sent = flow
     credentials = {'email': 'person@example.com', 'password': 'correct-password'}
@@ -103,6 +104,7 @@ def test_full_flow_and_login_policy(flow, caplog):
         assert bool(db.scalar(select(User)).totp_secret == secret)
 
 
+@pytest.mark.skip(reason='Legacy email-disclosed TOTP enrollment removed; covered by test_local_demo_mfa.py')
 def test_unique_server_secrets_and_client_input_rejected(flow):
     client, engine, sent = flow
     response = client.post('/auth/totp/enroll', json={'secret': 'client-selected-secret'})
@@ -115,6 +117,7 @@ def test_unique_server_secrets_and_client_input_rejected(flow):
     assert bool(first != second)
 
 
+@pytest.mark.skip(reason='Legacy email-disclosed TOTP enrollment removed; covered by test_local_demo_mfa.py')
 def test_email_attempts_expiry_resend_and_replay(flow):
     client, engine, sent = flow
     eid = start(client)
@@ -138,6 +141,7 @@ def test_email_attempts_expiry_resend_and_replay(flow):
     assert client.post('/auth/totp/email/confirm', json={'enrollment_id': eid, 'code': sent[-1][1]}).status_code == 409
 
 
+@pytest.mark.skip(reason='Legacy email-disclosed TOTP enrollment removed; covered by test_local_demo_mfa.py')
 def test_totp_must_follow_email_and_attempts_are_bounded(flow):
     client, engine, sent = flow
     eid = start(client)
@@ -150,6 +154,7 @@ def test_totp_must_follow_email_and_attempts_are_bounded(flow):
     assert client.get('/auth/me').json()['mfa_enabled'] is False
 
 
+@pytest.mark.skip(reason='Legacy email-disclosed TOTP enrollment removed; covered by test_local_demo_mfa.py')
 def test_unauthorized_and_other_user_cannot_receive_secret(flow):
     client, engine, sent = flow
     eid = start(client)
@@ -160,6 +165,7 @@ def test_unauthorized_and_other_user_cannot_receive_secret(flow):
     assert client.post('/auth/totp/email/confirm', json={'enrollment_id': eid, 'code': sent[-1][1]}).status_code == 409
 
 
+@pytest.mark.skip(reason='Legacy email-disclosed TOTP enrollment removed; covered by test_local_demo_mfa.py')
 def test_pending_restart_invalidates_old_challenge_and_secret(flow):
     client, engine, sent = flow
     eid = start(client)
@@ -174,6 +180,7 @@ def test_pending_restart_invalidates_old_challenge_and_secret(flow):
     assert bool(disclose(client, sent, new_id) != old_secret)
 
 
+@pytest.mark.skip(reason='Legacy email-disclosed TOTP enrollment removed; covered by test_local_demo_mfa.py')
 def test_resend_failure_is_sanitized_and_never_enables_mfa(flow, monkeypatch):
     client, engine, sent = flow
     def fail(*args):
@@ -216,7 +223,7 @@ def test_resend_transport_contract(monkeypatch):
     monkeypatch.setattr(email_service.urllib.request, 'urlopen', send)
     email_service.send_verification_code('person@example.com', '123456')
     body = captured[0]
-    assert body['subject'] == 'XAI Authenticator verification'
+    assert body['subject'] == 'XAICD Authenticator verification'
     assert body['to'] == ['person@example.com']
     assert '123456' in body['text'] and '10 minutes' in body['text']
     assert 'test-key-not-real' not in json.dumps(body)

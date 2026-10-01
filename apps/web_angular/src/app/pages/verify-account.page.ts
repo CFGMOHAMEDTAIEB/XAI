@@ -6,7 +6,7 @@ import {firstValueFrom} from 'rxjs';
 import {environment} from '../../environments/environment';
 
 @Component({standalone:true,imports:[FormsModule,RouterLink],template:`
-<main class="auth-page"><section class="auth-card"><div class="logo" aria-hidden="true">XC</div>
+<main class="auth-page"><section class="auth-card"><div class="logo" aria-hidden="true">XD</div>
  <p class="eyebrow">Account security</p><h1>Verify your account</h1><p class="muted">We sent a 6-digit code to your email.</p>
  <form (ngSubmit)="verify()"><label for="verify-email">Email</label><input id="verify-email" type="email" name="email" [(ngModel)]="email" autocomplete="email" required [disabled]="busy()">
   <label for="verify-code">6-digit code</label><input id="verify-code" class="otp-input" name="code" [(ngModel)]="code" inputmode="numeric" maxlength="6" autocomplete="one-time-code" (input)="digitsOnly()" [disabled]="busy()">

@@ -51,7 +51,7 @@ class XaiAuthLayout extends StatelessWidget {
                                                   XaiColors.accent
                                                 ])),
                                         child: const Center(
-                                            child: Text('XC',
+                                            child: Text('XD',
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontWeight:

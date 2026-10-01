@@ -3,7 +3,7 @@ String accountDisplayName(Map<String, dynamic>? account) {
     final value = account?[key];
     if (value is String && value.trim().isNotEmpty) return value.trim();
   }
-  return 'XAI user';
+  return 'XAICD user';
 }
 
 String accountInitials(Map<String, dynamic>? account) {

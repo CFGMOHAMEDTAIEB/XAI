@@ -20,6 +20,10 @@ class LoginRequest(BaseModel):
     email: EmailStr
     password: str
     totp_code: str|None = None
+class MfaVerifyRequest(BaseModel):
+    model_config={'extra':'forbid','hide_input_in_errors':True}
+    mfa_token: str = Field(min_length=32,max_length=2048)
+    code: str = Field(pattern=r'^\d{6}$')
 class IdentifierRequest(BaseModel):
     identifier: str = Field(min_length=3,max_length=320)
 class VerificationSendRequest(IdentifierRequest): pass
@@ -39,6 +43,8 @@ class TokenResponse(BaseModel):
     access_token: str
     refresh_token: str|None = None
     token_type: str = 'bearer'
+    mfa_enabled: bool = False
+    enrollment_required: bool = False
 class RefreshRequest(BaseModel):
     refresh_token: str
 class FileCreate(BaseModel):

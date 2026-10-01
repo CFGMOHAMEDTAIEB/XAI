@@ -17,7 +17,7 @@ Future<void> main() async {
       size: Size(1220, 780),
       minimumSize: Size(900, 620),
       center: true,
-      title: 'XAI Compress');
+      title: 'XAICD');
   windowManager.waitUntilReadyToShow(options, () async {
     await windowManager.show();
     await windowManager.focus();
@@ -38,7 +38,7 @@ class DesktopApp extends StatelessWidget {
   Widget build(BuildContext c) => Consumer<AppState>(
       builder: (c, s, _) => MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: 'XAI Compress',
+          title: 'XAICD',
           themeMode: s.darkMode ? ThemeMode.dark : ThemeMode.light,
           theme: XaiTheme.light,
           darkTheme: XaiTheme.dark,

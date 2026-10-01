@@ -1,6 +1,6 @@
-﻿@page "/system"
+@page "/system"
 @inject PlatformApiClient Api
-<PageTitle>System readiness</PageTitle>
+<PageTitle>System readiness | XAICD Admin</PageTitle>
 <div class="page-heading"><div><h1>System readiness</h1><p>Read-only backend prerequisite checks. These do not verify end-to-end processing or email delivery.</p></div><button class="button" disabled="@_loading" @onclick="Load">Refresh</button></div>
 @if(_loading){<p role="status">Checking services...</p>}
 @if(_error is not null){<p role="alert">@_error</p>}

@@ -43,10 +43,10 @@ class LandingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = context.watch<AppState>();
     return XaiAuthLayout(
-        eyebrow: 'XAI secure identity',
+        eyebrow: 'XAICD secure identity',
         title: 'Authentication, simplified',
         subtitle:
-            'Create or access your XAI account and keep verification codes protected on this device.',
+            'Create or access your XAICD account and keep verification codes protected on this device.',
         child:
             Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           XaiButton(
@@ -315,11 +315,12 @@ class _EnrollmentScreenState extends State<EnrollmentScreen> {
     });
     try {
       final state = context.read<AppState>();
-      final data = await state.apiService.startAuthenticatorEnrollment();
+      final data = await state.apiService.claimMobileEnrollment();
       final id = data['enrollment_id'] as String;
       await state.provision(data['otpauth_uri'] as String, id,
           displayName: widget.fullName);
-      if (mounted) setState(() => enrollmentId = id);
+      state.openAuthenticator();
+      if (mounted) _resetTo(context, const HomeScreen());
     } on ApiException catch (e) {
       if (mounted) setState(() => error = e.message);
     } catch (_) {
@@ -332,49 +333,15 @@ class _EnrollmentScreenState extends State<EnrollmentScreen> {
     }
   }
 
-  Future<void> confirm() async {
-    final state = context.read<AppState>();
-    final account = state.accounts
-        .where((item) => item.id == 'xai-$enrollmentId')
-        .firstOrNull;
-    if (account == null) return;
-    setState(() {
-      busy = true;
-      error = null;
-    });
-    try {
-      final code = state.totpService.generate(account, now: state.now).code;
-      if (!await state.apiService
-          .confirmAuthenticatorEnrollment(enrollmentId!, code)) {
-        throw const ApiException('Authenticator confirmation failed.');
-      }
-      state.openAuthenticator();
-      if (mounted) _resetTo(context, const HomeScreen());
-    } on ApiException catch (e) {
-      if (mounted) setState(() => error = e.message);
-    } finally {
-      if (mounted) setState(() => busy = false);
-    }
-  }
-
   @override
   Widget build(BuildContext context) => XaiAuthLayout(
       eyebrow: 'Protected enrollment',
       title: 'Set up authenticator',
       subtitle:
-          'XAI generated this enrollment. The secret is stored only in secure device storage and codes are generated offline.',
+          'XAICD generated this enrollment. The secret is stored only in secure device storage and codes are generated offline.',
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         if (busy) const Center(child: CircularProgressIndicator()),
-        if (!busy && enrollmentId != null) ...[
-          const Icon(Icons.verified_user_outlined,
-              size: 54, color: XaiColors.success),
-          const SizedBox(height: 12),
-          const Text('Authenticator saved securely',
-              textAlign: TextAlign.center),
-          const SizedBox(height: 18),
-          XaiButton(label: 'Activate authenticator', onPressed: confirm)
-        ],
-        if (!busy && enrollmentId == null)
+        if (!busy)
           XaiButton(label: 'Retry enrollment', onPressed: start),
         AuthError(error),
       ]));
@@ -394,26 +361,37 @@ class _LoginScreenState extends State<LoginScreen> {
   String? error;
   Future<void> login() async {
     if (busy) return;
+    final state = context.read<AppState>();
     setState(() {
       busy = true;
       error = null;
     });
     try {
-      final state = context.read<AppState>();
-      await state.apiService.login(
+      final session=await state.apiService.login(
           email: email.text.trim(),
           password: password.text,
           totpCode: mfa ? totp.text : null);
       password.clear();
       totp.clear();
+      if(session.enrollmentRequired){
+        final data=await state.apiService.claimMobileEnrollment();
+        await state.provision(data['otpauth_uri'] as String,data['enrollment_id'] as String);
+      }
+      state.focusAccount(email.text.trim());
       state.openAuthenticator();
       if (mounted) _resetTo(context, const HomeScreen());
     } on ApiException catch (e) {
       if (mounted) {
         setState(() {
           if (e.message == 'MFA_REQUIRED') {
-            mfa = true;
-            error = null;
+            if(state.accounts.any((account)=>account.accountName.toLowerCase()==email.text.trim().toLowerCase())){
+              state.focusAccount(email.text.trim());
+              state.openAuthenticator();
+              _resetTo(context,const HomeScreen());
+              return;
+            }
+            mfa = false;
+            error = 'This account is already protected. Unlock its authenticator on the enrolled device.';
           } else {
             error =
                 mfa ? 'That authenticator code was not accepted.' : e.message;
@@ -427,11 +405,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) => XaiAuthLayout(
-      eyebrow: mfa ? 'Additional verification' : 'XAI secure identity',
+      eyebrow: mfa ? 'Additional verification' : 'XAICD secure identity',
       title: mfa ? 'Verify your identity' : 'Welcome back',
       subtitle: mfa
           ? 'Enter the current 6-digit code from your authenticator.'
-          : 'Sign in to your XAI account.',
+          : 'Sign in to your XAICD account.',
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         if (!mfa) ...[
           XaiTextField(
@@ -479,7 +457,7 @@ class _LoginScreenState extends State<LoginScreen> {
               onPressed: busy
                   ? null
                   : () => _replace(context, const RegistrationScreen()),
-              child: const Text('New to XAI? Create account'))
+              child: const Text('New to XAICD? Create account'))
         ],
         AuthError(error),
         if (busy) const LinearProgressIndicator(),

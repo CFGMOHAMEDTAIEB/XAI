@@ -6,6 +6,8 @@ param(
 
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'xai-common.ps1')
+$effectiveSkipDesktop = $SkipDesktop -or $env:XAI_SKIP_DESKTOP -eq '1'
+$effectiveNoBuild = $NoBuild -or $env:XAI_NO_BUILD -eq '1'
 $repoRoot = Get-XaiRepoRoot
 Set-Location $repoRoot
 Assert-XaiTools
@@ -34,7 +36,7 @@ foreach ($service in $ports.Keys) {
     }
 }
 
-if (-not $NoBuild) {
+if (-not $effectiveNoBuild) {
     & docker compose build clamav backend angular nextjs admin
     if ($LASTEXITCODE -ne 0) { throw 'One or more container images failed to build.' }
 }
@@ -66,14 +68,27 @@ Wait-XaiHttp -Url "http://localhost:$($ports.mailpit)" -TimeoutSeconds 120
 $runtimePath = Get-XaiRuntimePath -RepoRoot $repoRoot
 New-Item -ItemType Directory -Path $runtimePath -Force | Out-Null
 $runtime = [ordered]@{ startedAt=(Get-Date).ToUniversalTime().ToString('o'); processes=@() }
-if (-not $SkipDesktop) {
+$existingRuntime = Join-Path $runtimePath 'runtime.json'
+if (Test-Path -LiteralPath $existingRuntime) {
+    try {
+        $old = Get-Content -LiteralPath $existingRuntime -Raw | ConvertFrom-Json
+        foreach ($entry in @($old.processes)) {
+            $oldProcess = Get-Process -Id $entry.pid -ErrorAction SilentlyContinue
+            if (-not $oldProcess) { continue }
+            $expectedStart = [datetime]::Parse($entry.startedAt).ToUniversalTime()
+            if ([math]::Abs(($oldProcess.StartTime.ToUniversalTime() - $expectedStart).TotalSeconds) -le 2) {
+                $runtime.processes += $entry
+            }
+        }
+    } catch { Write-Warning 'Existing core runtime metadata was invalid; stale entries were ignored.' }
+}
+if (-not $effectiveSkipDesktop) {
     $devicesJson = & flutter.bat devices --machine 2>$null
     $windowsDevice = $null
     if ($LASTEXITCODE -eq 0 -and $devicesJson) {
         $windowsDevice = @($devicesJson | ConvertFrom-Json) | Where-Object { $_.id -eq 'windows' } | Select-Object -First 1
     }
     if ($windowsDevice) {
-        $existingRuntime = Join-Path $runtimePath 'runtime.json'
         $alreadyRunning = $false
         if (Test-Path -LiteralPath $existingRuntime) {
             try {
@@ -97,7 +112,7 @@ if (-not $SkipDesktop) {
 
 Write-Host ''
 Write-Host '========================================================'
-Write-Host '             XAI-COMPRESS LOCAL ENVIRONMENT'
+Write-Host '                 XAICD LOCAL ENVIRONMENT'
 Write-Host '========================================================'
 Write-Host "FastAPI:                http://localhost:$($ports.backend)"
 Write-Host "API documentation:      http://localhost:$($ports.backend)/docs"

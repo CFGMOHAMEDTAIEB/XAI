@@ -5,8 +5,8 @@ import {AuthService} from '../core/auth.service';
 
 @Component({standalone:true,imports:[FormsModule,RouterLink],template:`
 <main class="auth-page"><section class="auth-card" aria-labelledby="register-title">
- <div class="logo" aria-hidden="true">XC</div><p class="eyebrow">Create your workspace</p><h1 id="register-title">Create account</h1>
- <p class="muted">Create your account, then verify your email. You can add XAI Authenticator after signing in.</p>
+ <div class="logo" aria-hidden="true">XD</div><p class="eyebrow">Create your workspace</p><h1 id="register-title">Create account</h1>
+ <p class="muted">Create your account, then verify your email. You can add XAICD Authenticator after signing in.</p>
  <form (ngSubmit)="submit()" novalidate>
   <label for="register-name">Full name</label><input id="register-name" name="fullName" [(ngModel)]="fullName" autocomplete="name" required [disabled]="busy()">
   <label for="register-email">Email</label><input id="register-email" type="email" name="email" [(ngModel)]="email" autocomplete="email" required [disabled]="busy()">

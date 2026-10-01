@@ -61,7 +61,7 @@ class AppShell extends StatelessWidget {
                     style: TextStyle(
                         color: Colors.white, fontWeight: FontWeight.bold))),
             const SizedBox(width: 12),
-            const Text('XAI Compress',
+            const Text('XAICD',
                 style: TextStyle(fontSize: 19, fontWeight: FontWeight.w700)),
             const Spacer(),
             Text(accountDisplayName(s.account)),

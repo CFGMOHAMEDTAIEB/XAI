@@ -1,4 +1,4 @@
-# XAI-Compress integrated platform
+# XAICD integrated platform
 
 This monorepo combines the lossless XAI-Compress engine with a FastAPI API, PostgreSQL, Angular user portal, Next.js public site, .NET administration UI, ClamAV/YARA scanning, Flutter desktop client, and Flutter mobile authenticator.
 
@@ -42,6 +42,31 @@ All ports are configurable in the ignored `.env`; `.env.example` is the placehol
 Use the same `powershell.exe -NoProfile -ExecutionPolicy Bypass -File` prefix for any command if direct `.ps1` execution is restricted.
 
 Ordinary stop/restart preserves the named database, pgAdmin, scanner, and artifact volumes. Do not use `docker compose down -v` when data must survive.
+
+## One-click local launch
+
+From the repository root, start the core platform, Flutter Desktop, the existing Android emulator, and the Mobile Authenticator with:
+
+```powershell
+run-all.bat
+```
+
+Optional starts:
+
+```powershell
+run-all.bat -NoBrowser
+run-all.bat -NoMobile
+run-all.bat -NoDesktop
+```
+
+Inspect or stop only the platform and host processes recorded by this launcher:
+
+```powershell
+status-all.bat
+stop-all.bat
+```
+
+The first Flutter launch after generated files have been cleaned can take longer because dependencies and build outputs must be regenerated. The launcher reuses an online emulator, never wipes AVD data, retains Docker volumes, and does not stop a pre-existing emulator.
 
 ## Architecture and data flow
 

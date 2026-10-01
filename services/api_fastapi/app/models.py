@@ -119,7 +119,7 @@ class AuthChallenge(Base):
     device_id: Mapped[int] = mapped_column(ForeignKey('authenticator_devices.id'), index=True)
     nonce: Mapped[str] = mapped_column(String(96))
     number_hash: Mapped[str] = mapped_column(String(64))
-    application: Mapped[str] = mapped_column(String(120), default='XAI')
+    application: Mapped[str] = mapped_column(String(120), default='XAICD')
     request_context: Mapped[str] = mapped_column(Text, default='{}')
     status: Mapped[str] = mapped_column(String(24), default='pending', index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
@@ -133,7 +133,7 @@ class AuthEvent(Base):
     device_id: Mapped[int|None] = mapped_column(ForeignKey('authenticator_devices.id'), nullable=True, index=True)
     event_type: Mapped[str] = mapped_column(String(48), index=True)
     result: Mapped[str] = mapped_column(String(24))
-    application: Mapped[str] = mapped_column(String(120), default='XAI')
+    application: Mapped[str] = mapped_column(String(120), default='XAICD')
     details: Mapped[str] = mapped_column(Text, default='{}')
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
 

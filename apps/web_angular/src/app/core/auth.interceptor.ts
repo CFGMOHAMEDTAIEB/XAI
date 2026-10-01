@@ -6,7 +6,7 @@ import {environment} from '../../environments/environment';
 export const authInterceptor:HttpInterceptorFn=(req,next)=>{
   if(!req.url.startsWith(`${environment.apiUrl}/`))return next(req);
   const auth=inject(AuthService);
-  const anonymous=/\/auth\/(login|register|refresh|logout)$/.test(req.url);
+  const anonymous=/\/auth\/(login(?:\/mfa\/verify)?|register|refresh|logout)$/.test(req.url);
   const token=auth.token();
   const request=token&&!anonymous?req.clone({setHeaders:{Authorization:`Bearer ${token}`}}):req;
   const limit=/\/compression\/|\/download$/.test(req.url)?600000:40000;

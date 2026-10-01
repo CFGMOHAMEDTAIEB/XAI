@@ -27,7 +27,7 @@ class CompressScreen extends StatelessWidget {
                   style: Theme.of(c).textTheme.headlineMedium),
               const SizedBox(height: 6),
               const Text(
-                  'Use the cloud backend, or select an existing local engine mode.'),
+                  'XAICD automatically selects the validated lossless strategy.'),
               const SizedBox(height: 12),
               OutlinedButton(
                   onPressed: () => s.setPage(3),
@@ -38,25 +38,12 @@ class CompressScreen extends StatelessWidget {
                   onChanged: s.selectInput,
                   label: 'Input file'),
               const SizedBox(height: 18),
-              Row(children: [
-                DropdownButton<String>(
-                    value: s.mode,
-                    items: const [
-                      DropdownMenuItem(
-                          value: 'cloud', child: Text('Cloud Hybrid V3')),
-                      DropdownMenuItem(
-                          value: 'static', child: Text('Static Arithmetic')),
-                      DropdownMenuItem(
-                          value: 'neural', child: Text('Neural GRU'))
-                    ],
-                    onChanged: (v) => s.setMode(v!)),
-                const SizedBox(width: 18),
-                Expanded(
-                    child: OutlinedButton.icon(
-                        onPressed: () => out(c),
-                        icon: const Icon(Icons.save),
-                        label: Text(s.outputPath ?? 'Select output .xaic')))
-              ]),
+              SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                      onPressed: () => out(c),
+                      icon: const Icon(Icons.save),
+                      label: Text(s.outputPath ?? 'Select output .xaic'))),
               const SizedBox(height: 20),
               if (s.processing) ...[
                 const LinearProgressIndicator(),

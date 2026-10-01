@@ -2,8 +2,8 @@
 @inject PlatformApiClient Api
 @inject AdminSession Session
 @inject NavigationManager Navigation
-<PageTitle>Dashboard | XAI Admin</PageTitle>
-<div class="page-heading"><div><p class="eyebrow">Operational overview</p><h1>Dashboard</h1><p>Live account, compression and security records from the XAI platform API.</p></div><button class="button" disabled="@_loading" @onclick="LoadAsync">Refresh data</button></div>
+<PageTitle>Dashboard | XAICD Admin</PageTitle>
+<div class="page-heading"><div><p class="eyebrow">Operational overview</p><h1>Dashboard</h1><p>Live account, compression and security records from the XAICD platform API.</p></div><button class="button" disabled="@_loading" @onclick="LoadAsync">Refresh data</button></div>
 @if(!string.IsNullOrWhiteSpace(_error)){<div class="notice" role="alert">@_error</div>}
 else if(_loading||_stats is null){<div class="dashboard-skeleton" role="status"><span></span><span></span><span></span><span></span></div>}
 else{

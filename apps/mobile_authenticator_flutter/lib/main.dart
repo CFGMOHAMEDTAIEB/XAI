@@ -30,7 +30,7 @@ class XaiAuthenticatorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'XAI',
+      title: 'XAICD',
       debugShowCheckedModeBanner: false,
       theme: XaiTheme.light(),
       darkTheme: XaiTheme.dark(),

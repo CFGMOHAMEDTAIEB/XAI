@@ -1,6 +1,6 @@
-﻿@page "/jobs"
+@page "/jobs"
 @inherits AdminReadPage<IReadOnlyList<CompressionJob>>
-<PageTitle>Files and compression jobs</PageTitle>
+<PageTitle>Files and compression jobs | XAICD Admin</PageTitle>
 <div class="page-heading"><div><h1>Files and compression jobs</h1><p>Stored file records, modes, sizes and integrity flags. This is not a live worker queue.</p></div><button disabled="@Loading" @onclick="LoadAsync">Refresh</button></div>
 <AdminDataState RequiresLogin="RequiresLogin" Loading="Loading" Error="Error">
 @if(Data is not null){<section class="panel"><table><thead><tr><th>Job</th><th>File</th><th>User</th><th>Mode</th><th>Status</th><th>Sizes</th><th>Integrity</th></tr></thead><tbody>

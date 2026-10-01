@@ -1,0 +1,37 @@
+﻿**********************
+Début de la transcription Windows PowerShell
+Heure de début : 20260929105602
+Nom d'utilisateur : DESKTOP-RC6V9R6\ss
+Utilisateur runAs :  DESKTOP-RC6V9R6\ss
+Nom de la configuration : 
+Ordinateur : DESKTOP-RC6V9R6 (Microsoft Windows NT 10.0.19045.0)
+Application hôte : C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -Command try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
+$env:ANDROID_SDK_HOME='C:\Users\ss'; $env:ANDROID_USER_HOME='C:\Users\ss\.android'; $env:HOME='C:\Users\ss'; $adb='C:\Users\ss\AppData\Local\Android\sdk\platform-tools\adb.exe'; $dir='C:\Users\ss\Desktop\XAI\XAI\reports\mobile-ab-20260929'; Start-Transcript -Path "$dir\unlock-comparison.txt" -Force; & $adb -s emulator-5554 shell input keyevent KEYCODE_WAKEUP; & $adb -s emulator-5554 shell wm dismiss-keyguard; Start-Sleep -Seconds 3; & $adb -s emulator-5554 shell dumpsys user | Select-String 'State: RUNNING|Started users state'; & $adb -s emulator-5554 shell cmd package resolve-activity --brief -n com.example.xai_compress_authenticator/.MainActivity; & $adb -s emulator-5554 shell am start -W -n com.example.xai_compress_authenticator/.MainActivity; & $adb -s emulator-5554 shell pidof com.example.xai_compress_authenticator; & $adb -s emulator-5554 shell dumpsys activity activities | Select-String 'Resumed.*xai|mResumedActivity.*xai'; & $adb -s emulator-5554 shell dumpsys window policy | Select-String 'secure|keyguard|showing' | Select-Object -First 20; Stop-Transcript
+ID de processus : 9176
+PSVersion: 5.1.19041.7725
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.19041.7725
+BuildVersion: 10.0.19041.7725
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcription démarrée, le fichier de sortie est C:\Users\ss\Desktop\XAI\XAI\reports\mobile-ab-20260929\unlock-comparison.txt
+
+
+
+    State: RUNNING_LOCKED
+  Started users state: [0=RUNNING_LOCKED]
+
+
+
+    mKeyguardOccluded=false mPendingKeyguardOccluded=false
+    KeyguardServiceDelegate
+      showing=true
+      simSecure=false
+      deviceHasKeyguard=true
+**********************
+Fin de la transcription Windows PowerShell
+Heure de fin : 20260929105615
+**********************

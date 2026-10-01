@@ -105,7 +105,7 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      appBar: AppBar(title: const Text('XAI account and secure files')),
+      appBar: AppBar(title: const Text('XAICD account and secure files')),
       body: SingleChildScrollView(
           padding: const EdgeInsets.all(28),
           child: ConstrainedBox(
@@ -147,7 +147,7 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
                               : 'Create account')),
                     ] else ...[
                       const Text(
-                          'Open the portal Security page to generate a short-lived QR code, then scan it with XAI Authenticator. Future logins require TOTP after activation.'),
+                          'Open the portal Security page to generate a short-lived QR code, then scan it with XAICD Authenticator. Future logins require TOTP after activation.'),
                       FilledButton(
                           onPressed: busy ? null : () => run(history),
                           child: const Text('Cloud history and downloads')),

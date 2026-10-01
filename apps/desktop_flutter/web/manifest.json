@@ -1,6 +1,6 @@
 {
-    "name": "xai_compress_desktop",
-    "short_name": "xai_compress_desktop",
+    "name": "XAICD Desktop",
+    "short_name": "XAICD",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

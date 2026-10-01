@@ -1,6 +1,6 @@
 {
-    "name": "xai_compress_authenticator",
-    "short_name": "xai_compress_authenticator",
+    "name": "XAICD Authenticator",
+    "short_name": "XAICD Authenticator",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

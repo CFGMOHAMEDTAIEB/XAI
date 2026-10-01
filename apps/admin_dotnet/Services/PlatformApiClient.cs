@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using XaiCompress.Admin.Models;
 
@@ -12,11 +13,13 @@ public sealed class AdminApiAuthorizationException(HttpStatusCode statusCode)
     public HttpStatusCode StatusCode { get; } = statusCode;
 }
 public sealed class AdminMfaRequiredException() : Exception("An authenticator code is required.");
+public sealed class AdminEnrollmentRequiredException() : Exception("Authenticator enrollment is required.");
 
 public sealed class PlatformApiClient
 {
     private readonly HttpClient _http;
     private readonly AdminSession _session;
+    private string? _mfaToken, _enrollmentToken, _enrollmentId;
 
     public PlatformApiClient(HttpClient http, AdminSession session)
     {
@@ -27,13 +30,19 @@ public sealed class PlatformApiClient
     public async Task LoginAsync(string email, string password, string? totpCode = null)
     {
         _session.Clear();
+        ClearPending();
         using var loginResponse = await _http.PostAsJsonAsync(
             "/auth/login", new { email, password, totp_code = totpCode });
 
         if (loginResponse.StatusCode is HttpStatusCode.Unauthorized)
         {
-            var error = await loginResponse.Content.ReadFromJsonAsync<ApiError>();
-            if (error?.Detail == "Valid TOTP code required") throw new AdminMfaRequiredException();
+            using var error = await JsonDocument.ParseAsync(await loginResponse.Content.ReadAsStreamAsync());
+            var detail = error.RootElement.GetProperty("detail");
+            if (detail.ValueKind == JsonValueKind.Object && detail.TryGetProperty("mfa_token", out var challenge))
+            {
+                _mfaToken = challenge.GetString();
+                throw new AdminMfaRequiredException();
+            }
             throw new AdminApiAuthorizationException(loginResponse.StatusCode);
         }
         if (loginResponse.StatusCode is HttpStatusCode.Forbidden)
@@ -44,7 +53,57 @@ public sealed class PlatformApiClient
             ?? throw new InvalidOperationException("The backend did not return an access token.");
         if (string.IsNullOrWhiteSpace(token.AccessToken)) throw new InvalidOperationException("The backend did not return an access token.");
 
-        // Verify the role before retaining the token in this Blazor circuit.
+        if (token.EnrollmentRequired)
+        {
+            using var accountRequest = CreateAuthorizedRequest(HttpMethod.Get, "/auth/me", token.AccessToken);
+            using var accountResponse = await _http.SendAsync(accountRequest);
+            accountResponse.EnsureSuccessStatusCode();
+            using var account = await JsonDocument.ParseAsync(await accountResponse.Content.ReadAsStreamAsync());
+            if (!string.Equals(account.RootElement.GetProperty("role").GetString(), "admin", StringComparison.OrdinalIgnoreCase))
+                throw new AdminApiAuthorizationException(HttpStatusCode.Forbidden);
+            _enrollmentToken = token.AccessToken;
+            using var start = CreateAuthorizedRequest(HttpMethod.Post, "/auth/authenticator/enroll/start", _enrollmentToken);
+            start.Content = JsonContent.Create(new { });
+            using var startResponse = await _http.SendAsync(start);
+            startResponse.EnsureSuccessStatusCode();
+            using var pending = await JsonDocument.ParseAsync(await startResponse.Content.ReadAsStreamAsync());
+            _enrollmentId = pending.RootElement.GetProperty("enrollment_id").GetString();
+            throw new AdminEnrollmentRequiredException();
+        }
+        await EstablishAdminSessionAsync(token);
+    }
+
+    public async Task VerifyMfaAsync(string code)
+    {
+        if (string.IsNullOrEmpty(_mfaToken)) throw new AdminApiAuthorizationException(HttpStatusCode.Unauthorized);
+        using var response = await _http.PostAsJsonAsync("/auth/login/mfa/verify", new { mfa_token = _mfaToken, code });
+        if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.BadRequest)
+            throw new AdminApiAuthorizationException(HttpStatusCode.Unauthorized);
+        response.EnsureSuccessStatusCode();
+        var token = await response.Content.ReadFromJsonAsync<TokenEnvelope>() ?? throw new InvalidOperationException("Missing token.");
+        await EstablishAdminSessionAsync(token);
+        ClearPending();
+    }
+
+    public async Task ConfirmEnrollmentAsync(string code)
+    {
+        if (string.IsNullOrEmpty(_enrollmentToken) || string.IsNullOrEmpty(_enrollmentId))
+            throw new AdminApiAuthorizationException(HttpStatusCode.Unauthorized);
+        using var request = CreateAuthorizedRequest(HttpMethod.Post, "/auth/authenticator/enroll/confirm", _enrollmentToken);
+        request.Content = JsonContent.Create(new { enrollment_id = _enrollmentId, code });
+        using var response = await _http.SendAsync(request);
+        if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.Unauthorized)
+            throw new AdminApiAuthorizationException(HttpStatusCode.Unauthorized);
+        response.EnsureSuccessStatusCode();
+        var token = await response.Content.ReadFromJsonAsync<TokenEnvelope>() ?? throw new InvalidOperationException("Missing token.");
+        await EstablishAdminSessionAsync(token);
+        ClearPending();
+    }
+
+    public void ClearPending() { _mfaToken = null; _enrollmentToken = null; _enrollmentId = null; }
+
+    private async Task EstablishAdminSessionAsync(TokenEnvelope token)
+    {
         using var validation = CreateAuthorizedRequest(HttpMethod.Get, "/admin/stats", token.AccessToken);
         using var validationResponse = await _http.SendAsync(validation);
         if (validationResponse.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
@@ -56,6 +115,7 @@ public sealed class PlatformApiClient
 
     public async Task LogoutAsync()
     {
+        ClearPending();
         var refreshToken = _session.RefreshToken;
         _session.Clear();
         if (string.IsNullOrEmpty(refreshToken)) return;
@@ -129,6 +189,6 @@ public sealed class PlatformApiClient
     private sealed record PublicStatus(Dictionary<string, string>? Services);
 
     private sealed record TokenEnvelope([property: JsonPropertyName("access_token")] string AccessToken,
-        [property: JsonPropertyName("refresh_token")] string? RefreshToken);
-    private sealed record ApiError([property: JsonPropertyName("detail")] string Detail);
+        [property: JsonPropertyName("refresh_token")] string? RefreshToken,
+        [property: JsonPropertyName("enrollment_required")] bool EnrollmentRequired = false);
 }

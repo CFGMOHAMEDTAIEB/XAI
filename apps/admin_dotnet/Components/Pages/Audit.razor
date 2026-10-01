@@ -1,6 +1,6 @@
-﻿@page "/audit"
+@page "/audit"
 @inherits AdminReadPage<IReadOnlyList<AuditEvent>>
-<PageTitle>Audit logs</PageTitle>
+<PageTitle>Audit logs | XAICD Admin</PageTitle>
 <div class="page-heading"><div><h1>Audit trail</h1><p>Recorded administrative, authentication, sharing and file events. This is not a complete incident feed.</p></div><button disabled="@Loading" @onclick="LoadAsync">Refresh</button></div>
 <AdminDataState RequiresLogin="RequiresLogin" Loading="Loading" Error="Error">
 @if(Data is not null){<section class="panel"><table><thead><tr><th>Time</th><th>Actor</th><th>Action</th><th>Resource</th><th>Result</th><th>Source</th></tr></thead><tbody>

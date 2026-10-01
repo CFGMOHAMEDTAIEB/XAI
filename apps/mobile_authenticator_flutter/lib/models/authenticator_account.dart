@@ -48,7 +48,7 @@ class AuthenticatorAccount {
   factory AuthenticatorAccount.fromJson(Map<String, dynamic> json) {
     return AuthenticatorAccount(
       id: json['id'] as String,
-      issuer: json['issuer'] as String? ?? 'XAI-Compress',
+      issuer: json['issuer'] as String? ?? 'XAICD',
       accountName: json['accountName'] as String? ?? 'Account',
       secret: json['secret'] as String,
       algorithm: json['algorithm'] as String? ?? 'SHA1',

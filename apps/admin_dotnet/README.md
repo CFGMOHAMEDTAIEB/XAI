@@ -1,6 +1,6 @@
-# XAI-Compress Admin Console (.NET)
+# XAICD Admin Console (.NET)
 
-Blazor Server administrative and security console for the XAI-Compress platform.
+Blazor Server administrative and security console for the XAICD platform.
 
 ## Included screens
 

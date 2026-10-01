@@ -1,6 +1,6 @@
 @page "/email"
 @inherits AdminReadPage<EmailConfiguration>
-<PageTitle>Email configuration</PageTitle>
+<PageTitle>Email configuration | XAICD Admin</PageTitle>
 <div class="page-heading"><h1>Email configuration</h1><button disabled="@Loading" @onclick="LoadAsync">Refresh</button></div>
 <AdminDataState RequiresLogin="RequiresLogin" Loading="Loading" Error="Error">
 @if(Data is not null){

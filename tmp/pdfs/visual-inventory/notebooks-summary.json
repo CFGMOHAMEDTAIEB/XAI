@@ -1,0 +1,206 @@
+{
+  "total_files": 377,
+  "unique_hashes": 25,
+  "groups": [
+    {
+      "sha256": "5e8e132359c8914a490fa39e23c5e0c6e29ad6bcf6ffc79b94c8ad40ccc72338",
+      "copies": 20,
+      "representative": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\.kaggle_activation_v2\\XAI-Compress\\XAI_Compress_Complete_Analysis.ipynb",
+      "cells": 32,
+      "outputs": 21,
+      "image_outputs": 8
+    },
+    {
+      "sha256": "07ede12042e411f1ae173bf70b7a0400a41411fe430647268e30f4fcfd37ffec",
+      "copies": 17,
+      "representative": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\.kaggle_activation_v2\\XAI-Compress\\notebooks\\10_compression_comparison.ipynb",
+      "cells": 4,
+      "outputs": 0,
+      "image_outputs": 0
+    },
+    {
+      "sha256": "0df99fdcef5e9bbf8c47a859fbfb4788281b32f50d02a691a35f33af44fa1c01",
+      "copies": 17,
+      "representative": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\.kaggle_activation_v2\\XAI-Compress\\notebooks\\12_memory_gpu_benchmark.ipynb",
+      "cells": 4,
+      "outputs": 0,
+      "image_outputs": 0
+    },
+    {
+      "sha256": "100b91a148d3b236cee1cd42b9a4b86eba4b59f63e453e6c16c75745b3af30dd",
+      "copies": 17,
+      "representative": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\.kaggle_activation_v2\\XAI-Compress\\notebooks\\06_model_architecture.ipynb",
+      "cells": 4,
+      "outputs": 0,
+      "image_outputs": 0
+    },
+    {
+      "sha256": "1be2e6a47458b26ac08a42881a8994d45a91605bd2c3b285b808dbbf522ba5af",
+      "copies": 17,
+      "representative": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\.kaggle_activation_v2\\XAI-Compress\\notebooks\\PhD_Interview_XAI_Compress_Visual_Explanation.ipynb",
+      "cells": 41,
+      "outputs": 20,
+      "image_outputs": 6
+    },
+    {
+      "sha256": "1ff9c45b79aa140df261cf1864958697c76da455a1a36acad79556139fb12b9b",
+      "copies": 17,
+      "representative": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\.kaggle_activation_v2\\XAI-Compress\\notebooks\\11_speed_benchmark.ipynb",
+      "cells": 4,
+      "outputs": 0,
+      "image_outputs": 0
+    },
+    {
+      "sha256": "2a3024b3c8dbc4bd1fa9b465ea07b1f16c391745e21d18d4b362d48c8d2fb0d9",
+      "copies": 17,
+      "representative": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\.kaggle_activation_v2\\XAI-Compress\\notebooks\\09_model_comparison.ipynb",
+      "cells": 4,
+      "outputs": 0,
+      "image_outputs": 0
+    },
+    {
+      "sha256": "2e4d9c8b244c290419affc9da765f258c1a2c73ee2e28b8249a7a6886edd39a8",
+      "copies": 17,
+      "representative": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\.kaggle_activation_v2\\XAI-Compress\\notebooks\\14_error_analysis.ipynb",
+      "cells": 4,
+      "outputs": 0,
+      "image_outputs": 0
+    },
+    {
+      "sha256": "30eae3820b117198a6b53cd2bb05443dbf0c83f388de2dc8d01d53569937a54a",
+      "copies": 17,
+      "representative": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\.kaggle_activation_v2\\XAI-Compress\\notebooks\\08_training_evolution.ipynb",
+      "cells": 4,
+      "outputs": 0,
+      "image_outputs": 0
+    },
+    {
+      "sha256": "3d009bfb870a03137d7b6d833d113c1dd54d2b69d8666f19679d3c127bd2a5b7",
+      "copies": 17,
+      "representative": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\.kaggle_activation_v2\\XAI-Compress\\notebooks\\16_complete_pipeline.ipynb",
+      "cells": 4,
+      "outputs": 0,
+      "image_outputs": 0
+    },
+    {
+      "sha256": "3ea3789908b008585b8bd183267fc35372c2fa526600ecbb30575ca727aeab57",
+      "copies": 17,
+      "representative": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\.kaggle_activation_v2\\XAI-Compress\\notebooks\\xai_compress_research.ipynb",
+      "cells": 8,
+      "outputs": 0,
+      "image_outputs": 0
+    },
+    {
+      "sha256": "41b2772342066d7959374ae4ead4a031013a3699ae80288dc8d6231ef7b554e9",
+      "copies": 17,
+      "representative": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\.kaggle_activation_v2\\XAI-Compress\\notebooks\\00_kaggle_setup.ipynb",
+      "cells": 8,
+      "outputs": 0,
+      "image_outputs": 0
+    },
+    {
+      "sha256": "5d88283da68155bbe44595e897f46308c335af081880604b21db3be26281a4ba",
+      "copies": 17,
+      "representative": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\.kaggle_activation_v2\\XAI-Compress\\notebooks\\13_ablation_study.ipynb",
+      "cells": 4,
+      "outputs": 0,
+      "image_outputs": 0
+    },
+    {
+      "sha256": "a274f87133c6503d7b248827f980f8769ed18b5d02a1e66f82cc2109b2a2cac9",
+      "copies": 17,
+      "representative": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\.kaggle_activation_v2\\XAI-Compress\\notebooks\\15_final_results.ipynb",
+      "cells": 4,
+      "outputs": 0,
+      "image_outputs": 0
+    },
+    {
+      "sha256": "a64bcf73ca2403bcc8bcc6d39699428f26e7daf4ed9f87d5761fe230c0168fb9",
+      "copies": 17,
+      "representative": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\.kaggle_activation_v2\\XAI-Compress\\notebooks\\02_dataset_analysis.ipynb",
+      "cells": 4,
+      "outputs": 0,
+      "image_outputs": 0
+    },
+    {
+      "sha256": "c8f4db425ee0af886205b62eb2f3a32a10e9886f5247910c128ad56b60f21175",
+      "copies": 17,
+      "representative": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\.kaggle_activation_v2\\XAI-Compress\\notebooks\\04_entropy_analysis.ipynb",
+      "cells": 4,
+      "outputs": 0,
+      "image_outputs": 0
+    },
+    {
+      "sha256": "d0e79ea9eadcca0d64801900841afe4d5d7a9762d84fb733b281a94e33995e50",
+      "copies": 17,
+      "representative": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\.kaggle_activation_v2\\XAI-Compress\\notebooks\\03_data_preprocessing.ipynb",
+      "cells": 4,
+      "outputs": 0,
+      "image_outputs": 0
+    },
+    {
+      "sha256": "dcbba6b44484be817d61432c1ef1142f94319ac5b6ee2d502965f66a371cd48a",
+      "copies": 17,
+      "representative": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\.kaggle_activation_v2\\XAI-Compress\\notebooks\\07_training_process.ipynb",
+      "cells": 4,
+      "outputs": 0,
+      "image_outputs": 0
+    },
+    {
+      "sha256": "e03537bde3612e3247a17a43adde109e8407883a2027d7dcd0bb6c05eec09aa7",
+      "copies": 17,
+      "representative": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\.kaggle_activation_v2\\XAI-Compress\\notebooks\\05_baseline_model.ipynb",
+      "cells": 4,
+      "outputs": 0,
+      "image_outputs": 0
+    },
+    {
+      "sha256": "e2b3de537d43bbf4d839110cb63710e97aa10046e093379a7593d4bf2cddc07e",
+      "copies": 17,
+      "representative": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\.kaggle_activation_v2\\XAI-Compress\\notebooks\\01_project_introduction.ipynb",
+      "cells": 4,
+      "outputs": 0,
+      "image_outputs": 0
+    },
+    {
+      "sha256": "9d6eefc011e53dd19405ea32af04e5c1689c4bc6dddc960df98c86faeed03477",
+      "copies": 15,
+      "representative": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\.kaggle_activation_v2\\XAI-Compress\\notebooks\\XAI_Compress_Final_Research_Analysis.ipynb",
+      "cells": 14,
+      "outputs": 0,
+      "image_outputs": 0
+    },
+    {
+      "sha256": "5f2c48b04d42fd40d6f4a22f3c98148ce9d00d1fd43da55b33825bd44b15bcf6",
+      "copies": 14,
+      "representative": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\.kaggle_activation_v2\\XAI-Compress\\notebooks\\XAI_Compress_Three_Model_Final_Analysis.ipynb",
+      "cells": 8,
+      "outputs": 0,
+      "image_outputs": 0
+    },
+    {
+      "sha256": "f03da3e13b97280aa1c95cbd44803e354fa687009dc9d6042a379be332ba11e8",
+      "copies": 3,
+      "representative": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\engines\\XAI-Compress\\.kaggle_build_auto\\notebooks\\XAI_Compress_Final_Project.ipynb",
+      "cells": 25,
+      "outputs": 0,
+      "image_outputs": 0
+    },
+    {
+      "sha256": "8858122f702f24c4d3f7347d39d189fc29c829842cf7659fb2093acd27bae187",
+      "copies": 1,
+      "representative": "C:\\Users\\ss\\Desktop\\XAI\\last-Pro-Report\\iput\\XAI_Compress_Model_Analysis.ipynb",
+      "cells": 24,
+      "outputs": 20,
+      "image_outputs": 9
+    },
+    {
+      "sha256": "c8d70305f40c2e2d76b07752ee5c3a8aaed151f0b78b5a278f4adeb17b09dc85",
+      "copies": 1,
+      "representative": "C:\\Users\\ss\\Desktop\\XAI\\XAI\\notebooks\\XAI_Compress_Model_Analysis.ipynb",
+      "cells": 24,
+      "outputs": 20,
+      "image_outputs": 9
+    }
+  ]
+}

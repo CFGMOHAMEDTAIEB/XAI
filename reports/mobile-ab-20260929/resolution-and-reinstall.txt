@@ -1,0 +1,32 @@
+﻿**********************
+Début de la transcription Windows PowerShell
+Heure de début : 20260929105526
+Nom d'utilisateur : DESKTOP-RC6V9R6\ss
+Utilisateur runAs :  DESKTOP-RC6V9R6\ss
+Nom de la configuration : 
+Ordinateur : DESKTOP-RC6V9R6 (Microsoft Windows NT 10.0.19045.0)
+Application hôte : C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -Command try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
+$env:ANDROID_SDK_HOME='C:\Users\ss'; $env:ANDROID_USER_HOME='C:\Users\ss\.android'; $env:HOME='C:\Users\ss'; $adb='C:\Users\ss\AppData\Local\Android\sdk\platform-tools\adb.exe'; $dir='C:\Users\ss\Desktop\XAI\XAI\reports\mobile-ab-20260929'; $pkg='com.example.xai_compress_authenticator'; Start-Transcript -Path "$dir\resolution-and-reinstall.txt" -Force; & $adb -s emulator-5554 shell cmd package resolve-activity --brief -n "$pkg/$pkg.MainActivity"; & $adb -s emulator-5554 shell cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -p $pkg; & $adb -s emulator-5554 shell cmd package resolve-activity --brief --query-flags 0xc0000 -n "$pkg/.MainActivity"; & $adb -s emulator-5554 shell am start -W -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -p $pkg; & $adb -s emulator-5554 uninstall $pkg; & $adb -s emulator-5554 install "$dir\comparison.apk"; & $adb -s emulator-5554 shell cmd package resolve-activity --brief -n "$pkg/.MainActivity"; & $adb -s emulator-5554 shell am start -W -n "$pkg/.MainActivity"; Stop-Transcript
+ID de processus : 29236
+PSVersion: 5.1.19041.7725
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.19041.7725
+BuildVersion: 10.0.19041.7725
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcription démarrée, le fichier de sortie est C:\Users\ss\Desktop\XAI\XAI\reports\mobile-ab-20260929\resolution-and-reinstall.txt
+
+
+
+
+
+
+
+
+**********************
+Fin de la transcription Windows PowerShell
+Heure de fin : 20260929105533
+**********************

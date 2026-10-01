@@ -12,9 +12,10 @@ class ApiException implements Exception {
 }
 
 class LoginResult {
-  const LoginResult({required this.email, required this.name});
+  const LoginResult({required this.email, required this.name,required this.enrollmentRequired});
   final String email;
   final String name;
+  final bool enrollmentRequired;
 }
 
 class ApiService {
@@ -90,7 +91,7 @@ class ApiService {
         try {
           final decoded = jsonDecode(response.body) as Map<String, dynamic>;
           final detail = decoded['detail'];
-          if (detail == 'Valid TOTP code required') {
+          if (detail == 'Valid TOTP code required'||detail is Map&&detail['message']=='Valid TOTP code required') {
             knownDetail = 'MFA_REQUIRED';
           }
         } catch (_) {}
@@ -138,7 +139,7 @@ class ApiService {
     }
     accessToken = data['access_token'] as String;
     _refreshToken = data['refresh_token'] as String?;
-    return LoginResult(email: email.trim().toLowerCase(), name: '');
+    return LoginResult(email: email.trim().toLowerCase(), name: '',enrollmentRequired:data['enrollment_required']==true);
   }
 
   Future<void> register(
@@ -158,6 +159,8 @@ class ApiService {
       true;
   Future<Map<String, dynamic>> startAuthenticatorEnrollment() =>
       _request('/auth/authenticator/enroll/start', body: {});
+  Future<Map<String, dynamic>> claimMobileEnrollment() =>
+      _request('/auth/authenticator/enroll/mobile', body: {});
   Future<bool> confirmAuthenticatorEnrollment(
           String enrollmentId, String code) async =>
       (await _request('/auth/authenticator/enroll/confirm',

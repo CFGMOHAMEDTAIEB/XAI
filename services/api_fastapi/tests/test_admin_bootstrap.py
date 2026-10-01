@@ -69,5 +69,10 @@ def test_admin_mfa_has_no_role_bypass(flow):
         user.totp_secret=secret;user.password_hash=hash_password(password);db.commit()
     payload={'email':'person@example.com','password':password}
     assert client.post('/auth/login',json=payload).status_code==401
+    assert client.post('/auth/login',json={**payload,'totp_code':'000000'}).status_code==401
     payload['totp_code']=pyotp.TOTP(secret).now()
-    assert client.post('/auth/login',json=payload).status_code==200
+    login=client.post('/auth/login',json=payload)
+    assert login.status_code==200
+    assert login.json()['mfa_enabled'] is True
+    client.headers['Authorization']='Bearer '+login.json()['access_token']
+    assert client.get('/admin/stats').status_code==200

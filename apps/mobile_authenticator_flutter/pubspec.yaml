@@ -1,5 +1,5 @@
 name: xai_compress_authenticator
-description: XAI-Compress mobile authenticator with TOTP, QR enrollment, secure storage and biometric lock.
+description: XAICD mobile authenticator with TOTP, QR enrollment, secure storage and biometric lock.
 publish_to: none
 version: 0.1.0+1
 

@@ -1,6 +1,6 @@
-﻿@page "/users/{Id:int}"
+@page "/users/{Id:int}"
 @inherits AdminReadPage<XaiCompress.Admin.Models.UserDetails>
-<PageTitle>User details</PageTitle>
+<PageTitle>User details | XAICD Admin</PageTitle>
 <div class="page-heading"><h1>User details</h1><button disabled="@Loading" @onclick="LoadAsync">Refresh</button></div>
 <a href="/users">Back to users</a>
 <AdminDataState RequiresLogin="RequiresLogin" Loading="Loading" Error="Error">

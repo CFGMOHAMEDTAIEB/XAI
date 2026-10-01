@@ -13,14 +13,24 @@ def keys():
     raw=private.public_key().public_bytes(serialization.Encoding.Raw,serialization.PublicFormat.Raw)
     return private,base64.b64encode(raw).decode()
 
-def test_qr_enrollment_is_short_lived_and_requires_first_totp(flow):
+def activate(client):
+    started=client.post('/auth/authenticator/enroll/start').json()
+    mobile=client.post('/auth/authenticator/enroll/mobile').json()
+    code=pyotp.parse_uri(mobile['otpauth_uri']).now()
+    confirmed=client.post('/auth/authenticator/enroll/confirm',json={'enrollment_id':started['enrollment_id'],'code':code})
+    assert confirmed.status_code==200
+    client.headers['Authorization']='Bearer '+confirmed.json()['access_token']
+    return started,code
+
+def test_no_qr_enrollment_is_short_lived_and_requires_first_totp(flow):
     client,engine,_=flow
     started=client.post('/auth/authenticator/enroll/start');assert started.status_code==200
-    data=started.json();uri=pyotp.parse_uri(data['otpauth_uri'])
-    assert data['expires_in_seconds']==600 and uri.issuer=='XAI'
+    data=started.json();assert 'otpauth_uri' not in data and 'qr_data_uri' not in data
+    mobile=client.post('/auth/authenticator/enroll/mobile').json();uri=pyotp.parse_uri(mobile['otpauth_uri'])
+    assert data['expires_in_seconds']<=1200 and uri.issuer=='XAICD'
     assert client.post('/auth/authenticator/enroll/confirm',json={'enrollment_id':data['enrollment_id'],'code':'000000'}).status_code==400
-    assert client.post('/auth/authenticator/enroll/confirm',json={'enrollment_id':data['enrollment_id'],'code':uri.now()}).json()=={'enabled':True}
-    assert client.post('/auth/authenticator/enroll/confirm',json={'enrollment_id':data['enrollment_id'],'code':uri.now()}).status_code==409
+    assert client.post('/auth/authenticator/enroll/confirm',json={'enrollment_id':data['enrollment_id'],'code':uri.now()}).json()['enabled'] is True
+    assert client.post('/auth/authenticator/enroll/confirm',json={'enrollment_id':data['enrollment_id'],'code':uri.now()}).status_code==401
 
 def test_expired_enrollment_rejected(flow):
     client,engine,_=flow;data=client.post('/auth/authenticator/enroll/start').json()
@@ -29,22 +39,22 @@ def test_expired_enrollment_rejected(flow):
         row=db.scalar(select(TotpEnrollment));row.expires_at=datetime.utcnow()-timedelta(seconds=1);db.commit()
     assert client.post('/auth/authenticator/enroll/confirm',json={'enrollment_id':data['enrollment_id'],'code':'123456'}).status_code==410
 
-def test_qr_totp_logout_and_relogin_end_to_end(flow):
+def test_mobile_totp_logout_and_relogin_end_to_end(flow):
     client,_,_=flow
     credentials={'email':'person@example.com','password':'correct-password'}
-    enrolled=client.post('/auth/authenticator/enroll/start').json()
-    code=pyotp.parse_uri(enrolled['otpauth_uri']).now()
-    assert client.post('/auth/authenticator/enroll/confirm',json={'enrollment_id':enrolled['enrollment_id'],'code':code}).json()=={'enabled':True}
-    assert client.post('/auth/login',json=credentials).status_code==401
-    first=client.post('/auth/login',json={**credentials,'totp_code':code})
+    _,code=activate(client)
+    challenge=client.post('/auth/login',json=credentials)
+    assert challenge.status_code==401
+    first=client.post('/auth/login/mfa/verify',json={'mfa_token':challenge.json()['detail']['mfa_token'],'code':code})
     assert first.status_code==200
     refresh=first.json()['refresh_token']
     assert client.post('/auth/logout',json={'refresh_token':refresh}).json()=={'logged_out':True}
     assert client.post('/auth/refresh',json={'refresh_token':refresh}).status_code==401
-    assert client.post('/auth/login',json={**credentials,'totp_code':pyotp.parse_uri(enrolled['otpauth_uri']).now()}).status_code==200
+    assert client.post('/auth/login',json={**credentials,'totp_code':code}).status_code==200
 
 def test_device_challenge_signature_number_replay_revoke_and_history(flow):
     client,engine,_=flow;private,public=keys();device_id='device_abcdefghijklmnopqrst'
+    activate(client)
     payload={'device_id':device_id,'public_key':public,'platform':'android','app_version':'1.0.0'}
     assert client.post('/auth/devices',json=payload).status_code==200
     assert client.post('/auth/devices',json=payload).status_code==409
@@ -63,6 +73,7 @@ def test_device_challenge_signature_number_replay_revoke_and_history(flow):
 
 def test_expired_challenge_and_wrong_device_rejected(flow):
     client,engine,_=flow;_,public=keys();device_id='device_zabcdefghijklmnopqrs'
+    activate(client)
     client.post('/auth/devices',json={'device_id':device_id,'public_key':public,'platform':'ios','app_version':'1'})
     created=client.post('/auth/challenges',json={'device_id':device_id}).json()
     with Session(engine) as db:
@@ -72,6 +83,7 @@ def test_expired_challenge_and_wrong_device_rejected(flow):
 
 def test_admin_authenticator_views_never_return_sensitive_material(flow):
     client,engine,_=flow;_,public=keys();device_id='device_adminabcdefghijklmnop'
+    activate(client)
     assert client.post('/auth/devices',json={'device_id':device_id,'public_key':public,'platform':'android','app_version':'1'}).status_code==200
     client.post('/auth/recovery-codes')
     with Session(engine) as db:

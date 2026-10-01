@@ -29,7 +29,12 @@ def test_share_list_redeem_download_revoke_and_ownership(flow, tmp_path):
 
     client.headers['Authorization']='Bearer '+recipient_token
     assert client.get(f'/files/{file_id}/download').status_code==404
-    assert client.post('/shares/redeem',json={'code':code}).status_code==200
+    redeemed=client.post('/shares/redeem',json={'code':code})
+    assert redeemed.status_code==200
+    assert redeemed.json()=={
+        'file':{'name':'owned.bin.xaic','size':16},
+        'sender':{'name':'Test Person','email':'person@example.com'},
+        'expires_at':created.json()['expires_at'],'remaining_downloads':2,'max_downloads':2}
     assert client.post('/shares/download',json={'code':code}).status_code==200
     assert client.post(f"/shares/{item['id']}/revoke").status_code==404
 
@@ -50,5 +55,26 @@ def test_expired_and_exhausted_shares_are_denied(flow, tmp_path):
         row=db.query(ShareCode).one();row.expires_at=datetime.utcnow()-timedelta(seconds=1);db.commit()
     assert client.get('/shares').json()[0]['status']=='expired'
     client.headers['Authorization']='Bearer '+recipient_token
-    assert client.post('/shares/redeem',json={'code':code}).status_code==404
-    assert client.post('/shares/download',json={'code':code}).status_code==404
+    assert client.post('/shares/redeem',json={'code':code}).status_code==410
+    assert client.post('/shares/download',json={'code':code}).status_code==410
+
+    client.headers['Authorization']=owner_token
+    exhausted_code=client.post('/shares',json={'file_id':file_id,'recipient_email':'recipient@example.com','expires_minutes':60,'max_downloads':1}).json()['share_code']
+    client.headers['Authorization']='Bearer '+recipient_token
+    assert client.post('/shares/download',json={'code':exhausted_code}).status_code==200
+    assert client.post('/shares/redeem',json={'code':exhausted_code}).status_code==409
+    assert client.post('/shares/download',json={'code':exhausted_code}).status_code==409
+
+
+def test_share_redemption_rejects_invalid_and_wrong_recipient_without_metadata(flow, tmp_path):
+    client,engine,sent=flow;owner_token=client.headers['Authorization'];file_id=add_artifact(engine,tmp_path)
+    recipient_token=register_and_login(client,sent,'recipient@example.com','+33612345679')
+    client.headers['Authorization']=owner_token
+    code=client.post('/shares',json={'file_id':file_id,'recipient_email':'recipient@example.com','expires_minutes':60}).json()['share_code']
+    wrong_token=register_and_login(client,sent,'wrong@example.com','+33612345670')
+    client.headers['Authorization']='Bearer '+wrong_token
+    unauthorized=client.post('/shares/redeem',json={'code':code})
+    assert unauthorized.status_code==403
+    assert 'file' not in unauthorized.json()
+    client.headers['Authorization']='Bearer '+recipient_token
+    assert client.post('/shares/redeem',json={'code':'XC-NOT-A-REAL-CODE'}).status_code==404

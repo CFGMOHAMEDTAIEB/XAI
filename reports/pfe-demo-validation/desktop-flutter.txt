@@ -1,0 +1,20 @@
+﻿**********************
+Début de la transcription Windows PowerShell
+Heure de début : 20260929122248
+Nom d'utilisateur : DESKTOP-RC6V9R6\ss
+Utilisateur runAs :  DESKTOP-RC6V9R6\ss
+Nom de la configuration : 
+Ordinateur : DESKTOP-RC6V9R6 (Microsoft Windows NT 10.0.19045.0)
+Application hôte : C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -Command try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
+Start-Transcript -Path 'C:\Users\ss\Desktop\XAI\XAI\reports\pfe-demo-validation\desktop-flutter.txt' -Force; flutter run -d windows --no-pub --dart-define=XAI_API_URL=http://localhost:18002; Stop-Transcript; exit $LASTEXITCODE
+ID de processus : 16168
+PSVersion: 5.1.19041.7725
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.19041.7725
+BuildVersion: 10.0.19041.7725
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcription démarrée, le fichier de sortie est C:\Users\ss\Desktop\XAI\XAI\reports\pfe-demo-validation\desktop-flutter.txt

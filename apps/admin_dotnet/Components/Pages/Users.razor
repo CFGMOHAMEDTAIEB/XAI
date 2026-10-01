@@ -1,6 +1,6 @@
-﻿@page "/users"
+@page "/users"
 @inherits AdminReadPage<IReadOnlyList<UserSummary>>
-<PageTitle>Users</PageTitle>
+<PageTitle>Users | XAICD Admin</PageTitle>
 <div class="page-heading"><div><h1>Users and access</h1><p>Review roles, MFA state and account status.</p></div><button disabled="@Loading" @onclick="LoadAsync">Refresh</button></div>
 <label>Search users<input class="search" @bind="_search" @bind:event="oninput" placeholder="Name or email" /></label>
 <AdminDataState RequiresLogin="RequiresLogin" Loading="Loading" Error="Error">

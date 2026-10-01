@@ -55,9 +55,9 @@ def pending(db, user, enrollment_id):
     return row
 
 
-def register_mfa_routes(app, current_user):
+def register_mfa_routes(app, current_user, status_user):
     @app.get('/auth/totp/status')
-    def status(response: Response, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    def status(response: Response, user: User = Depends(status_user), db: Session = Depends(get_db)):
         response.headers['Cache-Control'] = 'no-store'
         row = db.get(TotpEnrollment, user.id)
         state = 'enabled' if user.totp_enabled else 'not_configured'
@@ -118,7 +118,7 @@ def register_mfa_routes(app, current_user):
         enrollment_id = row.enrollment_id
         db.commit()  # Consume before returning: lost responses require explicit restart.
         return {'enrollment_id': enrollment_id, 'secret': secret,
-                'otpauth_uri': pyotp.TOTP(secret).provisioning_uri(name=user.email, issuer_name='XAI-Compress')}
+                'otpauth_uri': pyotp.TOTP(secret).provisioning_uri(name=user.email, issuer_name='XAICD')}
 
     @app.post('/auth/totp/confirm')
     def confirm(body: TotpConfirm, user: User = Depends(current_user), db: Session = Depends(get_db)):

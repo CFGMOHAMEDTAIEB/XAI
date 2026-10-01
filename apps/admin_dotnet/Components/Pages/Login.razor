@@ -4,13 +4,13 @@
 @inject AdminSession Session
 @inject NavigationManager Navigation
 
-<PageTitle>Sign in | XAI Admin</PageTitle>
+<PageTitle>Sign in | XAICD Admin</PageTitle>
 <section class="admin-login-card" aria-labelledby="admin-login-title">
     <header class="login-brand">
-        <span class="brand-mark" aria-hidden="true">XC</span>
-        <span class="login-brand-copy"><strong>XAI-Compress</strong><small>Administration Console</small></span>
+        <span class="brand-mark" aria-hidden="true">XD</span>
+        <span class="login-brand-copy"><strong>XAICD</strong><small>Administration Console</small></span>
     </header>
-    @if (!_mfaRequired)
+    @if (!_mfaRequired && !_enrollmentRequired)
     {
         <div class="login-heading"><p class="eyebrow">Authorized administrators only</p><h1 id="admin-login-title">Welcome back</h1><p>Secure access for authorized administrators.</p></div>
         <form class="admin-login-form" @onsubmit="SignIn" @onsubmit:preventDefault>
@@ -31,7 +31,7 @@
     }
     else
     {
-        <div class="login-heading"><p class="eyebrow">Additional verification</p><h1 id="admin-login-title">Verify your identity</h1><p>Enter the 6-digit code from XAI Authenticator.</p></div>
+        <div class="login-heading"><p class="eyebrow">@(_enrollmentRequired ? "First-time setup" : "Additional verification")</p><h1 id="admin-login-title">@(_enrollmentRequired ? "Set up XAICD Authenticator" : "Verify your identity")</h1><p>@(_enrollmentRequired ? "Sign in to the Android authenticator with this same account, then enter its current 6-digit code. No QR code is needed." : "Enter the 6-digit code from XAICD Authenticator.")</p></div>
         <form class="admin-login-form" @onsubmit="SignIn" @onsubmit:preventDefault>
             <div class="form-field">
                 <label for="admin-totp">Authenticator code</label>
@@ -47,15 +47,21 @@
 
 @code {
     private string _email = "", _password = "", _totp = "", _error = "";
-    private bool _busy, _mfaRequired, _showPassword;
+    private bool _busy, _mfaRequired, _enrollmentRequired, _showPassword;
     protected override void OnInitialized() { if (Session.IsAuthenticated) Navigation.NavigateTo("/"); }
-    private void Back() { _mfaRequired = false; _totp = ""; _password = ""; _error = ""; }
+    private void Back() { _mfaRequired = false; _enrollmentRequired = false; _totp = ""; _password = ""; _error = ""; Api.ClearPending(); }
     private async Task SignIn()
     {
         if (_busy) return; _busy = true; _error = "";
-        try { await Api.LoginAsync(_email, _password, _mfaRequired ? _totp : null); _password = ""; _totp = ""; Navigation.NavigateTo("/"); }
+        try {
+            if (_mfaRequired) await Api.VerifyMfaAsync(_totp);
+            else if (_enrollmentRequired) await Api.ConfirmEnrollmentAsync(_totp);
+            else await Api.LoginAsync(_email, _password);
+            _password = ""; _totp = ""; Navigation.NavigateTo("/");
+        }
         catch (AdminMfaRequiredException) { _mfaRequired = true; _totp = ""; }
-        catch (AdminApiAuthorizationException ex) { _error = ex.StatusCode == System.Net.HttpStatusCode.Forbidden ? "Access denied. This account is not authorized for administration." : (_mfaRequired ? "That code was not accepted. Enter the current 6-digit code and try again." : "Sign-in failed. Check your email and password."); if (!_mfaRequired) _password = ""; }
+        catch (AdminEnrollmentRequiredException) { _enrollmentRequired = true; _password = ""; _totp = ""; }
+        catch (AdminApiAuthorizationException ex) { _error = ex.StatusCode == System.Net.HttpStatusCode.Forbidden ? "Access denied. This account is not authorized for administration." : (_mfaRequired || _enrollmentRequired ? "Invalid verification code. Please try again." : "Sign-in failed. Check your email and password."); if (!_mfaRequired) _password = ""; }
         catch (OperationCanceledException) { _error = "Request timed out. Try again shortly."; }
         catch (HttpRequestException) { _error = "The service is unavailable. Try again shortly."; }
         catch (Exception) { _error = "Sign-in could not be completed. Try again."; }

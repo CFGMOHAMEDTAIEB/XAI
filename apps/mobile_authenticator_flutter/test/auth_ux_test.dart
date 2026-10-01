@@ -33,7 +33,7 @@ class FakeApi extends ApiService {
       resetDone = false;
   String verificationResult = 'ok';
   String? registeredName, registeredEmail, resetPasswordValue;
-  int resetRequests = 0, enrollmentStarts = 0, enrollmentConfirms = 0;
+  int resetRequests = 0, enrollmentStarts = 0;
   @override
   Future<void> register(
       {required String fullName,
@@ -55,7 +55,7 @@ class FakeApi extends ApiService {
       throw const ApiException('invalid', 401);
     }
     accessToken = 'offline-test';
-    return LoginResult(email: email, name: 'Test User');
+    return LoginResult(email: email, name: 'Test User', enrollmentRequired: false);
   }
 
   @override
@@ -81,10 +81,9 @@ class FakeApi extends ApiService {
   }
 
   @override
-  Future<bool> confirmAuthenticatorEnrollment(
-      String enrollmentId, String code) async {
-    enrollmentConfirms++;
-    return code.length == 6;
+  Future<Map<String, dynamic>> claimMobileEnrollment() async {
+    enrollmentStarts++;
+    return {'enrollment_id': '0123456789abcdef0123456789abcdef', 'otpauth_uri': testUri};
   }
 
   @override
@@ -181,14 +180,10 @@ void main() {
     await enter(tester, 'Verification code', '123456');
     await tap(tester, 'Verify email');
     await tester.pumpAndSettle();
-    expect(find.text('Set up authenticator'), findsOneWidget);
+    expect(find.byKey(const ValueKey('totp-code')), findsOneWidget);
     expect(api.enrollmentStarts, 1);
     expect(store.stored, hasLength(1));
     expect(store.writes, 1);
-    await tap(tester, 'Activate authenticator');
-    await tester.pumpAndSettle();
-    expect(api.enrollmentConfirms, 1);
-    expect(find.byKey(const ValueKey('totp-code')), findsOneWidget);
   });
 
   testWidgets('TOTP renders, refreshes at boundary, and copy uses current code',
@@ -225,8 +220,10 @@ void main() {
     expect(copied?.replaceAll(' ', ''), second?.replaceAll(' ', ''));
   });
 
-  testWidgets('login requests MFA, accepts TOTP, and logout returns to landing',
+  testWidgets('enrolled mobile account opens local TOTP and logout returns to landing',
       (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
     final api = FakeApi()..requireMfa = true;
     const account = AuthenticatorAccount(
         id: '1',
@@ -240,12 +237,8 @@ void main() {
     await enter(tester, 'Password', 'correct-password');
     await tap(tester, 'Login');
     await tester.pump();
-    expect(find.text('Verify your identity'), findsOneWidget);
-    await enter(tester, 'Authenticator code', '123456');
-    await tap(tester, 'Verify and login');
-    await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('totp-code')), findsOneWidget);
-    await tester.tap(find.byTooltip('Logout'));
+    tester.widget<IconButton>(find.ancestor(of: find.byTooltip('Logout'), matching: find.byType(IconButton))).onPressed!();
     await tester.pumpAndSettle();
     expect(api.loggedOut, isTrue);
     expect(find.text('Authentication, simplified'), findsOneWidget);

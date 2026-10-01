@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     public_base_url: str = 'http://localhost:8000'
     cors_origins: str = 'http://localhost:4200,http://localhost:3000,http://localhost:5050'
     storage_path: str = './storage'
-    selector_model_path: str = 'engines/XAI-Compress/checkpoints/selector_v2/best.json'
+    selector_model_path: str = 'engines/XAICD/checkpoints/selector_v2/best.json'
     refresh_token_days: int = 30
     account_verification_minutes: int = 10
     verification_resend_seconds: int = 60
@@ -29,7 +29,7 @@ class Settings(BaseSettings):
     email_provider: str = 'smtp'
     brevo_api_key: str = Field(default='', repr=False)
     brevo_sender_email: str = ''
-    brevo_sender_name: str = 'XAI Compress'
+    brevo_sender_name: str = 'XAICD'
     resend_api_key: str = Field(default='', repr=False)
     resend_from_email: str = ''
     smtp_host: str = ''
@@ -37,7 +37,7 @@ class Settings(BaseSettings):
     smtp_username: str = ''
     smtp_password: str = Field(default='', repr=False)
     smtp_from: str = ''
-    smtp_from_name: str = 'XAI Compress'
+    smtp_from_name: str = 'XAICD'
     smtp_security: str = 'starttls'
     smtp_timeout_seconds: int = 30
     smtp_max_attachment_bytes: int = 18000000
@@ -61,10 +61,10 @@ class Settings(BaseSettings):
         selector = Path(self.selector_model_path).expanduser()
         if not selector.is_absolute():
             repository = next((parent for parent in Path(__file__).resolve().parents
-                               if (parent / 'engines/XAI-Compress').is_dir()), None)
+                               if (parent / 'engines/XAICD').is_dir()), None)
             if repository is not None:
                 selector = repository / selector
-            elif self.selector_model_path == 'engines/XAI-Compress/checkpoints/selector_v2/best.json':
+            elif self.selector_model_path == 'engines/XAICD/checkpoints/selector_v2/best.json':
                 import xai_compress
                 selector = Path(xai_compress.__file__).resolve().parent.parent / 'checkpoints/selector_v2/best.json'
             else:

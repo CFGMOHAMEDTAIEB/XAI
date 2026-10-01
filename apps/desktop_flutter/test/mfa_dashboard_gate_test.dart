@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:provider/provider.dart';
 import 'package:xai_compress_desktop/core/app_state.dart';
-import 'package:xai_compress_desktop/screens/app_shell.dart';
+import 'package:xai_compress_desktop/screens/auth_flow.dart';
 import 'package:xai_compress_desktop/services/api_service.dart';
 import 'package:xai_compress_desktop/services/history_service.dart';
 import 'package:xai_compress_desktop/services/local_engine_service.dart';
@@ -36,14 +36,46 @@ AppState stateFor(ApiService api, {SessionStore? store}) => AppState(
   ..config = DesktopSettings();
 
 void main() {
+  test('unenrolled login stays gated until mobile TOTP confirms setup', () async {
+    final store = MemorySessionStore();
+    var confirmed = false;
+    final api = ApiService(client: MockClient((request) async {
+      if (request.url.path == '/auth/login') {
+        return http.Response('{"access_token":"enroll","refresh_token":null,"enrollment_required":true}', 200);
+      }
+      if (request.url.path == '/auth/me') {
+        return http.Response(jsonEncode({'email':'person@example.com','mfa_enabled':confirmed,'email_verified':true,'account_status':'ACTIVE'}), 200);
+      }
+      if (request.url.path == '/auth/authenticator/enroll/start') {
+        expect(request.headers['authorization'], 'Bearer enroll');
+        return http.Response('{"enrollment_id":"0123456789abcdef0123456789abcdef","expires_in_seconds":1200}', 200);
+      }
+      if (request.url.path == '/auth/authenticator/enroll/confirm') {
+        expect(jsonDecode(request.body)['code'], '123456');
+        confirmed = true;
+        return http.Response('{"enabled":true,"access_token":"full","refresh_token":"refresh"}', 200);
+      }
+      return http.Response('{}', 404);
+    }));
+    final state = stateFor(api, store: store);
+    addTearDown(state.dispose);
+    await state.login('person@example.com', 'correct-password');
+    expect(state.authStage, AuthStage.enroll);
+    expect(state.workspaceUnlocked, isFalse);
+    expect(store.value, isNull);
+    await state.verifyEnrollment('123456');
+    expect(state.authStage, AuthStage.authenticated);
+    expect(store.value, 'refresh');
+  });
+
   testWidgets(
-      'password accepted with MFA required shows locked dashboard and calls no protected APIs',
+      'password accepted with MFA required shows visible verification screen and calls no protected APIs',
       (tester) async {
     var protectedCalls = 0;
     final api = ApiService(client: MockClient((request) async {
       if (request.url.path == '/auth/login') {
         return http.Response(
-            jsonEncode({'detail': 'Valid TOTP code required'}), 401);
+            jsonEncode({'detail': {'message': 'Valid TOTP code required', 'mfa_token': 'challenge'}}), 401);
       }
       protectedCalls++;
       return http.Response('[]', 200);
@@ -55,14 +87,20 @@ void main() {
       await state.login('person@example.com', 'valid-password');
     } on ApiException catch (_) {}
     expect(state.mfaPending, isTrue);
+    expect(state.shellVisible, isFalse);
     expect(state.page, 0);
     expect(api.token, isNull);
     expect(store.value, isNull);
     await tester.binding.setSurfaceSize(const Size(1220, 780));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(ChangeNotifierProvider.value(
-        value: state, child: const MaterialApp(home: AppShell())));
-    expect(find.text('Mobile Authenticator verification'), findsOneWidget);
+        value: state, child: const MaterialApp(home: AuthFlow())));
+    expect(find.text('Verify your identity'), findsOneWidget);
+    expect(find.text('Enter the 6-digit code from XAICD Authenticator'),
+        findsOneWidget);
+    expect(find.widgetWithText(TextField, '6-digit code'), findsOneWidget);
+    expect(find.text('Verify'), findsOneWidget);
+    expect(find.text('Back to sign in'), findsOneWidget);
     state.setPage(1);
     state.setPage(4);
     state.setPage(5);
@@ -72,7 +110,7 @@ void main() {
     expect(protectedCalls, 0);
     await expectLater(api.history(), throwsA(isA<ApiException>()));
     expect(protectedCalls, 0);
-    expect(find.byIcon(Icons.lock_outline), findsWidgets);
+    expect(find.byIcon(Icons.shield_outlined), findsWidgets);
   });
 
   test('invalid input makes no request and incorrect TOTP remains locked',
@@ -81,7 +119,7 @@ void main() {
     final api = ApiService(client: MockClient((request) async {
       calls++;
       return http.Response(
-          jsonEncode({'detail': 'Valid TOTP code required'}), 401);
+          jsonEncode({'detail': {'message': 'Valid TOTP code required', 'mfa_token': 'challenge'}}), 401);
     }));
     final state = stateFor(api);
     addTearDown(state.dispose);
@@ -106,12 +144,12 @@ void main() {
     final api = ApiService(client: MockClient((request) async {
       if (request.url.path == '/auth/login') {
         loginCalls++;
+        return http.Response(jsonEncode({'detail': {'message': 'Valid TOTP code required', 'mfa_token': 'challenge'}}), 401);
+      }
+      if (request.url.path == '/auth/login/mfa/verify') {
         final body = jsonDecode(request.body);
-        if (body['totp_code'] == null) {
-          return http.Response(
-              jsonEncode({'detail': 'Valid TOTP code required'}), 401);
-        }
-        expect(body['totp_code'], '428731');
+        expect(body['code'], '428731');
+        expect(body['mfa_token'], 'challenge');
         return http.Response('{"access_token":"a","refresh_token":"r"}', 200);
       }
       if (request.url.path == '/auth/me') {
@@ -127,7 +165,7 @@ void main() {
       await state.login('person@example.com', 'valid-password');
     } catch (_) {}
     await state.verifyMfa('428731');
-    expect(loginCalls, 2);
+    expect(loginCalls, 1);
     expect(state.workspaceUnlocked, isTrue);
     expect(store.value, 'r');
     await state.logout();
@@ -167,7 +205,7 @@ void main() {
     final api = ApiService(client: MockClient((_) async {
       calls++;
       return http.Response(
-          jsonEncode({'detail': 'Valid TOTP code required'}), 401);
+          jsonEncode({'detail': {'message': 'Valid TOTP code required', 'mfa_token': 'challenge'}}), 401);
     }));
     final state = stateFor(api);
     addTearDown(state.dispose);
@@ -184,7 +222,7 @@ void main() {
     final api = ApiService(client: MockClient((_) async {
       calls++;
       return http.Response(
-          jsonEncode({'detail': 'Valid TOTP code required'}), 401);
+          jsonEncode({'detail': {'message': 'Valid TOTP code required', 'mfa_token': 'challenge'}}), 401);
     }));
     final state = stateFor(api, store: MemorySessionStore());
     addTearDown(state.dispose);

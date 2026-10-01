@@ -1,2 +1,2 @@
-& (Join-Path $PSScriptRoot 'stop-all.ps1') @args
+& (Join-Path $PSScriptRoot 'xai.ps1') stop
 exit $LASTEXITCODE

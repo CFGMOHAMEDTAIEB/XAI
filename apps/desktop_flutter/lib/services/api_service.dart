@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'deployment_config.dart';
 
@@ -21,6 +20,8 @@ class ApiService {
   final Duration requestTimeout;
   String baseUrl = configuredApiUrl();
   String? token, _refreshToken;
+  String? _mfaToken;
+  bool enrollmentRequired = false;
   Future<void>? _refreshing;
   int _generation = 0;
   String? get refreshToken => _refreshToken;
@@ -28,6 +29,7 @@ class ApiService {
   Future<Map<String, dynamic>> login(String email, String password,
       {String? totp}) async {
     validateEmail(email);
+    _mfaToken = null;
     final generation = _generation;
     final r = await _post(
         '/auth/login',
@@ -44,8 +46,32 @@ class ApiService {
     final data = Map<String, dynamic>.from(jsonDecode(r.body));
     token = data['access_token'];
     _refreshToken = data['refresh_token'];
+    enrollmentRequired = data['enrollment_required'] == true;
     return me();
   }
+
+  Future<Map<String, dynamic>> verifyMfa(String code) async {
+    if (_mfaToken == null) {
+      throw const ApiException('Sign in again to verify your identity.',kind:'authentication');
+    }
+    final r=await _post('/auth/login/mfa/verify',{'mfa_token':_mfaToken,'code':code},auth:false);
+    final data=Map<String,dynamic>.from(jsonDecode(r.body));
+    _mfaToken=null;token=data['access_token'];_refreshToken=data['refresh_token'];enrollmentRequired=false;
+    return me();
+  }
+
+  Future<Map<String,dynamic>> startAuthenticatorEnrollment() async =>
+      Map<String,dynamic>.from(jsonDecode((await _post('/auth/authenticator/enroll/start',{})).body));
+
+  Future<Map<String,dynamic>> confirmAuthenticatorEnrollment(String enrollmentId,String code) async {
+    final r=await _post('/auth/authenticator/enroll/confirm',{'enrollment_id':enrollmentId,'code':code});
+    final data=Map<String,dynamic>.from(jsonDecode(r.body));
+    if(data['enabled']!=true)throw const ApiException('Authenticator setup could not be completed.');
+    token=data['access_token'];_refreshToken=data['refresh_token'];enrollmentRequired=false;
+    return me();
+  }
+
+  void clearPendingMfa(){_mfaToken=null;enrollmentRequired=false;token=null;_refreshToken=null;}
 
   Future<void> restore(String refresh) async {
     _refreshToken = refresh;
@@ -98,6 +124,8 @@ class ApiService {
     _generation++;
     token = null;
     _refreshToken = null;
+    _mfaToken = null;
+    enrollmentRequired = false;
     if (refresh != null) {
       try {
         await _post('/auth/logout', {'refresh_token': refresh}, auth: false);
@@ -157,11 +185,21 @@ class ApiService {
   ApiException _mapHttpError(http.Response response,
       {required bool authenticated, required bool detectAuth}) {
     final detail = _safeDetail(response.body);
+    if (detectAuth && response.statusCode == 401) {
+      try {
+        final body=jsonDecode(response.body) as Map<String,dynamic>;
+        final value=body['detail'];
+        if(value is Map<String,dynamic> && value['message']=='Valid TOTP code required' && value['mfa_token'] is String){
+          _mfaToken=value['mfa_token'] as String;
+          return const ApiException('Enter the current code from XAICD Authenticator.',kind:'mfa_required');
+        }
+      } catch (_) {/* Backend detail is never shown. */}
+    }
     if (detectAuth &&
         response.statusCode == 401 &&
         detail == 'Valid TOTP code required') {
       return const ApiException(
-          'Enter the current code from XAI Authenticator.',
+          'Enter the current code from XAICD Authenticator.',
           kind: 'mfa_required');
     }
     if (detectAuth &&
@@ -186,10 +224,17 @@ class ApiService {
       return const ApiException('This action is not allowed.',
           kind: 'forbidden');
     }
+    if (status == 404) {
+      return const ApiException('The requested item is unavailable.',
+          kind: 'not_found');
+    }
     if (status == 409) {
       return const ApiException(
           'This request conflicts with the current account or resource state.',
           kind: 'conflict');
+    }
+    if (status == 410) {
+      return const ApiException('The requested item has expired.', kind: 'gone');
     }
     if (status == 429) {
       return const ApiException('Too many attempts. Please try again later.',
@@ -238,22 +283,8 @@ class ApiService {
           kind: 'authentication_required'));
     }
     final uri = Uri.parse('$baseUrl$path');
-    final diagnose = kDebugMode && path == '/auth/password/forgot';
-    if (diagnose) {
-      debugPrint('DESKTOP_API_SCHEME=${uri.scheme}');
-      debugPrint('DESKTOP_API_HOST=${uri.host}');
-      debugPrint('DESKTOP_API_ENDPOINT=$path');
-    }
     return _send(() async {
-      try {
-        final response =
-            await _client.post(uri, headers: _headers, body: jsonEncode(body));
-        if (diagnose) debugPrint('HTTP_STATUS=${response.statusCode}');
-        return response;
-      } catch (error) {
-        if (diagnose) debugPrint('EXCEPTION_TYPE=${error.runtimeType}');
-        rethrow;
-      }
+      return _client.post(uri, headers: _headers, body: jsonEncode(body));
     }, auth: auth, detectAuth: detectAuth);
   }
 
