@@ -4,7 +4,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {firstValueFrom} from 'rxjs';
 import {environment} from '../../environments/environment';
-import {AuthToken} from '../models/models';
+import {AuthToken,MfaChallenge} from '../models/models';
 @Injectable({providedIn:'root'})
 export class AuthService {
   private readonly key='xai_access_token';
@@ -30,7 +30,11 @@ export class AuthService {
   async login(email:string,password:string,totp?:string){
     this.mfaChallenge=null;
     try{
-      const r=await firstValueFrom(this.http.post<AuthToken>(`${environment.apiUrl}/auth/login`,{email,password,totp_code:totp||null}));
+      const r=await firstValueFrom(this.http.post<AuthToken|MfaChallenge>(`${environment.apiUrl}/auth/login`,{email,password,totp_code:totp||null},{headers:{'X-XAICD-Login-Flow':'staged'}}));
+      if(r.state==='MFA_REQUIRED'){
+        this.mfaChallenge=r.mfa_token;
+        return r;
+      }
       this.save(r.access_token,r.refresh_token);return r;
     }catch(error){
       const detail=(error as HttpErrorResponse)?.error?.detail;

@@ -1,1 +1,24 @@
-<nav class="nav-menu" aria-label="Admin navigation"><small>Overview</small><NavLink href="/" Match="NavLinkMatch.All"><XIcon Name="dashboard"/>Dashboard</NavLink><small>Management</small><NavLink href="/users"><XIcon Name="users"/>Users</NavLink><NavLink href="/jobs"><XIcon Name="jobs"/>Compression jobs</NavLink><small>Security</small><NavLink href="/audit"><XIcon Name="audit"/>Audit activity</NavLink><NavLink href="/authenticator"><XIcon Name="security"/>Authenticator</NavLink><NavLink href="/scanner"><XIcon Name="security"/>Scanner</NavLink><small>System</small><NavLink href="/system"><XIcon Name="system"/>System health</NavLink><NavLink href="/email"><XIcon Name="mail"/>Email delivery</NavLink><NavLink href="/privacy"><XIcon Name="security"/>Privacy</NavLink></nav>
+<nav class="nav-menu" aria-label="Administrator navigation">
+    <div class="nav-group">
+        <span class="nav-label">Overview</span>
+        <NavLink href="/" Match="NavLinkMatch.All"><XIcon Name="dashboard" /><span>Dashboard</span></NavLink>
+    </div>
+    <div class="nav-group">
+        <span class="nav-label">Management</span>
+        <NavLink href="/users"><XIcon Name="users" /><span>Users</span></NavLink>
+        <NavLink href="/jobs"><XIcon Name="jobs" /><span>Compression jobs</span></NavLink>
+        <NavLink href="/shares"><XIcon Name="security" /><span>Shares</span></NavLink>
+    </div>
+    <div class="nav-group">
+        <span class="nav-label">Security</span>
+        <NavLink href="/audit"><XIcon Name="audit" /><span>Audit activity</span></NavLink>
+        <NavLink href="/authenticator"><XIcon Name="key" /><span>Authenticator</span></NavLink>
+        <NavLink href="/scanner"><XIcon Name="security" /><span>Scanner</span></NavLink>
+    </div>
+    <div class="nav-group">
+        <span class="nav-label">System</span>
+        <NavLink href="/system"><XIcon Name="system" /><span>System health</span></NavLink>
+        <NavLink href="/email"><XIcon Name="mail" /><span>Email delivery</span></NavLink>
+        <NavLink href="/privacy"><XIcon Name="lock" /><span>Privacy</span></NavLink>
+    </div>
+</nav>

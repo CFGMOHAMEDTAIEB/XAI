@@ -302,6 +302,14 @@ class ApiService {
       jsonDecode((await _get('/history')).body);
   Future<List<dynamic>> shares() async =>
       jsonDecode((await _get('/shares')).body);
+  Future<Map<String, dynamic>> importArtifact(String path) async {
+    if (!path.toLowerCase().endsWith('.xaic')) {
+      throw const ApiException('Please select a compressed XAICD file.',
+          kind: 'invalid_input');
+    }
+    final response = await _upload('/files/artifacts?preserve_bytes=true', path);
+    return Map<String, dynamic>.from(jsonDecode(response.body));
+  }
   Future<Map<String, dynamic>> createShare(
           int fileId, String email, int minutes) async =>
       Map<String, dynamic>.from(jsonDecode((await _post('/shares', {

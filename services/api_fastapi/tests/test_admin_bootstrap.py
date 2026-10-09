@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from app import main
 from app.config import Settings
 from app.models import User, TotpEnrollment
-from app.security import verify_password
+from app.security import create_token, verify_password
 from app.scripts.create_admin import create_admin
 from test_mfa_enrollment import flow
 
@@ -38,7 +38,13 @@ def test_admin_authorization_and_secret_free_details(flow,monkeypatch):
     client,engine,_=flow
     monkeypatch.setattr(main.settings,'admin_emails','person@example.com')
     monkeypatch.setattr(main,'scanner_health',lambda:{'status':'unavailable','clamav':'unavailable','yara':'operational','required':True})
-    token=client.headers.pop('Authorization')
+    client.headers.pop('Authorization')
+    # Administrator endpoints require a completed MFA session. Build a valid
+    # full-scope non-admin session here so this test reaches the role check
+    # instead of being rejected earlier by the MFA gate.
+    with Session(engine) as db:
+        user=db.scalar(select(User));user.totp_enabled=True;user.totp_secret='JBSWY3DPEHPK3PXP';db.commit()
+        token='Bearer '+create_token(user.id)
     paths=['/admin/stats','/admin/users','/admin/users/1','/admin/jobs','/admin/audit','/admin/email/configuration','/admin/security/scanner']
     for path in paths:assert client.get(path).status_code==401
     client.headers['Authorization']=token

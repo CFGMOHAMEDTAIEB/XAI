@@ -1,3 +1,4 @@
+from typing import Literal
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
 class RegisterRequest(BaseModel):
@@ -45,6 +46,10 @@ class TokenResponse(BaseModel):
     token_type: str = 'bearer'
     mfa_enabled: bool = False
     enrollment_required: bool = False
+    state: Literal['MFA_ENROLLMENT_REQUIRED']|None = None
+class MfaChallengeResponse(BaseModel):
+    state: Literal['MFA_REQUIRED'] = 'MFA_REQUIRED'
+    mfa_token: str
 class RefreshRequest(BaseModel):
     refresh_token: str
 class FileCreate(BaseModel):

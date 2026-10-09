@@ -1,6 +1,7 @@
 namespace XaiCompress.Admin.Models;
 
-public sealed record UserDetails(int Id, string Email, string DisplayName, string Role, bool MfaEnabled,
+public sealed record UserDetails(int Id, string Email, string DisplayName, string Role,
+    string Status, bool EmailVerified, bool MfaEnabled,
     DateTimeOffset CreatedAt, DateTimeOffset? LastLogin, int FileCount, string MfaEnrollmentState);
 public sealed record ScannerStatus(string Status, string Clamav, string Yara, bool Required);
 public sealed record EmailConfiguration(string Provider, bool Configured, string[] Missing,
@@ -84,8 +85,28 @@ public sealed record ServiceHealth(
     string Version,
     DateTimeOffset CheckedAt);
 
-public sealed record AuthenticatorDevice(int UserId, string DeviceId, string Platform, string AppVersion,
-    string Status, DateTimeOffset RegisteredAt, DateTimeOffset LastActivity);
-public sealed record AuthenticatorHistory(int UserId, string Type, string Result, string Application,
-    DateTimeOffset CreatedAt);
-public sealed record RecoveryCodeSummary(int UserId, int Issued, int Used, int Remaining);
+public sealed record AuthenticatorDevice(
+    [property: System.Text.Json.Serialization.JsonPropertyName("user_id")] int UserId,
+    [property: System.Text.Json.Serialization.JsonPropertyName("device_id")] string DeviceId,
+    string Platform,
+    [property: System.Text.Json.Serialization.JsonPropertyName("app_version")] string AppVersion,
+    string Status,
+    [property: System.Text.Json.Serialization.JsonPropertyName("registered_at")] DateTimeOffset RegisteredAt,
+    [property: System.Text.Json.Serialization.JsonPropertyName("last_activity")] DateTimeOffset LastActivity);
+public sealed record AuthenticatorHistory(
+    [property: System.Text.Json.Serialization.JsonPropertyName("user_id")] int UserId,
+    string Type, string Result, string Application,
+    [property: System.Text.Json.Serialization.JsonPropertyName("created_at")] DateTimeOffset CreatedAt);
+public sealed record RecoveryCodeSummary(
+    [property: System.Text.Json.Serialization.JsonPropertyName("user_id")] int UserId,
+    int Issued, int Used, int Remaining);
+
+public sealed record AdminShare(
+    int Id,
+    [property: System.Text.Json.Serialization.JsonPropertyName("sender_email")] string SenderEmail,
+    [property: System.Text.Json.Serialization.JsonPropertyName("recipient_email")] string RecipientEmail,
+    [property: System.Text.Json.Serialization.JsonPropertyName("file_name")] string FileName,
+    [property: System.Text.Json.Serialization.JsonPropertyName("created_at")] DateTimeOffset? CreatedAt,
+    [property: System.Text.Json.Serialization.JsonPropertyName("expires_at")] DateTimeOffset ExpiresAt,
+    string Status,
+    [property: System.Text.Json.Serialization.JsonPropertyName("remaining_downloads")] int RemainingDownloads);

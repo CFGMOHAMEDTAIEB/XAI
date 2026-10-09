@@ -101,6 +101,11 @@ LEGACY_OBJECTS = {
         "columns": {("audit_events", "updated_at")},
         "indexes": set(),
     },
+    "006": {
+        "tables": {"share_codes"},
+        "columns": {("share_codes", "created_at")},
+        "indexes": set(),
+    },
 }
 
 

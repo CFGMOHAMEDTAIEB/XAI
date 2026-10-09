@@ -1,10 +1,41 @@
-@if (RequiresLogin) { <p role="status">An authorized administrator session is required.</p><a class="button" href="/login">Sign in</a> }
-else if (Loading) { <p role="status">Loading...</p> }
-else if (Error is not null) { <p role="alert">@Error</p> }
-else { @ChildContent }
+@if (RequiresLogin)
+{
+    <section class="state-panel warning" role="status">
+        <span class="state-icon"><XIcon Name="security" /></span>
+        <div>
+            <h2>Administrator sign-in required</h2>
+            <p>An authorized administrator session is required to view this page.</p>
+            <a class="button primary" href="/login">Sign in</a>
+        </div>
+    </section>
+}
+else if (Loading)
+{
+    <section class="state-panel loading" role="status" aria-live="polite">
+        <span class="spinner" aria-hidden="true"></span>
+        <div><h2>Loading information</h2><p>Retrieving the latest administrator data…</p></div>
+    </section>
+}
+else if (!string.IsNullOrWhiteSpace(Error))
+{
+    <section class="state-panel error" role="alert">
+        <span class="state-icon"><XIcon Name="warning" /></span>
+        <div>
+            <h2>Unable to load information</h2>
+            <p>@Error</p>
+            @if (OnRetry.HasDelegate) { <button class="button secondary" @onclick="OnRetry">Try again</button> }
+        </div>
+    </section>
+}
+else
+{
+    @ChildContent
+}
+
 @code {
     [Parameter] public bool RequiresLogin { get; set; }
     [Parameter] public bool Loading { get; set; }
     [Parameter] public string? Error { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public EventCallback OnRetry { get; set; }
 }

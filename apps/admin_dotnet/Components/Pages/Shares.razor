@@ -1,0 +1,53 @@
+@page "/shares"
+@inherits AdminReadPage<IReadOnlyList<AdminShare>>
+
+<PageTitle>Shares | XAICD Admin</PageTitle>
+<AdminPageHeader Section="Management" Title="Shares" Description="Review recipient access and revoke active shares. Codes and credential hashes are never exposed.">
+    <Actions><button class="button secondary" disabled="@Loading" @onclick="LoadAsync"><XIcon Name="system" /> Refresh</button></Actions>
+</AdminPageHeader>
+
+@if (_actionError is not null) { <div class="alert error" role="alert">@_actionError</div> }
+@if (_actionMessage is not null) { <div class="alert success" role="status">@_actionMessage</div> }
+
+<AdminDataState RequiresLogin="RequiresLogin" Loading="Loading" Error="@Error" OnRetry="LoadAsync">
+    @if (Data is not null)
+    {
+        <div class="summary-filters" role="group" aria-label="Filter shares by status">
+            @foreach (var status in Statuses) { <button class="@(_status == status.Key ? "active" : null)" @onclick="() => _status = status.Key"><span>@status.Label</span><strong>@Count(status.Key)</strong></button> }
+        </div>
+        <div class="toolbar"><label class="search-control"><span>Search shares</span><input @bind="_search" @bind:event="oninput" placeholder="File, sender, or recipient" /></label><button class="button quiet" @onclick="ClearFilters">Clear filters</button></div>
+        <section class="card data-card"><div class="table-wrap"><table><thead><tr><th>File</th><th>Sender</th><th>Recipient</th><th>Status</th><th>Created</th><th>Expires</th><th>Uses left</th><th><span class="sr-only">Actions</span></th></tr></thead><tbody>
+            @if (!Filtered.Any()) { <tr><td colspan="8"><AdminEmptyState Icon="security" Title="@(Data.Count == 0 ? "No shares are available." : "No shares found")" Description="@(Data.Count == 0 ? "Share records will appear here when available." : "No share records match this view.")" /></td></tr> }
+            @foreach (var share in Filtered)
+            {
+                <tr><td><div class="primary-cell"><strong class="truncate" title="@share.FileName">@share.FileName</strong><small>Share @share.Id</small></div></td><td>@share.SenderEmail</td><td>@share.RecipientEmail</td><td><StatusBadge Value="@share.Status" /></td><td>@(share.CreatedAt?.LocalDateTime.ToString("g") ?? "Not recorded")</td><td>@share.ExpiresAt.LocalDateTime.ToString("g")</td><td class="numeric">@share.RemainingDownloads</td><td>@if (share.Status.Equals("active", StringComparison.OrdinalIgnoreCase)) { <button class="button danger-quiet compact" disabled="@_actionBusy" @onclick="() => AskRevoke(share)">Revoke</button> }</td></tr>
+            }
+        </tbody></table></div></section>
+    }
+</AdminDataState>
+
+<AdminConfirmDialog Open="@(_pendingRevoke is not null)" Busy="@_actionBusy" Title="Revoke share?" Message="Recipients will no longer be able to redeem this share. This action is recorded in the audit trail." ConfirmLabel="Revoke share" OnConfirm="ConfirmRevoke" OnCancel="CancelRevoke" />
+
+@code {
+    private bool _actionBusy;
+    private string _search = "", _status = "";
+    private string? _actionError, _actionMessage;
+    private AdminShare? _pendingRevoke;
+    private static readonly (string Key, string Label)[] Statuses = [("", "All shares"), ("active", "Active"), ("expired", "Expired"), ("exhausted", "Exhausted"), ("revoked", "Revoked")];
+    private int Count(string status) => string.IsNullOrWhiteSpace(status) ? Data?.Count ?? 0 : (Data ?? []).Count(x => x.Status.Equals(status, StringComparison.OrdinalIgnoreCase));
+    private IEnumerable<AdminShare> Filtered => (Data ?? []).Where(x => (string.IsNullOrWhiteSpace(_status) || x.Status.Equals(_status, StringComparison.OrdinalIgnoreCase)) && (string.IsNullOrWhiteSpace(_search) || x.FileName.Contains(_search, StringComparison.OrdinalIgnoreCase) || x.SenderEmail.Contains(_search, StringComparison.OrdinalIgnoreCase) || x.RecipientEmail.Contains(_search, StringComparison.OrdinalIgnoreCase)));
+    protected override Task<IReadOnlyList<AdminShare>> FetchAsync() => Api.GetSharesAsync();
+    private void ClearFilters() { _search = ""; _status = ""; }
+    private void AskRevoke(AdminShare share) { _pendingRevoke = share; _actionError = _actionMessage = null; }
+    private void CancelRevoke() => _pendingRevoke = null;
+    private async Task ConfirmRevoke()
+    {
+        if (_actionBusy || _pendingRevoke is null) return;
+        var share = _pendingRevoke; _actionBusy = true; _actionError = _actionMessage = null;
+        try { await Api.RevokeShareAsync(share.Id); _pendingRevoke = null; await LoadAsync(); _actionMessage = "Share revoked."; }
+        catch (AdminApiAuthorizationException ex) { if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized) RedirectToLogin(); else _actionError = "You do not have permission to revoke this share."; }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Conflict) { _pendingRevoke = null; _actionError = "This share has already been revoked."; await LoadAsync(); }
+        catch (Exception) { _actionError = "The share could not be revoked. Please try again."; }
+        finally { _actionBusy = false; }
+    }
+}

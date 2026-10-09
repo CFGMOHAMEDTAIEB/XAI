@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using XaiCompress.Admin.Components;
 using XaiCompress.Admin.Services;
 
@@ -12,8 +13,16 @@ builder.Services.AddRazorComponents()
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<AdminSession>();
-// Local sessions are intentionally ephemeral; deployed environments retain the platform key provider.
-if (builder.Environment.IsDevelopment()) builder.Services.AddDataProtection().UseEphemeralDataProtectionProvider();
+builder.Services.AddScoped<ProtectedSessionStorage>();
+builder.Services.AddScoped<IAdminSessionStore, ProtectedAdminSessionStore>();
+builder.Services.AddSingleton<AdminRefreshCoordinator>();
+var dataProtection = builder.Services.AddDataProtection().SetApplicationName("XAICD.Admin");
+var keyPath = builder.Configuration["DataProtection:KeysPath"];
+if (!string.IsNullOrWhiteSpace(keyPath))
+{
+    Directory.CreateDirectory(keyPath);
+    dataProtection.PersistKeysToFileSystem(new DirectoryInfo(keyPath));
+}
 
 builder.Services.AddHttpClient<PlatformApiClient>((services, client) =>
 {

@@ -61,6 +61,7 @@ class ShareCode(Base):
     download_count: Mapped[int] = mapped_column(Integer, default=0)
     anonymous_sender: Mapped[bool] = mapped_column(Boolean, default=False)
     revoked: Mapped[bool] = mapped_column(Boolean, default=False)
+    created_at: Mapped[datetime|None] = mapped_column(DateTime, nullable=True, default=datetime.utcnow)
 
 class AuditEvent(Base):
     __tablename__='audit_events'

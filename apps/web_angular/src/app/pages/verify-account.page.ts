@@ -7,7 +7,7 @@ import {environment} from '../../environments/environment';
 
 @Component({standalone:true,imports:[FormsModule,RouterLink],template:`
 <main class="auth-page"><section class="auth-card"><div class="logo" aria-hidden="true">XD</div>
- <p class="eyebrow">Account security</p><h1>Verify your account</h1><p class="muted">We sent a 6-digit code to your email.</p>
+ <p class="eyebrow">Account security</p><h1>Verify your account</h1><p class="muted">{{deliveryUnavailable?'Your account was created, but we could not send the code. Use Resend code to try again.':'We sent a 6-digit code to your email.'}}</p>
  <form (ngSubmit)="verify()"><label for="verify-email">Email</label><input id="verify-email" type="email" name="email" [(ngModel)]="email" autocomplete="email" required [disabled]="busy()">
   <label for="verify-code">6-digit code</label><input id="verify-code" class="otp-input" name="code" [(ngModel)]="code" inputmode="numeric" maxlength="6" autocomplete="one-time-code" (input)="digitsOnly()" [disabled]="busy()">
   <button class="primary" [disabled]="busy()||!validCode()">{{busy()?'Verifying…':'Verify account'}}</button>
@@ -16,7 +16,7 @@ import {environment} from '../../environments/environment';
  <p class="auth-switch"><a routerLink="/login">Back to sign in</a></p>
 </section></main>`})
 export class VerifyAccountPage implements OnDestroy{
- email=history.state?.email||'';code='';busy=signal(false);message=signal('');success=signal(false);cooldown=signal(0);timer?:number;
+ email=history.state?.email||'';deliveryUnavailable=history.state?.deliveryUnavailable===true;code='';busy=signal(false);message=signal('');success=signal(false);cooldown=signal(0);timer?:number;
  constructor(private http:HttpClient,private router:Router){}
  validCode(){return /^\d{6}$/.test(this.code)}digitsOnly(){this.code=this.code.replace(/\D/g,'').slice(0,6)}
  private startCooldown(){this.cooldown.set(60);this.timer=window.setInterval(()=>{this.cooldown.update(v=>v-1);if(this.cooldown()<=0&&this.timer)clearInterval(this.timer)},1000)}

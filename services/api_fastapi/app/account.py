@@ -31,7 +31,7 @@ def find_user(db:Session,identifier:str):
     except ValueError:return None
     return db.scalar(select(User).where(User.phone_number==phone))
 
-def issue(db:Session,user:User,channel:str,purpose:str):
+def issue(db:Session,user:User,channel:str,purpose:str,email_template:str|None=None):
     now=datetime.utcnow();latest=db.scalar(select(AccountVerificationChallenge).where(
         AccountVerificationChallenge.user_id==user.id,AccountVerificationChallenge.purpose==purpose,
         AccountVerificationChallenge.used_at.is_(None)).order_by(AccountVerificationChallenge.created_at.desc()))
@@ -48,7 +48,7 @@ def issue(db:Session,user:User,channel:str,purpose:str):
     db.add(AuditEvent(user_id=user.id,action=action))
     db.commit()
     try:
-        if channel=='email':send_account_email(user.email,code,purpose)
+        if channel=='email':send_account_email(user.email,code,email_template or purpose)
         else:send_sms(user.phone_number,code)
     except (VerificationEmailError,SmsUnavailableError):
         row.used_at=datetime.utcnow();db.commit();raise

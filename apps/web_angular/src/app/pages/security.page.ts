@@ -5,7 +5,6 @@ import {firstValueFrom} from 'rxjs';
 import {ApiService} from '../core/api.service';
 import {IconComponent} from '../ui/icon.component';
 import {DatePipe} from '@angular/common';
-import {Router} from '@angular/router';
 import {AuthService} from '../core/auth.service';
 
 @Component({standalone:true,imports:[FormsModule,IconComponent,DatePipe],template:`
@@ -28,11 +27,12 @@ import {AuthService} from '../core/auth.service';
   <section class="enrollment" aria-labelledby="setup-title">
    <div class="step-marker">1</div><div><h3 id="setup-title">Set up XAICD Authenticator</h3><p>Open XAICD Authenticator on the emulator and sign in with the same XAICD account. The mobile app will display your current code.</p></div>
    <p class="muted centered">Complete setup within {{expiresMinutes()}} minutes.</p>
-   <div class="verification-block"><div class="step-marker">2</div><div><h3>Verify your authenticator</h3><p>Enter the 6-digit code currently shown in XAICD Authenticator.</p></div>
+   <form class="verification-block" (ngSubmit)="confirm()"><div class="step-marker">2</div><div><h3>Verify your authenticator</h3><p>Enter the 6-digit code currently shown in XAICD Authenticator.</p></div>
     <label class="sr-only" for="enrollment-code">6-digit code from XAICD Authenticator</label>
-    <input id="enrollment-code" class="otp-input" [(ngModel)]="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" [disabled]="busy()" (input)="digitsOnly()">
-    <button class="primary" [disabled]="busy()||!validCode(code)" (click)="confirm()">{{busy()?'Verifying…':'Confirm authenticator'}}</button>
-   </div>
+    <input id="enrollment-code" class="otp-input" name="enrollmentCode" [(ngModel)]="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" autofocus [disabled]="busy()" (input)="digitsOnly()">
+    <button class="primary" type="submit" [disabled]="busy()||!validCode(code)">{{busy()?'Verifying…':'Confirm authenticator'}}</button>
+   </form>
+   <button class="secondary" type="button" [disabled]="busy()" (click)="refresh()">Refresh setup status</button>
   </section>
  }
  @if(state()==='enabled'){
@@ -46,19 +46,19 @@ import {AuthService} from '../core/auth.service';
 <article class="panel"><div class="card-title"><x-icon name="key"/><div><h2>Password and sessions</h2><p class="muted">Use the verified reset flow to change your password.</p></div></div><a class="outline" href="/forgot-password">Change password</a></article>`})
 export class SecurityPage implements OnDestroy {
  state=signal('loading');profile=signal<{email:string;phone_number:string|null;email_verified:boolean;phone_verified:boolean}|null>(null);message=signal('');busy=signal(false);showManagement=signal(false);showRecovery=signal(false);devices=signal<Array<{device_id:string;platform:string;app_version:string;status:string;registered_at:string;last_activity:string}>>([]);devicesLoading=signal(false);recovery=signal<string[]>([]);code='';enrollmentId='';expiresSeconds=1200;destroyed=false;
- constructor(private api:ApiService,private auth:AuthService,private router:Router){void this.refresh();firstValueFrom(this.api.me()).then(value=>this.profile.set(value)).catch(()=>{})}
- statusLabel(){return this.state()==='enabled'?'Active':this.state()==='pending_activation'||this.state().startsWith('awaiting_')?'Pending':'Not configured'}
+ constructor(private api:ApiService,private auth:AuthService){void this.refresh();firstValueFrom(this.api.me()).then(value=>this.profile.set(value)).catch(()=>{})}
+ statusLabel(){return this.state()==='enabled'?'Active':'Not Configured'}
  expiresMinutes(){return Math.max(1,Math.ceil(this.expiresSeconds/60))}
  validCode(value:string){return /^\d{6}$/.test(value)}
  digitsOnly(){this.code=this.code.replace(/\D/g,'').slice(0,6)}
  async run(action:()=>Promise<void>){if(this.busy())return;this.busy.set(true);this.message.set('');try{await action()}catch(error){if(!this.destroyed)this.message.set(this.safeError(error))}finally{if(!this.destroyed)this.busy.set(false)}}
- refresh(){return this.run(async()=>{const status=await firstValueFrom(this.api.totpStatus());if(this.destroyed)return;if(status.state==='enabled'){this.state.set('enabled');void this.loadDevices();return}const value=status.enrollment_id&&status.state!=='expired'?status:await firstValueFrom(this.api.startAuthenticator());this.enrollmentId=value.enrollment_id||'';this.expiresSeconds='expires_in_seconds'in value?value.expires_in_seconds:1200;this.state.set('pending_activation')})}
+ refresh(){return this.run(async()=>{const status=await firstValueFrom(this.api.totpStatus());if(this.destroyed)return;if(status.state==='enabled'){this.state.set('enabled');void this.loadDevices();return}if(status.state==='MFA_REQUIRED'){this.state.set('expired');this.message.set('Your authenticator setup session has expired. Please sign in again.');return}const value=status.enrollment_id&&status.state!=='expired'?status:await firstValueFrom(this.api.startAuthenticator());if(!value.enrollment_id)throw new Error('malformed');this.enrollmentId=value.enrollment_id;this.expiresSeconds='expires_in_seconds'in value?value.expires_in_seconds:1200;this.state.set('pending_activation')})}
  start(){return this.run(async()=>{const value=await firstValueFrom(this.api.startAuthenticator());if(this.destroyed)return;if(!value.enrollment_id)throw new Error('malformed');this.enrollmentId=value.enrollment_id;this.expiresSeconds=value.expires_in_seconds;this.state.set('pending_activation')})}
- confirm(){return this.run(async()=>{const value=await firstValueFrom(this.api.confirmAuthenticator(this.enrollmentId,this.code));if(!value.enabled)throw new Error('malformed');if(this.destroyed)return;this.auth.completeEnrollment(value);this.clearTransient();this.state.set('enabled');await this.router.navigateByUrl('/dashboard')})}
+ confirm(){if(!this.validCode(this.code)||!this.enrollmentId)return Promise.resolve();return this.run(async()=>{const value=await firstValueFrom(this.api.confirmAuthenticator(this.enrollmentId,this.code));if(!value.enabled)throw new Error('malformed');if(this.destroyed)return;this.auth.completeEnrollment(value);this.clearTransient();this.state.set('enabled');const status=await firstValueFrom(this.api.totpStatus());if(status.state!=='enabled')throw new Error('malformed');void this.loadDevices()})}
  async loadDevices(){this.devicesLoading.set(true);try{const value=await firstValueFrom(this.api.authDevices());if(!this.destroyed)this.devices.set(value)}catch{if(!this.destroyed)this.message.set('Registered devices are unavailable right now.')}finally{if(!this.destroyed)this.devicesLoading.set(false)}}
  revokeDevice(deviceId:string){return this.run(async()=>{await firstValueFrom(this.api.revokeDevice(deviceId));await this.loadDevices()})}
  generateRecovery(){return this.run(async()=>{const value=await firstValueFrom(this.api.recoveryCodes());if(!value.shown_once||!value.codes?.length)throw new Error('malformed');if(!this.destroyed)this.recovery.set(value.codes)})}
- private safeError(error:unknown){const response=error as HttpErrorResponse;if(response?.status===401)return 'Your setup session has expired. Sign in again to continue.';if(response?.status===410)return 'This enrollment has expired. Restart setup.';if(response?.status===409)return 'This enrollment is no longer available or was already confirmed. Refresh or restart setup.';if(response?.status===400)return 'Invalid verification code. Please try again.';if(response?.status===0||response?.status===503)return 'XAICD is temporarily unavailable. Check your connection and try again.';return 'The security request could not be completed. Please try again.'}
+ private safeError(error:unknown){const response=error as HttpErrorResponse;if(response?.status===401||response?.status===403||response?.status===410)return 'Your authenticator setup session has expired. Please sign in again.';if(response?.status===409)return 'Open XAICD Authenticator and complete enrollment first.';if(response?.status===400)return 'Invalid verification code. Please try again.';if(response?.status===0||response?.status===503)return "We couldn't check your authenticator status. Please try again.";return 'The security request could not be completed. Please try again.'}
  private clearTransient(){this.code='';this.enrollmentId=''}
  ngOnDestroy(){this.destroyed=true;this.clearTransient();this.recovery.set([])}
 }

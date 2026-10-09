@@ -1,9 +1,8 @@
 @page "/quarantine"
-@inject PlatformApiClient Api
+
 <PageTitle>Quarantine | XAICD Admin</PageTitle>
-<p>Live quarantine reporting is not available from this backend. An empty list does not establish that no files are quarantined.</p>
-<div class="page-heading"><div><h1>Quarantined files</h1><p>Quarantine review and release actions are not implemented.</p></div></div>
-<section class="panel"><table><thead><tr><th>File</th><th>Owner</th><th>ClamAV</th><th>YARA</th><th>SHA-256</th><th>Date</th></tr></thead><tbody>
-@foreach(var file in _files){<tr><td><strong>@file.FileName</strong><small>@file.Id</small></td><td>@file.OwnerEmail</td><td>@file.ClamAvResult</td><td>@(file.YaraMatches.Count==0?"No matches":string.Join(", ",file.YaraMatches))</td><td class="mono">@file.Sha256[..12]…</td><td>@file.QuarantinedAt.LocalDateTime</td></tr>}
-</tbody></table></section>
-@code {private IReadOnlyList<QuarantinedFile> _files=[];protected override async Task OnInitializedAsync()=>_files=await Api.GetQuarantineAsync();}
+<AdminPageHeader Section="Security" Title="Quarantined files" Description="Quarantine review and release controls are not exposed by the current backend contract." />
+<section class="state-panel warning" role="status">
+    <span class="state-icon"><XIcon Name="security" /></span>
+    <div><h2>Live quarantine reporting unavailable</h2><p>No file records are displayed because this backend does not provide an administrator quarantine feed. An empty view would not establish that no files are quarantined.</p></div>
+</section>

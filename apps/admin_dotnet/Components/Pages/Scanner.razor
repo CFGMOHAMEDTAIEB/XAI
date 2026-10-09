@@ -1,9 +1,21 @@
 @page "/scanner"
 @inherits AdminReadPage<ScannerStatus>
-<PageTitle>Security scanner | XAICD Admin</PageTitle>
-<div class="page-heading"><h1>Security scanner</h1><button disabled="@Loading" @onclick="LoadAsync">Refresh</button></div>
-<AdminDataState RequiresLogin="RequiresLogin" Loading="Loading" Error="Error">
-@if(Data is not null){<dl><dt>Overall readiness</dt><dd><StatusBadge Value="@Data.Status" /></dd><dt>ClamAV connectivity</dt><dd><StatusBadge Value="@Data.Clamav" /></dd><dt>YARA rule loading</dt><dd><StatusBadge Value="@Data.Yara" /></dd><dt>Required by configuration</dt><dd>@Data.Required</dd></dl>}
+
+<PageTitle>Scanner | XAICD Admin</PageTitle>
+<AdminPageHeader Section="Security" Title="Scanner" Description="Current malware-scanning prerequisites used by file processing.">
+    <Actions><button class="button secondary" disabled="@Loading" @onclick="LoadAsync"><XIcon Name="system" /> Refresh</button></Actions>
+</AdminPageHeader>
+
+<AdminDataState RequiresLogin="RequiresLogin" Loading="Loading" Error="@Error" OnRetry="LoadAsync">
+    @if (Data is not null)
+    {
+        <div class="service-grid">
+            <article class="service-card"><span class="service-icon"><XIcon Name="security" /></span><div><span>Malware scanner</span><h2>ClamAV</h2><p>Connectivity and daemon readiness.</p></div><StatusBadge Value="@Data.Clamav" /></article>
+            <article class="service-card"><span class="service-icon"><XIcon Name="audit" /></span><div><span>Rule engine</span><h2>YARA</h2><p>Production rule-loading readiness.</p></div><StatusBadge Value="@Data.Yara" /></article>
+            <article class="service-card"><span class="service-icon"><XIcon Name="lock" /></span><div><span>Processing policy</span><h2>Fail closed</h2><p>Stop processing when scans cannot finish.</p></div><StatusBadge Value="@(Data.Required ? "Enabled" : "Disabled")" /></article>
+        </div>
+    }
 </AdminDataState>
-<p>File processing fails closed when scanning cannot finish. Readiness does not prove detection of every threat. Internal hostnames and rule contents are not exposed.</p>
-@code { protected override Task<ScannerStatus> FetchAsync()=>Api.GetScannerAsync(); }
+<div class="info-callout"><XIcon Name="security" /><div><strong>Readiness scope</strong><p>This view does not prove detection of every threat. Internal hostnames and rule contents remain hidden.</p></div></div>
+
+@code { protected override Task<ScannerStatus> FetchAsync() => Api.GetScannerAsync(); }

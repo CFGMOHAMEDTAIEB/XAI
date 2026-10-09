@@ -4,5 +4,122 @@
 @inject AdminSession Session
 @inject NavigationManager Navigation
 @inject IWebHostEnvironment HostEnvironment
-@if(Session.IsAuthenticated){<div class="app-shell">@if(_drawer){<button class="admin-backdrop" aria-label="Close navigation" @onclick="()=>_drawer=false"></button>}<aside class="sidebar @(_drawer?"open":"")"><div class="brand"><div class="brand-mark">XD</div><div><strong>XAICD Admin</strong><span>Operations console</span></div></div><NavMenu/><button class="sidebar-logout" @onclick="Logout"><XIcon Name="logout"/>Sign out</button><div class="sidebar-footer"><div class="environment-dot"></div><div><strong>@HostEnvironment.EnvironmentName</strong><small>Administrative environment</small></div></div></aside><main class="main-content"><header class="topbar"><button class="mobile-nav-button" aria-label="Open navigation" aria-expanded="@_drawer" @onclick="()=>_drawer=true"><XIcon Name="dashboard"/></button><div><strong>Administration</strong><span>Users, operations and account security</span></div><div class="admin-profile"><div class="avatar">A</div><div><strong>Administrator</strong><small>Server-authorized session</small></div><button disabled="@_signingOut" @onclick="Logout">Sign out</button></div></header><section class="page-content">@Body</section></main></div>}
-@code{protected override void OnInitialized(){Session.Changed+=SessionChanged;RedirectIfRequired();}protected override void OnParametersSet()=>RedirectIfRequired();private void RedirectIfRequired(){var path=Navigation.ToBaseRelativePath(Navigation.Uri);if(!Session.IsAuthenticated&&!path.StartsWith("login",StringComparison.OrdinalIgnoreCase))Navigation.NavigateTo("/login");}private void SessionChanged()=>_=InvokeAsync(StateHasChanged);public void Dispose()=>Session.Changed-=SessionChanged;private bool _signingOut,_drawer;private async Task Logout(){if(_signingOut)return;_signingOut=true;try{await Api.LogoutAsync();Navigation.NavigateTo("/login",true);}finally{_signingOut=false;}}}
+@inject ILogger<MainLayout> Logger
+
+@if (Session.IsAuthenticated)
+{
+    <div class="admin-shell">
+        @if (_drawerOpen)
+        {
+            <button class="nav-backdrop" aria-label="Close navigation" @onclick="CloseDrawer"></button>
+        }
+        <aside class="sidebar @(_drawerOpen ? "open" : null)">
+            <div class="sidebar-brand">
+                <span class="brand-mark" aria-hidden="true">XD</span>
+                <div><strong>XAICD</strong><span>Admin Console</span></div>
+                <button class="sidebar-close" aria-label="Close navigation" @onclick="CloseDrawer">×</button>
+            </div>
+            <NavMenu />
+            <div class="sidebar-bottom">
+                <div class="sidebar-user"><span class="sidebar-avatar">A</span><div><strong>Administrator</strong><span>Authorized session</span></div></div>
+                <button class="sidebar-signout" disabled="@_signingOut" @onclick="Logout">
+                    <XIcon Name="logout" /><span>@(_signingOut ? "Signing out…" : "Sign out")</span>
+                </button>
+                <div class="environment"><i></i><div><strong>@HostEnvironment.EnvironmentName</strong><span>Administrative environment</span></div></div>
+            </div>
+        </aside>
+        <div class="workspace">
+            <header class="topbar">
+                <div class="topbar-start">
+                    <button class="menu-button" aria-label="Open navigation" aria-expanded="@_drawerOpen" @onclick="OpenDrawer"><XIcon Name="dashboard" /></button>
+                    <div class="route-context"><span>@_section</span><strong>@_pageTitle</strong></div>
+                </div>
+                <div class="admin-identity">
+                    <span class="session-status @Session.State.ToString().ToLowerInvariant()"><i></i>@SessionLabel</span>
+                    <span class="avatar" aria-hidden="true">A</span>
+                    <div><strong>Administrator</strong><span>Authorized session</span></div>
+                    <button class="topbar-signout" disabled="@_signingOut" @onclick="Logout">Sign out</button>
+                </div>
+            </header>
+            <main class="page-content">@Body</main>
+        </div>
+    </div>
+}
+
+@code {
+    private bool _signingOut;
+    private bool _drawerOpen;
+    private string _section = "Overview";
+    private string _pageTitle = "Dashboard";
+    private string? _lastRedirect;
+    private string SessionLabel => Session.State == AdminSessionState.Refreshing ? "Refreshing" : "Session active";
+
+    protected override void OnInitialized()
+    {
+        Session.Changed += OnSessionChanged;
+        Navigation.LocationChanged += OnLocationChanged;
+        UpdateRouteContext();
+        RedirectIfRequired();
+    }
+
+    protected override void OnParametersSet() => RedirectIfRequired();
+    private void OpenDrawer() => _drawerOpen = true;
+    private void CloseDrawer() => _drawerOpen = false;
+
+    private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs args)
+    {
+        _drawerOpen = false;
+        UpdateRouteContext();
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    private void UpdateRouteContext()
+    {
+        var path = Navigation.ToBaseRelativePath(Navigation.Uri).Split('?', '#')[0].Trim('/').ToLowerInvariant();
+        (_section, _pageTitle) = path switch
+        {
+            "users" => ("Management", "Users"),
+            var value when value.StartsWith("users/") => ("Management", "User details"),
+            "jobs" => ("Management", "Compression jobs"),
+            "shares" => ("Management", "Shares"),
+            "audit" => ("Security", "Audit activity"),
+            "authenticator" => ("Security", "Authenticator"),
+            "scanner" => ("Security", "Scanner"),
+            "system" or "system-health" => ("System", "System health"),
+            "email" => ("System", "Email delivery"),
+            "privacy" => ("System", "Privacy"),
+            _ => ("Overview", "Dashboard")
+        };
+    }
+
+    private void RedirectIfRequired()
+    {
+        var path = Navigation.ToBaseRelativePath(Navigation.Uri);
+        if (Session.State == AdminSessionState.Restoring) return;
+        if (Session.IsAuthenticated || path.StartsWith("login", StringComparison.OrdinalIgnoreCase) || path.StartsWith("forgot-password", StringComparison.OrdinalIgnoreCase)) return;
+        var destination = Session.State == AdminSessionState.Expired ? "/login?expired=1" : "/login";
+        if (_lastRedirect != destination)
+        {
+            _lastRedirect = destination;
+            Logger.LogInformation("Admin route redirect destination={Destination} state={State} revision={Revision}",
+                destination, Session.State, Session.Revision);
+        }
+        Navigation.NavigateTo(destination);
+    }
+
+    private void OnSessionChanged() => _ = InvokeAsync(() => { RedirectIfRequired(); StateHasChanged(); });
+
+    private async Task Logout()
+    {
+        if (_signingOut) return;
+        _signingOut = true;
+        try { await Api.LogoutAsync(); Navigation.NavigateTo("/login", true); }
+        finally { _signingOut = false; }
+    }
+
+    public void Dispose()
+    {
+        Session.Changed -= OnSessionChanged;
+        Navigation.LocationChanged -= OnLocationChanged;
+    }
+}

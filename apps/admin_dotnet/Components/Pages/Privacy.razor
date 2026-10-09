@@ -1,6 +1,15 @@
 @page "/privacy"
-<PageTitle>Admin privacy | XAICD Admin</PageTitle>
-<h1>Admin data use — policy draft</h1>
-<p>This interface processes account emails, roles, MFA state, file metadata and audit events returned by administrator-authorized API endpoints. Authentication tokens are held in the server-side session circuit. Logout clears the local session and attempts refresh-token revocation.</p>
-<p>Access is for authorized administration. Retention, operator contact, hosting logs, processor details and deletion procedures remain operator decisions. No finalized privacy policy or compliance certification is established.</p>
-<p>The backend stores uploaded content and artifacts. This dashboard does not provide account deletion, role editing or a retention management control.</p>
+
+<PageTitle>Privacy | XAICD Admin</PageTitle>
+<AdminPageHeader Section="System" Title="Privacy and data use" Description="How this console handles operational and account information.">
+    <Actions><span class="draft-badge">Policy draft</span></Actions>
+</AdminPageHeader>
+
+<div class="privacy-grid">
+    <section class="card prose-card"><span class="service-icon"><XIcon Name="security" /></span><h2>Administrator-visible data</h2><p>The console processes account emails, roles, MFA state, file and share metadata, and audit events returned by administrator-authorized endpoints.</p><ul><li>Passwords, TOTP secrets, current codes, and session tokens are never displayed.</li><li>Plaintext share codes and credential hashes are never returned.</li><li>Operational actions are limited to supported, audited controls.</li></ul></section>
+    <section class="card prose-card"><span class="service-icon"><XIcon Name="lock" /></span><h2>Session handling</h2><p>Session state is held in the server-side circuit. An encrypted browser-tab snapshot supports reload recovery.</p><ul><li>Short-lived access tokens are renewed using valid refresh sessions.</li><li>Signing out clears browser and circuit state and requests refresh-token revocation.</li><li>Persistent Data Protection keys keep encrypted state readable across normal Admin restarts.</li></ul></section>
+    <section class="card prose-card"><span class="service-icon"><XIcon Name="users" /></span><h2>Administrator controls</h2><p>The console supports audited user creation, role and status changes, refresh-session revocation, MFA reset, device revocation, and share revocation.</p><p>Hard account deletion, artifact deletion, and retention-policy management are not exposed here.</p></section>
+    <section class="card prose-card"><span class="service-icon"><XIcon Name="audit" /></span><h2>Retention</h2><p>This console displays records returned by the platform; it does not define or change retention periods. Database, audit, file, and hosting-log retention must be documented and approved by the operator.</p></section>
+    <section class="card prose-card"><span class="service-icon"><XIcon Name="security" /></span><h2>Security</h2><p>Administrator access requires role authorization and MFA. Sensitive credentials and enrollment material remain backend-only, and supported administrative changes are auditable.</p></section>
+    <section class="card prose-card notice-card"><span class="service-icon"><XIcon Name="warning" /></span><h2>Limitations and draft notice</h2><p>This operational summary is not an approved legal privacy policy. Operator contacts, hosting logs, processors, formal deletion procedures, and final policy language require operator approval.</p></section>
+</div>

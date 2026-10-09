@@ -182,5 +182,7 @@ def register_authenticator_routes(app,current_user,require_admin,enrollment_user
 
     @app.get('/admin/authenticator/recovery')
     def admin_recovery(admin:User=Depends(require_admin),db:Session=Depends(get_db)):
-        rows=db.execute(select(RecoveryCode.user_id,func.count(RecoveryCode.id),func.sum(RecoveryCode.used_at.is_not(None))).group_by(RecoveryCode.user_id)).all()
+        rows=db.execute(select(RecoveryCode.user_id,func.count(RecoveryCode.id),
+                               func.count(RecoveryCode.id).filter(RecoveryCode.used_at.is_not(None)))
+                        .group_by(RecoveryCode.user_id)).all()
         return [{'user_id':user_id,'issued':int(issued),'used':int(used or 0),'remaining':int(issued-(used or 0))} for user_id,issued,used in rows]

@@ -1,16 +1,61 @@
 @page "/users/{Id:int}"
 @inherits AdminReadPage<XaiCompress.Admin.Models.UserDetails>
-<PageTitle>User details | XAICD Admin</PageTitle>
-<div class="page-heading"><h1>User details</h1><button disabled="@Loading" @onclick="LoadAsync">Refresh</button></div>
-<a href="/users">Back to users</a>
-<AdminDataState RequiresLogin="RequiresLogin" Loading="Loading" Error="Error">
-@if (Data is not null) {
- <dl><dt>Email</dt><dd>@Data.Email</dd><dt>Display name</dt><dd>@Data.DisplayName</dd><dt>Role</dt><dd>@Data.Role</dd>
- <dt>MFA</dt><dd>@(Data.MfaEnabled ? "Enabled" : "Not enabled")</dd><dt>Enrollment</dt><dd>@Data.MfaEnrollmentState</dd>
- <dt>Created</dt><dd>@Data.CreatedAt.ToString("u")</dd><dt>Last recorded login</dt><dd>@(Data.LastLogin?.ToString("u") ?? "Not recorded")</dd>
- <dt>Stored file records</dt><dd>@Data.FileCount</dd></dl>
- <p>Read-only account review. Passwords, TOTP secrets and tokens are never returned here.</p>
-}
-</AdminDataState>
-@code { [Parameter] public int Id { get; set; } protected override Task<XaiCompress.Admin.Models.UserDetails> FetchAsync()=>Api.GetUserAsync(Id); }
 
+<PageTitle>User details | XAICD Admin</PageTitle>
+<AdminPageHeader Section="Management / Users" Title="User details" Description="Review account access and apply supported, audited controls.">
+    <Actions><a class="button quiet" href="/users">← Back to users</a><button class="button secondary" disabled="@Loading" @onclick="LoadAsync"><XIcon Name="system" /> Refresh</button></Actions>
+</AdminPageHeader>
+
+@if (_actionMessage is not null) { <div class="alert success" role="status">@_actionMessage</div> }
+@if (_actionError is not null) { <div class="alert error" role="alert">@_actionError</div> }
+
+<AdminDataState RequiresLogin="RequiresLogin" Loading="Loading" Error="@Error" OnRetry="LoadAsync">
+    @if (Data is not null)
+    {
+        <div class="detail-layout">
+            <section class="card profile-card">
+                <div class="profile-heading"><span class="profile-avatar">@Initial(Data)</span><div><h2>@(string.IsNullOrWhiteSpace(Data.DisplayName) ? Data.Email : Data.DisplayName)</h2><p>@Data.Email</p></div><StatusBadge Value="@Data.Status" /></div>
+                <dl class="detail-list"><div><dt>Role</dt><dd><StatusBadge Value="@Data.Role" /></dd></div><div><dt>Email verification</dt><dd>@(Data.EmailVerified ? "Verified" : "Not verified")</dd></div><div><dt>MFA</dt><dd>@(Data.MfaEnabled ? "Enabled" : "Not enabled")</dd></div><div><dt>Enrollment</dt><dd>@Data.MfaEnrollmentState</dd></div><div><dt>Created</dt><dd>@Data.CreatedAt.LocalDateTime.ToString("f")</dd></div><div><dt>Last recorded login</dt><dd>@(Data.LastLogin?.LocalDateTime.ToString("f") ?? "Not recorded")</dd></div><div><dt>Stored file records</dt><dd>@Data.FileCount</dd></div></dl>
+            </section>
+            <section class="card action-card">
+                <header class="card-header"><div><span class="card-kicker">Audited controls</span><h2>Account actions</h2></div></header>
+                <p class="card-description">Every change requires confirmation. Passwords, TOTP secrets, and session tokens are never displayed.</p>
+                <div class="action-list">
+                    <button disabled="@_actionBusy" @onclick="AskRole"><span><strong>@(Data.Role == "admin" ? "Remove administrator role" : "Grant administrator role")</strong><small>Change this account's authorization level.</small></span><span>→</span></button>
+                    <button disabled="@_actionBusy" @onclick="AskStatus"><span><strong>@(Data.Status == "DISABLED" ? "Enable account" : "Disable account")</strong><small>Control whether this account can sign in.</small></span><span>→</span></button>
+                    <button disabled="@_actionBusy" @onclick="AskSessions"><span><strong>Revoke refresh sessions</strong><small>Require fresh authentication on active clients.</small></span><span>→</span></button>
+                    @if (Data.MfaEnabled) { <button class="danger-row" disabled="@_actionBusy" @onclick="AskMfa"><span><strong>Reset MFA enrollment</strong><small>Revoke authenticator devices and require new setup.</small></span><span>→</span></button> }
+                </div>
+            </section>
+        </div>
+    }
+</AdminDataState>
+
+<AdminConfirmDialog Open="@(_pendingAction is not null)" Busy="@_actionBusy" Title="@_confirmTitle" Message="@_confirmMessage" ConfirmLabel="Confirm change" OnConfirm="ConfirmAction" OnCancel="CancelAction" />
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private bool _actionBusy;
+    private string? _actionError, _actionMessage;
+    private Func<Task>? _pendingAction;
+    private string _confirmTitle = "Confirm account change", _confirmMessage = "";
+    protected override Task<XaiCompress.Admin.Models.UserDetails> FetchAsync() => Api.GetUserAsync(Id);
+    private static string Initial(XaiCompress.Admin.Models.UserDetails user) { var value = string.IsNullOrWhiteSpace(user.DisplayName) ? user.Email : user.DisplayName; return string.IsNullOrWhiteSpace(value) ? "U" : value[..1].ToUpperInvariant(); }
+    private void Ask(string title, string message, Func<Task> action) { _confirmTitle = title; _confirmMessage = message; _pendingAction = action; _actionError = _actionMessage = null; }
+    private void AskRole() => Ask(Data?.Role == "admin" ? "Remove administrator role?" : "Grant administrator role?", "This changes the account's access to administrative resources.", () => Api.UpdateUserAsync(Id, Data?.Role == "admin" ? "user" : "admin", null));
+    private void AskStatus() => Ask(Data?.Status == "DISABLED" ? "Enable this account?" : "Disable this account?", Data?.Status == "DISABLED" ? "The user will be able to sign in again." : "This immediately blocks new sign-ins.", () => Api.UpdateUserAsync(Id, null, Data?.Status == "DISABLED" ? "ACTIVE" : "DISABLED"));
+    private void AskSessions() => Ask("Revoke refresh sessions?", "The user must authenticate again when current access tokens expire.", () => Api.RevokeRefreshSessionsAsync(Id));
+    private void AskMfa() => Ask("Reset MFA enrollment?", "Authenticator devices will be revoked and the user must enroll again.", () => Api.ResetUserMfaAsync(Id));
+    private void CancelAction() => _pendingAction = null;
+    private async Task ConfirmAction()
+    {
+        if (_actionBusy || _pendingAction is null) return;
+        var action = _pendingAction; _actionBusy = true; _actionError = _actionMessage = null;
+        try { await action(); _pendingAction = null; await LoadAsync(); _actionMessage = "Account action completed."; }
+        catch (AdminApiAuthorizationException ex) { if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized) RedirectToLogin(); else _actionError = "You do not have permission to change this account."; }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound) { _pendingAction = null; _actionError = "The account was not found."; }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Conflict) { _pendingAction = null; _actionError = "The requested change conflicts with the current account state."; }
+        catch (Exception) { _actionError = "The account could not be changed. Please try again."; }
+        finally { _actionBusy = false; }
+    }
+}

@@ -12,6 +12,7 @@ def test_local_demo_enrollment_and_second_login(flow):
     first = client.post('/auth/login', json=credentials)
     assert first.status_code == 200
     assert first.json()['enrollment_required'] is True
+    assert first.json()['state'] == 'MFA_ENROLLMENT_REQUIRED'
     assert first.json()['refresh_token'] is None
     assert client.get('/auth/history').status_code == 401
     assert client.get('/admin/stats').status_code == 401
@@ -39,6 +40,17 @@ def test_local_demo_enrollment_and_second_login(flow):
     challenge = client.post('/auth/login', json=credentials)
     assert challenge.status_code == 401
     mfa_token = challenge.json()['detail']['mfa_token']
+    staged = client.post('/auth/login', json=credentials,
+                         headers={'X-XAICD-Login-Flow':'staged'})
+    assert staged.status_code == 200
+    assert staged.json()['state'] == 'MFA_REQUIRED'
+    assert staged.json()['mfa_token']
+    assert 'access_token' not in staged.json()
+    assert staged.headers['cache-control'] == 'no-store'
+    invalid = client.post('/auth/login', json={**credentials, 'password':'wrong-password'},
+                          headers={'X-XAICD-Login-Flow':'staged'})
+    assert invalid.status_code == 401
+    assert invalid.json()['detail'] == 'Invalid credentials'
     client.headers['Authorization'] = 'Bearer ' + mfa_token
     assert client.get('/auth/me').status_code == 401
     assert client.get('/auth/history').status_code == 401

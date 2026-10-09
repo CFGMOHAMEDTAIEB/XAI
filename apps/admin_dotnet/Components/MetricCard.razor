@@ -1,3 +1,26 @@
-@if(string.IsNullOrWhiteSpace(Href)){<div class="metric-card @Tone"><div class="metric-title"><span>@Label</span><XIcon Name="@Icon"/></div><strong>@Value</strong><small>@Detail</small></div>}
-else{<a class="metric-card metric-link @Tone" href="@Href"><div class="metric-title"><span>@Label</span><XIcon Name="@Icon"/></div><strong>@Value</strong><small>@Detail</small><b>View details →</b></a>}
-@code {[Parameter,EditorRequired]public string Label{get;set;}="";[Parameter,EditorRequired]public string Value{get;set;}="";[Parameter]public string Detail{get;set;}="";[Parameter]public string Tone{get;set;}="blue";[Parameter]public string? Href{get;set;}[Parameter]public string Icon{get;set;}="dashboard";}
+@if (string.IsNullOrWhiteSpace(Href))
+{
+    <article class="metric-card @Tone">
+        <div class="metric-top"><span>@Label</span><span class="metric-icon"><XIcon Name="@Icon" /></span></div>
+        <strong class="metric-value">@Value</strong>
+        <span class="metric-detail">@Detail</span>
+    </article>
+}
+else
+{
+    <a class="metric-card metric-link @Tone" href="@Href">
+        <div class="metric-top"><span>@Label</span><span class="metric-icon"><XIcon Name="@Icon" /></span></div>
+        <strong class="metric-value">@Value</strong>
+        <span class="metric-detail">@Detail</span>
+        <span class="metric-action">View details <span aria-hidden="true">→</span></span>
+    </a>
+}
+
+@code {
+    [Parameter, EditorRequired] public string Label { get; set; } = "";
+    [Parameter, EditorRequired] public string Value { get; set; } = "";
+    [Parameter] public string Detail { get; set; } = "";
+    [Parameter] public string Tone { get; set; } = "blue";
+    [Parameter] public string? Href { get; set; }
+    [Parameter] public string Icon { get; set; } = "dashboard";
+}

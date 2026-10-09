@@ -1,0 +1,28 @@
+@if (Open)
+{
+    <div class="dialog-layer" role="presentation" @onclick="Cancel">
+        <section class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" @onclick:stopPropagation="true">
+            <span class="dialog-icon"><XIcon Name="warning" /></span>
+            <div>
+                <h2 id="confirm-title">@Title</h2>
+                <p>@Message</p>
+            </div>
+            <div class="dialog-actions">
+                <button class="button secondary" disabled="@Busy" @onclick="Cancel">Cancel</button>
+                <button class="button danger" disabled="@Busy" @onclick="Confirm">@(Busy ? "Working…" : ConfirmLabel)</button>
+            </div>
+        </section>
+    </div>
+}
+
+@code {
+    [Parameter] public bool Open { get; set; }
+    [Parameter] public bool Busy { get; set; }
+    [Parameter] public string Title { get; set; } = "Confirm action";
+    [Parameter] public string Message { get; set; } = "Are you sure?";
+    [Parameter] public string ConfirmLabel { get; set; } = "Confirm";
+    [Parameter] public EventCallback OnConfirm { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+    private Task Confirm() => OnConfirm.InvokeAsync();
+    private Task Cancel() => Busy ? Task.CompletedTask : OnCancel.InvokeAsync();
+}

@@ -61,7 +61,8 @@ sealed class LoginHandler(LoginScenario scenario):HttpMessageHandler{
  protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,CancellationToken token){
   if(request.RequestUri?.AbsolutePath=="/auth/login"){
    if(scenario==LoginScenario.Invalid)return Reply(HttpStatusCode.Unauthorized,"{\"detail\":\"Invalid credentials\"}");
-   if(scenario==LoginScenario.Mfa)return Reply(HttpStatusCode.Unauthorized,"{\"detail\":\"Valid TOTP code required\"}");
+   if(scenario==LoginScenario.Mfa)return Reply(HttpStatusCode.Unauthorized,
+    "{\"detail\":{\"message\":\"Valid TOTP code required\",\"mfa_token\":\"test-mfa-token\"}}");
    return Reply(HttpStatusCode.OK,"{\"access_token\":\"test-access-token\",\"refresh_token\":\"test-refresh-token\"}");
   }
   if(request.RequestUri?.AbsolutePath=="/admin/stats")return Reply(scenario==LoginScenario.NonAdmin?HttpStatusCode.Forbidden:HttpStatusCode.OK,"{}");

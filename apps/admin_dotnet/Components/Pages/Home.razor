@@ -1,14 +1,137 @@
 @page "/"
+@page "/dashboard"
 @inject PlatformApiClient Api
 @inject AdminSession Session
 @inject NavigationManager Navigation
+@inject ILogger<Home> Logger
+
 <PageTitle>Dashboard | XAICD Admin</PageTitle>
-<div class="page-heading"><div><p class="eyebrow">Operational overview</p><h1>Dashboard</h1><p>Live account, compression and security records from the XAICD platform API.</p></div><button class="button" disabled="@_loading" @onclick="LoadAsync">Refresh data</button></div>
-@if(!string.IsNullOrWhiteSpace(_error)){<div class="notice" role="alert">@_error</div>}
-else if(_loading||_stats is null){<div class="dashboard-skeleton" role="status"><span></span><span></span><span></span><span></span></div>}
-else{
- <div class="stat-grid admin-stats"><MetricCard Label="Total users" Value="@_stats.TotalUsers.ToString()" Detail="All stored accounts" Tone="blue" Href="/users"/><MetricCard Label="Active accounts" Value="@_stats.ActiveUsers.ToString()" Detail="Account status ACTIVE" Tone="green" Href="/users"/><MetricCard Label="Pending verification" Value="@_stats.PendingVerification.ToString()" Detail="Awaiting account activation" Tone="orange" Href="/users"/><MetricCard Label="MFA enabled" Value="@_stats.MfaEnabled.ToString()" Detail="Accounts protected by TOTP" Tone="purple" Href="/authenticator"/><MetricCard Label="Authenticator devices" Value="@_stats.AuthenticatorDevices.ToString()" Detail="Active registered devices" Tone="teal" Href="/authenticator"/><MetricCard Label="Compression jobs" Value="@_stats.CompressionJobs.ToString()" Detail="Stored file job records" Tone="blue" Href="/jobs"/><MetricCard Label="Successful jobs" Value="@_stats.SuccessfulJobs.ToString()" Detail="Completed records" Tone="green" Href="/jobs"/><MetricCard Label="Failed jobs" Value="@_stats.FailedJobs.ToString()" Detail="Failed records" Tone="red" Href="/jobs"/><MetricCard Label="Security events" Value="@_stats.SecurityEvents.ToString()" Detail="Recorded security audit events" Tone="orange" Href="/audit"/></div>
- <div class="two-column"><section class="panel"><div class="panel-header"><h2>Recent compression jobs</h2><a href="/jobs">View all</a></div><table><thead><tr><th>File</th><th>Mode</th><th>Status</th><th>Saving</th></tr></thead><tbody>@if(_jobs.Count==0){<tr><td colspan="4">No compression records yet.</td></tr>}@foreach(var job in _jobs.Take(5)){<tr><td><strong>@job.FileName</strong><small>@job.UserEmail</small></td><td>@job.Mode</td><td><StatusBadge Value="@job.Status"/></td><td>@FormatSaving(job)</td></tr>}</tbody></table></section>
- <section class="panel"><div class="panel-header"><h2>Platform snapshot</h2><a href="/system">System health</a></div><div class="snapshot"><div><span>Created today</span><strong>@_stats.JobsToday</strong></div><div><span>Net bytes saved</span><strong>@FormatBytes(_stats.BytesSaved)</strong></div><div><span>Integrity-verified records</span><strong>@(_stats.LosslessSuccessRate is double rate?$"{rate:F1}%":"No records")</strong></div></div></section></div>
+<AdminPageHeader Section="Overview" Title="Dashboard" Description="A current view of accounts, file activity, sharing, and platform readiness.">
+    <Actions><button class="button secondary" disabled="@_loading" @onclick="LoadAsync"><XIcon Name="system" /> Refresh data</button></Actions>
+</AdminPageHeader>
+
+<AdminDataState Loading="@_loading" Error="@_error" OnRetry="LoadAsync">
+        <section class="metric-grid" aria-label="Platform summary">
+            <MetricCard Label="Total users" Value="@(_stats?.TotalUsers.ToString() ?? "—")" Detail="@(_stats is null ? _statsError : $"{_stats.ActiveUsers} active accounts")" Icon="users" Href="/users" />
+            <MetricCard Label="MFA enabled" Value="@(_stats?.MfaEnabled.ToString() ?? "—")" Detail="@(_stats is null ? _statsError : "Accounts protected by MFA")" Icon="key" Tone="violet" Href="/authenticator" />
+            <MetricCard Label="Compression jobs" Value="@(_stats?.CompressionJobs.ToString() ?? "—")" Detail="@(_stats is null ? _statsError : $"{_stats.SuccessfulJobs} completed")" Icon="jobs" Tone="green" Href="/jobs" />
+            <MetricCard Label="Active shares" Value="@(_sharesError is null ? _shares.Count(x => x.Status.Equals("active", StringComparison.OrdinalIgnoreCase)).ToString() : "—")" Detail="@(_sharesError is null ? $"{_shares.Count} total share records" : "Unavailable")" Icon="security" Tone="cyan" Href="/shares" />
+        </section>
+
+        <div class="dashboard-grid">
+            <section class="card">
+                <header class="card-header"><div><span class="card-kicker">Readiness</span><h2>Security status</h2></div><a href="/system">System health</a></header>
+                <div class="key-value-list">
+                    @if (_scannerError is not null) { <div class="alert error" role="alert">@_scannerError</div> }
+                    else { <div><span>ClamAV</span><StatusBadge Value="@(_scanner?.Clamav ?? "Unknown")" /></div><div><span>YARA</span><StatusBadge Value="@(_scanner?.Yara ?? "Unknown")" /></div> }
+                    <div><span>MFA adoption</span><strong>@(_stats is null ? "Unavailable" : $"{_stats.MfaEnabled} / {_stats.TotalUsers}")</strong></div>
+                    @if (_emailError is not null) { <div class="alert error" role="alert">@_emailError</div> }
+                    else { <div><span>Email configuration</span><StatusBadge Value="@(_email?.Configured == true ? "Configured" : "Not configured")" /></div> }
+                </div>
+            </section>
+            <section class="card">
+                <header class="card-header"><div><span class="card-kicker">Activity</span><h2>Recent audit events</h2></div><a href="/audit">View all</a></header>
+                @if (_auditError is not null)
+                {
+                    <div class="alert error" role="alert">@_auditError</div>
+                }
+                else if (!_audit.Any())
+                {
+                    <AdminEmptyState Icon="audit" Title="No audit activity" Description="Recorded administrator events will appear here." />
+                }
+                else
+                {
+                    <div class="activity-list">
+                        @foreach (var item in _audit.Take(5))
+                        {
+                            <div><i></i><div><strong>@Friendly(item.Action)</strong><span>@item.Actor · @item.CreatedAt.LocalDateTime.ToString("g")</span></div><StatusBadge Value="@item.Result" /></div>
+                        }
+                    </div>
+                }
+            </section>
+            <section class="card dashboard-wide">
+                <header class="card-header"><div><span class="card-kicker">Files</span><h2>Recent compression activity</h2></div><a href="/jobs">View all</a></header>
+                @if (_jobsError is not null) { <div class="alert error" role="alert">@_jobsError</div> }
+                else
+                {
+                <div class="table-wrap"><table><thead><tr><th>File</th><th>Owner</th><th>Mode</th><th>Status</th><th>Saved</th><th>Created</th></tr></thead><tbody>
+                    @if (!_jobs.Any()) { <tr><td colspan="6"><AdminEmptyState Icon="jobs" Title="No compression activity" /></td></tr> }
+                    @foreach (var job in _jobs.Take(6)) { <tr><td><strong class="truncate" title="@job.FileName">@job.FileName</strong></td><td>@job.UserEmail</td><td>@job.Mode</td><td><StatusBadge Value="@job.Status" /></td><td>@FormatSaving(job)</td><td>@job.CreatedAt.LocalDateTime.ToString("g")</td></tr> }
+                </tbody></table></div>
+                }
+            </section>
+        </div>
+</AdminDataState>
+
+@code {
+    private DashboardStats? _stats;
+    private ScannerStatus? _scanner;
+    private EmailConfiguration? _email;
+    private IReadOnlyList<CompressionJob> _jobs = [];
+    private IReadOnlyList<AdminShare> _shares = [];
+    private IReadOnlyList<AuditEvent> _audit = [];
+    private bool _loading = true, _loadInProgress;
+    private string? _error;
+    private string? _statsError, _jobsError, _sharesError, _auditError, _scannerError, _emailError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Session.IsAuthenticated) { NavigateToLogin(); return; }
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        if (_loadInProgress) return;
+        _loadInProgress = true;
+        _loading = true; _error = null;
+        _statsError = _jobsError = _sharesError = _auditError = _scannerError = _emailError = null;
+        try
+        {
+            var stats = LoadPanelAsync(() => Api.GetDashboardAsync(), "/admin/stats", "dashboard summary");
+            var jobs = LoadPanelAsync(() => Api.GetJobsAsync(), "/admin/jobs", "compression activity");
+            var shares = LoadPanelAsync(() => Api.GetSharesAsync(), "/admin/shares", "shares");
+            var audit = LoadPanelAsync(() => Api.GetAuditAsync(), "/admin/audit", "audit activity");
+            var scanner = LoadPanelAsync(() => Api.GetScannerAsync(), "/admin/security/scanner", "scanner status");
+            var email = LoadPanelAsync(() => Api.GetEmailConfigurationAsync(), "/admin/email/configuration", "email configuration");
+            await Task.WhenAll(stats, jobs, shares, audit, scanner, email);
+            (_stats, _statsError) = (stats.Result.Data, stats.Result.Error);
+            (_jobs, _jobsError) = (jobs.Result.Data ?? [], jobs.Result.Error);
+            (_shares, _sharesError) = (shares.Result.Data ?? [], shares.Result.Error);
+            (_audit, _auditError) = (audit.Result.Data ?? [], audit.Result.Error);
+            (_scanner, _scannerError) = (scanner.Result.Data, scanner.Result.Error);
+            (_email, _emailError) = (email.Result.Data, email.Result.Error);
+            if (!Session.IsAuthenticated) NavigateToLogin();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning("Admin read failed Page=Dashboard Endpoint=/admin/stats Status={Status} Reason={Reason}",
+                ex is HttpRequestException request && request.StatusCode is not null ? (int)request.StatusCode : null,
+                ex.GetType().Name);
+            _error = "We couldn't load this information. Please try again.";
+        }
+        finally { _loading = false; _loadInProgress = false; }
+    }
+
+    private async Task<(T? Data, string? Error)> LoadPanelAsync<T>(Func<Task<T>> fetch, string endpoint, string label) where T : class
+    {
+        try { return (await fetch(), null); }
+        catch (Exception ex)
+        {
+            var status = ex switch
+            {
+                AdminApiAuthorizationException authorization => (int)authorization.StatusCode,
+                HttpRequestException request when request.StatusCode is not null => (int)request.StatusCode,
+                _ => (int?)null
+            };
+            Logger.LogWarning("Admin read failed Page=Dashboard Endpoint={Endpoint} Status={Status} Reason={Reason}",
+                endpoint, status, ex.GetType().Name);
+            return (null, $"We couldn't load {label}. Please try again.");
+        }
+    }
+
+    private static string FormatSaving(CompressionJob job) => job.CompressedSize <= 0 || job.OriginalSize <= 0 ? "Not available" : $"{100 * (1 - (double)job.CompressedSize / job.OriginalSize):F1}%";
+    private static string Friendly(string value) => string.Join(" ", value.Replace('.', '_').Split('_', StringSplitOptions.RemoveEmptyEntries).Select(x => char.ToUpperInvariant(x[0]) + x[1..]));
+    private void NavigateToLogin() =>
+        Navigation.NavigateTo(Session.State == AdminSessionState.Expired ? "/login?expired=1" : "/login");
 }
-@code{private DashboardStats?_stats;private IReadOnlyList<CompressionJob>_jobs=[];private bool _loading=true;private string?_error;protected override async Task OnInitializedAsync(){if(!Session.IsAuthenticated){Navigation.NavigateTo("/login");return;}await LoadAsync();}private async Task LoadAsync(){_loading=true;_error=null;try{_stats=await Api.GetDashboardAsync();_jobs=await Api.GetJobsAsync();}catch(AdminApiAuthorizationException ex){if(ex.StatusCode==System.Net.HttpStatusCode.Unauthorized)Navigation.NavigateTo("/login");else _error="Access denied.";}catch(Exception){_error="Dashboard data is unavailable. Try again shortly.";}finally{_loading=false;}}private static string FormatBytes(long bytes)=>bytes>=1_073_741_824?$"{bytes/1_073_741_824d:F1} GiB":$"{bytes/1_048_576d:F1} MiB";private static string FormatSaving(CompressionJob job)=>job.CompressedSize<=0||job.OriginalSize<=0?"Not available":$"{100*(1-(double)job.CompressedSize/job.OriginalSize):F1}%";}

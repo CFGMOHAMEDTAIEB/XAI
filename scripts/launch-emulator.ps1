@@ -6,7 +6,7 @@ $ErrorActionPreference = 'Stop'
 $sdk = 'C:\Users\ss\AppData\Local\Android\sdk'
 $adb = Join-Path $sdk 'platform-tools\adb.exe'
 $emulator = Join-Path $sdk 'emulator\emulator.exe'
-$avd = if ($env:XAI_ANDROID_AVD) { $env:XAI_ANDROID_AVD } else { 'xaicd_demo_api37' }
+$avd = 'xaicd_pfe_demo'
 $device = $null
 $env:ANDROID_HOME = $sdk
 $env:ANDROID_SDK_ROOT = $sdk
@@ -123,9 +123,13 @@ try {
     Write-Host '[Android Emulator] Testing Package Manager...'
     $packages = Invoke-Adb @('-s', $device, 'shell', 'pm', 'list', 'packages') 30
     if ($packages.Code -ne 0 -or $packages.Timeout -or $packages.Out -notmatch '(?m)^package:') { throw 'Android Package Manager check failed.' }
-    $users = Invoke-Adb @('-s', $device, 'shell', 'dumpsys', 'user') 15
-    if ($users.Code -ne 0 -or $users.Timeout) { throw 'Android user-state check failed.' }
-    if ($users.Out -match 'RUNNING_LOCKED') { throw "AVD '$avd' is in RUNNING_LOCKED state." }
+    do {
+        $users = Invoke-Adb @('-s', $device, 'shell', 'dumpsys', 'user') 15
+        if ($users.Code -ne 0 -or $users.Timeout) { throw 'Android user-state check failed.' }
+        if ($users.Out -match 'Started users state:\s*\[0=RUNNING_UNLOCKED') { break }
+        if ((Get-Date) -ge $deadline) { throw "AVD '$avd' did not reach RUNNING_UNLOCKED within $TimeoutSeconds seconds." }
+        Start-Sleep -Seconds 2
+    } while ($true)
     Write-Host '[Android Emulator] READY'
     Write-Host "AVD: $avd"
     Write-Host "ADB: $device"

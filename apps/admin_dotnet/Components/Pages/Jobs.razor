@@ -1,14 +1,50 @@
 @page "/jobs"
 @inherits AdminReadPage<IReadOnlyList<CompressionJob>>
-<PageTitle>Files and compression jobs | XAICD Admin</PageTitle>
-<div class="page-heading"><div><h1>Files and compression jobs</h1><p>Stored file records, modes, sizes and integrity flags. This is not a live worker queue.</p></div><button disabled="@Loading" @onclick="LoadAsync">Refresh</button></div>
-<AdminDataState RequiresLogin="RequiresLogin" Loading="Loading" Error="Error">
-@if(Data is not null){<section class="panel"><table><thead><tr><th>Job</th><th>File</th><th>User</th><th>Mode</th><th>Status</th><th>Sizes</th><th>Integrity</th></tr></thead><tbody>
-@if(Data.Count==0){<tr><td colspan="7">No file records yet.</td></tr>}
-@foreach(var job in Data){<tr><td>@job.Id</td><td><strong>@job.FileName</strong><small>@job.CreatedAt.LocalDateTime</small></td><td>@job.UserEmail</td><td>@job.Mode</td><td><StatusBadge Value="@job.Status" /></td><td>@Format(job.OriginalSize) &rarr; @Format(job.CompressedSize)</td><td><StatusBadge Value="@(job.IntegrityVerified ? "Verified" : "Unverified")" /></td></tr>}
-</tbody></table></section>}
+
+<PageTitle>Compression jobs | XAICD Admin</PageTitle>
+<AdminPageHeader Section="Management" Title="Compression jobs" Description="Review file ownership, compression output, status, and integrity results.">
+    <Actions><button class="button secondary" disabled="@Loading" @onclick="LoadAsync"><XIcon Name="system" /> Refresh</button></Actions>
+</AdminPageHeader>
+
+<div class="toolbar">
+    <label class="search-control"><span>Search jobs</span><input @bind="_search" @bind:event="oninput" placeholder="Filename or owner" /></label>
+    <label class="select-control"><span>Mode</span><select @bind="_mode"><option value="">All modes</option>@foreach (var mode in Modes) { <option value="@mode">@mode</option> }</select></label>
+    <label class="select-control"><span>Integrity</span><select @bind="_integrity"><option value="">All results</option><option value="verified">Verified</option><option value="unverified">Unverified</option></select></label>
+    <span class="result-count">@Filtered.Count() records</span>
+</div>
+
+<AdminDataState RequiresLogin="RequiresLogin" Loading="Loading" Error="@Error" OnRetry="LoadAsync">
+    @if (Data is not null)
+    {
+        <section class="card data-card"><div class="table-wrap"><table><thead><tr><th>File</th><th>Owner</th><th>Mode</th><th>Original</th><th>Compressed</th><th>Integrity</th><th>Created</th><th><span class="sr-only">Actions</span></th></tr></thead><tbody>
+            @if (!Filtered.Any()) { <tr><td colspan="8"><AdminEmptyState Icon="jobs" Title="@(Data.Count == 0 ? "No compression records are available." : "No compression jobs match")" Description="@(Data.Count == 0 ? "Completed and pending jobs will appear here." : "No records match the current filters.")" /></td></tr> }
+            @foreach (var job in Filtered)
+            {
+                <tr><td><div class="primary-cell"><strong class="truncate" title="@job.FileName">@job.FileName</strong><small>Job @job.Id · @job.Status</small></div></td><td>@job.UserEmail</td><td><StatusBadge Value="@job.Mode" /></td><td class="numeric">@Format(job.OriginalSize)</td><td class="numeric">@Format(job.CompressedSize)</td><td><StatusBadge Value="@(job.IntegrityVerified ? "Verified" : "Unverified")" /></td><td>@job.CreatedAt.LocalDateTime.ToString("g")</td><td><button class="button quiet compact" @onclick="() => _selected = job">Details</button></td></tr>
+            }
+        </tbody></table></div></section>
+    }
 </AdminDataState>
+
+@if (_selected is not null)
+{
+    <div class="dialog-layer" role="presentation" @onclick="() => _selected = null">
+        <section class="detail-dialog" role="dialog" aria-modal="true" aria-labelledby="job-detail-title" @onclick:stopPropagation="true">
+            <header><div><span class="card-kicker">Compression job</span><h2 id="job-detail-title">@_selected.FileName</h2></div><button aria-label="Close details" @onclick="() => _selected = null">×</button></header>
+            <dl class="detail-list"><div><dt>Job ID</dt><dd class="mono">@_selected.Id</dd></div><div><dt>Owner</dt><dd>@_selected.UserEmail</dd></div><div><dt>Mode</dt><dd>@_selected.Mode</dd></div><div><dt>Status</dt><dd><StatusBadge Value="@_selected.Status" /></dd></div><div><dt>Original size</dt><dd>@Format(_selected.OriginalSize)</dd></div><div><dt>Compressed size</dt><dd>@Format(_selected.CompressedSize)</dd></div><div><dt>Integrity</dt><dd>@(_selected.IntegrityVerified ? "Verified" : "Unverified")</dd></div><div><dt>Created</dt><dd>@_selected.CreatedAt.LocalDateTime.ToString("f")</dd></div></dl>
+            <footer><button class="button secondary" @onclick="() => _selected = null">Close</button></footer>
+        </section>
+    </div>
+}
+
 @code {
- protected override Task<IReadOnlyList<CompressionJob>> FetchAsync()=>Api.GetJobsAsync();
- private static string Format(long x)=>$"{x/1024d:F1} KiB";
+    private string _search = "", _mode = "", _integrity = "";
+    private CompressionJob? _selected;
+    protected override Task<IReadOnlyList<CompressionJob>> FetchAsync() => Api.GetJobsAsync();
+    private IEnumerable<string> Modes => (Data ?? []).Select(x => x.Mode).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Order();
+    private IEnumerable<CompressionJob> Filtered => (Data ?? []).Where(x =>
+        (string.IsNullOrWhiteSpace(_search) || x.FileName.Contains(_search, StringComparison.OrdinalIgnoreCase) || x.UserEmail.Contains(_search, StringComparison.OrdinalIgnoreCase)) &&
+        (string.IsNullOrWhiteSpace(_mode) || x.Mode.Equals(_mode, StringComparison.OrdinalIgnoreCase)) &&
+        (string.IsNullOrWhiteSpace(_integrity) || (_integrity == "verified" ? x.IntegrityVerified : !x.IntegrityVerified)));
+    private static string Format(long bytes) => bytes >= 1_073_741_824 ? $"{bytes / 1_073_741_824d:F2} GiB" : bytes >= 1_048_576 ? $"{bytes / 1_048_576d:F2} MiB" : bytes >= 1024 ? $"{bytes / 1024d:F1} KiB" : $"{bytes} B";
 }

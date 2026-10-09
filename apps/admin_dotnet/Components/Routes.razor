@@ -1,5 +1,13 @@
 @rendermode @(new InteractiveServerRenderMode(prerender: true))
+@inject AdminSession Session
+@inject ILogger<Routes> Logger
 
+@if (!_ready)
+{
+    <p role="status">Restoring administrator session...</p>
+}
+else
+{
 <Router AppAssembly="typeof(Program).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)" />
@@ -16,3 +24,24 @@
         </LayoutView>
     </NotFound>
 </Router>
+}
+
+@code {
+    private bool _ready;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        try { await Session.RestoreAsync(); }
+        catch (Exception exception)
+        {
+            Logger.LogWarning(exception, "The saved administrator session could not be restored.");
+        }
+        finally
+        {
+            // A stale/corrupt browser snapshot must never leave the whole admin
+            // console stuck on the restoration screen or tear down its circuit.
+            _ready = true;
+            StateHasChanged();
+        }
+    }
+}

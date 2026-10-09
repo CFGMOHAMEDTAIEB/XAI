@@ -25,7 +25,7 @@ class ResourceGuard:
         self.active = 0
 
     async def __call__(self, scope, receive, send):
-        if scope['type'] != 'http' or scope.get('path') not in ('/compression/jobs', '/compression/decompress'):
+        if scope['type'] != 'http' or scope.get('path') not in ('/compression/jobs', '/compression/decompress', '/files/artifacts'):
             return await self.app(scope, receive, send)
         async def reject(code, message):
             await JSONResponse({'detail': message}, status_code=code)(scope, receive, send)

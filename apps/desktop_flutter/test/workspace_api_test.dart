@@ -59,6 +59,36 @@ void main() {
     expect(calls, ['/shares', '/shares', '/shares/3/revoke']);
   });
 
+  test('local XAIC import uploads a real multipart file before sharing',
+      () async {
+    final directory = await Directory.systemTemp.createTemp('xai-import-api-');
+    addTearDown(() => directory.delete(recursive: true));
+    final artifact = File(
+        '${directory.path}${Platform.pathSeparator}local-report.xaic');
+    await artifact.writeAsBytes([88, 65, 73, 67, 6, 1, 2, 3]);
+    final calls = <String>[];
+    final api = ApiService(client: MockClient((request) async {
+      calls.add('${request.method} ${request.url.path}');
+      expect(request.headers['authorization'], 'Bearer access');
+      if (request.url.path == '/files/artifacts') {
+        expect(request.headers['content-type'], contains('multipart/form-data'));
+        expect(utf8.decode(request.bodyBytes), contains('local-report.xaic'));
+        return http.Response('{"id":42,"name":"local-report.xaic"}', 201);
+      }
+      expect(jsonDecode(request.body)['file_id'], 42);
+      return http.Response('{"share_code":"XC-REAL-RESPONSE"}', 200);
+    }))..token = 'access';
+    final imported = await api.importArtifact(artifact.path);
+    final result = await api.createShare(
+        imported['id'] as int, 'recipient@example.com', 60);
+    expect(result['share_code'], 'XC-REAL-RESPONSE');
+    expect(calls, ['POST /files/artifacts', 'POST /shares']);
+    await expectLater(api.importArtifact('not-compressed.txt'),
+        throwsA(isA<ApiException>().having(
+            (error) => error.message, 'message',
+            'Please select a compressed XAICD file.')));
+  });
+
   test('share redeem returns metadata and download writes exact XAIC bytes',
       () async {
     final api = ApiService(client: MockClient((request) async {

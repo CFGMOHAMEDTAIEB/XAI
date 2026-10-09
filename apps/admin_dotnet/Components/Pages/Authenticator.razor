@@ -1,26 +1,84 @@
 @page "/authenticator"
 @inherits AdminReadPage<IReadOnlyList<AuthenticatorDevice>>
-<PageTitle>Authenticator administration | XAICD Admin</PageTitle>
-<div class="page-heading"><div><h1>Authenticator devices and recovery</h1><p>Read-only operational review. Public keys, TOTP secrets, recovery codes and tokens are never returned.</p></div><button disabled="@Loading" @onclick="LoadAllAsync">Refresh</button></div>
-<AdminDataState RequiresLogin="RequiresLogin" Loading="Loading" Error="Error">
-@if(Data is not null){
-<section class="panel"><h2>Registered devices</h2><table><thead><tr><th>User</th><th>Device</th><th>Platform</th><th>Version</th><th>Status</th><th>Activity</th></tr></thead><tbody>
-@if(!Data.Any()){<tr><td colspan="6">No authenticator devices registered.</td></tr>}
-@foreach(var item in Data){<tr><td>@item.UserId</td><td class="mono">@item.DeviceId</td><td>@item.Platform</td><td>@item.AppVersion</td><td><StatusBadge Value="@item.Status" /></td><td>@item.LastActivity.LocalDateTime</td></tr>}
-</tbody></table></section>
-<section class="panel"><h2>Recovery code inventory</h2><table><thead><tr><th>User</th><th>Issued</th><th>Used</th><th>Remaining</th></tr></thead><tbody>
-@if(!_recovery.Any()){<tr><td colspan="4">No recovery codes issued.</td></tr>}
-@foreach(var item in _recovery){<tr><td>@item.UserId</td><td>@item.Issued</td><td>@item.Used</td><td>@item.Remaining</td></tr>}
-</tbody></table></section>
-<section class="panel"><h2>Authentication history</h2><table><thead><tr><th>Time</th><th>User</th><th>Event</th><th>Result</th><th>Application</th></tr></thead><tbody>
-@if(!_history.Any()){<tr><td colspan="5">No authenticator events recorded.</td></tr>}
-@foreach(var item in _history){<tr><td>@item.CreatedAt.LocalDateTime</td><td>@item.UserId</td><td>@item.Type</td><td><StatusBadge Value="@item.Result" /></td><td>@item.Application</td></tr>}
-</tbody></table></section>}
+
+<PageTitle>Authenticator | XAICD Admin</PageTitle>
+<AdminPageHeader Section="Security" Title="Authenticator" Description="Review enrolled devices and authentication events without exposing secrets or recovery material.">
+    <Actions><button class="button secondary" disabled="@Loading" @onclick="LoadAllAsync"><XIcon Name="system" /> Refresh</button></Actions>
+</AdminPageHeader>
+
+@if (_actionError is not null) { <div class="alert error" role="alert">@_actionError</div> }
+@if (_actionMessage is not null) { <div class="alert success" role="status">@_actionMessage</div> }
+
+<AdminDataState RequiresLogin="RequiresLogin" Loading="Loading" Error="@Error" OnRetry="LoadAllAsync">
+    @if (Data is not null)
+    {
+        <section class="card data-card">
+            <header class="card-header"><div><span class="card-kicker">Enrollment</span><h2>Registered devices</h2></div><span class="header-count">@Data.Count</span></header>
+            <div class="table-wrap"><table><thead><tr><th>User</th><th>Device</th><th>Platform</th><th>Version</th><th>Status</th><th>Enrolled</th><th>Last activity</th><th><span class="sr-only">Actions</span></th></tr></thead><tbody>
+                @if (!Data.Any()) { <tr><td colspan="8"><AdminEmptyState Icon="key" Title="No authenticator devices are available." Description="Authenticator enrollments will appear here." /></td></tr> }
+                @foreach (var item in Data) { <tr><td>User @item.UserId</td><td class="mono">@item.DeviceId</td><td>@item.Platform</td><td>@item.AppVersion</td><td><StatusBadge Value="@item.Status" /></td><td>@item.RegisteredAt.LocalDateTime.ToString("g")</td><td>@item.LastActivity.LocalDateTime.ToString("g")</td><td>@if (item.Status.Equals("active", StringComparison.OrdinalIgnoreCase)) { <button class="button danger-quiet compact" disabled="@_actionBusy" @onclick="() => AskRevoke(item)">Revoke</button> }</td></tr> }
+            </tbody></table></div>
+        </section>
+        <section class="card data-card section-gap">
+            <header class="card-header"><div><span class="card-kicker">Audit-safe history</span><h2>Authentication activity</h2></div></header>
+            @if (_historyError is not null) { <div class="alert error" role="alert">@_historyError</div> }
+            else
+            {
+            <div class="table-wrap"><table><thead><tr><th>Time</th><th>User</th><th>Event</th><th>Result</th><th>Application</th></tr></thead><tbody>
+                @if (!_history.Any()) { <tr><td colspan="5"><AdminEmptyState Icon="audit" Title="No authenticator activity" /></td></tr> }
+                @foreach (var item in _history) { <tr><td>@item.CreatedAt.LocalDateTime.ToString("g")</td><td>User @item.UserId</td><td>@item.Type</td><td><StatusBadge Value="@item.Result" /></td><td>@item.Application</td></tr> }
+            </tbody></table></div>
+            }
+        </section>
+        <div class="info-callout"><XIcon Name="lock" /><div><strong>Sensitive enrollment data stays hidden</strong><p>TOTP secrets, current codes, recovery codes, session tokens, and enrollment material are never returned by this page.</p></div></div>
+    }
 </AdminDataState>
+
+<AdminConfirmDialog Open="@(_pendingDevice is not null)" Busy="@_actionBusy" Title="Revoke authenticator device?" Message="Pending approvals on this device will expire. The action is recorded in the audit trail." ConfirmLabel="Revoke device" OnConfirm="ConfirmRevoke" OnCancel="CancelRevoke" />
+
 @code {
- private IReadOnlyList<AuthenticatorHistory> _history=[];
- private IReadOnlyList<RecoveryCodeSummary> _recovery=[];
- protected override Task<IReadOnlyList<AuthenticatorDevice>> FetchAsync()=>Api.GetAuthenticatorDevicesAsync();
- private async Task LoadAllAsync(){await LoadAsync();if(Data is null)return;try{_history=await Api.GetAuthenticatorHistoryAsync();_recovery=await Api.GetRecoveryCodeSummariesAsync();}catch(AdminApiAuthorizationException){RequiresLogin=true;}catch(Exception){Error="Authenticator administration data is unavailable. Retry when connected.";}}
- protected override async Task OnParametersSetAsync(){await LoadAllAsync();}
+    private IReadOnlyList<AuthenticatorHistory> _history = [];
+    private string? _historyError;
+    private bool _actionBusy;
+    private string? _actionError, _actionMessage;
+    private AuthenticatorDevice? _pendingDevice;
+    protected override Task<IReadOnlyList<AuthenticatorDevice>> FetchAsync() => Api.GetAuthenticatorDevicesAsync();
+    private async Task LoadAllAsync()
+    {
+        _history = [];
+        _historyError = null;
+        await LoadAsync(); if (Data is null) return;
+        try { _history = await Api.GetAuthenticatorHistoryAsync(); }
+        catch (AdminApiAuthorizationException ex)
+        {
+            LogReadFailure((int)ex.StatusCode, "HistoryUnauthorized", "/admin/authenticator/history");
+            if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized && !Session.IsAuthenticated)
+            {
+                RequiresLogin = true;
+                RedirectToLogin();
+            }
+            else _historyError = ex.StatusCode == System.Net.HttpStatusCode.Forbidden
+                ? "You do not have permission to view authenticator activity."
+                : "We couldn't load authenticator activity. Please try again.";
+        }
+        catch (Exception ex)
+        {
+            LogReadFailure(ex is HttpRequestException request && request.StatusCode is not null
+                ? (int)request.StatusCode : null, "HistoryRequestFailed", "/admin/authenticator/history");
+            _historyError = "We couldn't load authenticator activity. Please try again.";
+        }
+    }
+    protected override async Task OnParametersSetAsync() => await LoadAllAsync();
+    private void AskRevoke(AuthenticatorDevice item) { _pendingDevice = item; _actionError = _actionMessage = null; }
+    private void CancelRevoke() => _pendingDevice = null;
+    private async Task ConfirmRevoke()
+    {
+        if (_actionBusy || _pendingDevice is null) return;
+        var device = _pendingDevice; _actionBusy = true; _actionError = _actionMessage = null;
+        try { await Api.RevokeAuthenticatorDeviceAsync(device.DeviceId); _pendingDevice = null; await LoadAllAsync(); _actionMessage = "Authenticator device revoked."; }
+        catch (AdminApiAuthorizationException ex) { if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized) RedirectToLogin(); else _actionError = "You do not have permission to revoke this device."; }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Conflict) { _pendingDevice = null; _actionError = "This device cannot be revoked from its current state."; await LoadAllAsync(); }
+        catch (Exception) { _actionError = "The device could not be revoked. Please try again."; }
+        finally { _actionBusy = false; }
+    }
 }

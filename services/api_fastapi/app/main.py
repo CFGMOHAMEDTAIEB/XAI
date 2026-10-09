@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from pathlib import Path
 import hashlib, os, shutil, secrets
-from fastapi import FastAPI, Depends, HTTPException, Header, UploadFile, File
+from fastapi import FastAPI, Depends, HTTPException, Header, UploadFile, File, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.exceptions import RequestValidationError
@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 from .config import settings
 from .db import Base, engine, get_db
 from .models import User, FileRecord, ShareCode, AuditEvent, RefreshToken, TotpEnrollment, AuthenticatorDevice
-from .schemas import RegisterRequest, LoginRequest, MfaVerifyRequest, TokenResponse, RefreshRequest, FileCreate, ShareCreate, ShareRedeem
+from .schemas import RegisterRequest, LoginRequest, MfaVerifyRequest, TokenResponse, MfaChallengeResponse, RefreshRequest, FileCreate, ShareCreate, ShareRedeem
 from .security import hash_password, verify_password, create_token, create_refresh_token, hash_refresh_token, decode_token_claims, generate_share_code, hash_share_code
 from .schemas import EmailSend
 from .mfa import register_mfa_routes, verify_totp
@@ -22,6 +22,7 @@ import smtplib
 from .security_scanner import enforce_scan, scanner_health
 from .resource_guard import ResourceGuard, cleanup_work
 from .authenticator import register_authenticator_routes
+from .admin_actions import register_admin_actions
 from .account import register_account_routes, normalize_phone, issue, EMAIL_VERIFY
 from .email_service import VerificationEmailError, send_share_notification, verification_configuration_missing
 
@@ -92,17 +93,20 @@ def register(body:RegisterRequest,db:Session=Depends(get_db)):
     except VerificationEmailError:raise HTTPException(503,'Account created; verification email is temporarily unavailable')
     return {'verification_required':True,'channel':'email'}
 
-@app.post('/auth/login',response_model=TokenResponse)
-def login(body:LoginRequest,db:Session=Depends(get_db)):
+@app.post('/auth/login',response_model=TokenResponse|MfaChallengeResponse)
+def login(body:LoginRequest,response:Response,x_xaicd_login_flow:str=Header(default=''),db:Session=Depends(get_db)):
+    response.headers['Cache-Control']='no-store'
     user=db.scalar(select(User).where(User.email==body.email.lower()))
     if not user or not verify_password(body.password,user.password_hash): raise HTTPException(401,'Invalid credentials')
     if user.account_status=='DISABLED':raise HTTPException(401,'Invalid credentials')
     if user.account_status!='ACTIVE' or not user.email_verified:raise HTTPException(403,'Account verification required')
     if not user.totp_enabled:
         audit(db,user.id,'user.enrollment_login')
-        return TokenResponse(access_token=create_token(user.id,'enrollment',10),mfa_enabled=False,enrollment_required=True)
+        return TokenResponse(access_token=create_token(user.id,'enrollment',10),mfa_enabled=False,enrollment_required=True,state='MFA_ENROLLMENT_REQUIRED')
     if not body.totp_code:
-        raise HTTPException(401,{'message':'Valid TOTP code required','mfa_token':create_token(user.id,'mfa',5)})
+        challenge=create_token(user.id,'mfa',5)
+        if x_xaicd_login_flow=='staged':return MfaChallengeResponse(mfa_token=challenge)
+        raise HTTPException(401,{'message':'Valid TOTP code required','mfa_token':challenge})
     if not verify_totp(user.totp_secret,body.totp_code):raise HTTPException(401,'Invalid verification code')
     audit(db,user.id,'user.login'); return token_pair(db,user)
 
@@ -141,11 +145,56 @@ def me(user:User=Depends(account_user)):
 register_account_routes(app,current_user)
 register_mfa_routes(app, current_user, account_user)
 register_authenticator_routes(app, current_user, require_admin, enrollment_user, token_pair)
+register_admin_actions(app, require_admin)
 
 @app.post('/files')
 def create_file(body:FileCreate,user:User=Depends(current_user),db:Session=Depends(get_db)):
     row=FileRecord(owner_id=user.id,**body.model_dump()); db.add(row); db.commit(); db.refresh(row); audit(db,user.id,'file.recorded',str(row.id))
     return {'id':row.id,**body.model_dump()}
+
+@app.post('/files/artifacts', status_code=201)
+def import_artifact(upload:UploadFile=File(...),user:User=Depends(current_user),db:Session=Depends(get_db),preserve_bytes:bool=False):
+    filename=upload.filename or ''
+    if not filename.lower().endswith('.xaic') or safe_upload_name(filename)!=filename:
+        raise HTTPException(400,'Please select a compressed XAICD file')
+    job_key=secrets.token_hex(12)
+    work=settings.storage_root/str(user.id)/f'import-{job_key}'
+    work.mkdir(parents=True,exist_ok=False)
+    artifact=work/'artifact.xaic'; restored=work/'verified.bin'
+    size=0
+    try:
+        with artifact.open('wb') as target:
+            while chunk:=upload.file.read(1024*1024):
+                size+=len(chunk)
+                if size>settings.max_upload_bytes: raise HTTPException(413,'Upload too large')
+                target.write(chunk)
+        codec='xaic-import'
+        if preserve_bytes:
+            with artifact.open('rb') as verified:
+                digest=hashlib.file_digest(verified,'sha256').hexdigest()
+            enforce_scan(artifact,'upload',digest,request_id=job_key,user_id=user.id,db=db)
+            original_size=size
+            codec='uploaded-file'
+        else:
+            with artifact.open('rb') as probe:
+                prefix=probe.read(5)
+            if len(prefix)!=5 or prefix[:4]!=b'XAIC' or prefix[4] not in (1,2,3,5,6):
+                raise HTTPException(400,'Please select a compressed XAICD file')
+            from xai_compress.compression import decompress_file
+            decompress_file(artifact,restored,overwrite=True,max_output_size=settings.max_decompressed_bytes)
+            with restored.open('rb') as verified:
+                digest=hashlib.file_digest(verified,'sha256').hexdigest()
+            enforce_scan(restored,'decompressed_output',digest,request_id=job_key,user_id=user.id,db=db)
+            original_size=restored.stat().st_size
+            restored.unlink()
+        row=FileRecord(owner_id=user.id,name=filename,sha256=digest,original_size=original_size,
+            compressed_size=size,codec=codec,artifact_path=str(artifact),integrity_verified=True,status='completed')
+        db.add(row);db.commit();db.refresh(row);audit(db,user.id,'artifact.imported',str(row.id))
+        return {'id':row.id,'name':row.name,'status':row.status,'compressed_size':size}
+    except HTTPException:
+        db.rollback();cleanup_work(work);raise
+    except Exception:
+        db.rollback();cleanup_work(work);raise HTTPException(400,'Please select a compressed XAICD file')
 
 @app.post('/compression/jobs')
 def compress_upload(upload:UploadFile=File(...),user:User=Depends(current_user),db:Session=Depends(get_db)):
@@ -190,7 +239,8 @@ def compress_upload(upload:UploadFile=File(...),user:User=Depends(current_user),
 def download_artifact(file_id:int,user:User=Depends(current_user),db:Session=Depends(get_db)):
     row=db.get(FileRecord,file_id)
     if not row or row.owner_id!=user.id or not row.artifact_path: raise HTTPException(404,'File not found')
-    return FileResponse(row.artifact_path,filename=f'{row.name}.xaic',media_type='application/octet-stream')
+    filename=row.name if row.name.lower().endswith('.xaic') else f'{row.name}.xaic'
+    return FileResponse(row.artifact_path,filename=filename,media_type='application/octet-stream')
 
 @app.post('/compression/decompress')
 def decompress_upload(upload:UploadFile=File(...),user:User=Depends(current_user),db:Session=Depends(get_db)):
@@ -233,7 +283,8 @@ def email_artifact(file_id:int,body:EmailSend,user:User=Depends(current_user),db
     if not row or row.owner_id!=user.id or not row.artifact_path or not row.integrity_verified:
         raise HTTPException(404,'Verified artifact not found')
     try:
-        result=send_artifact(Path(row.artifact_path),f'{row.name}.xaic',str(body.recipient_email))
+        filename=row.name if row.name.lower().endswith('.xaic') else f'{row.name}.xaic'
+        result=send_artifact(Path(row.artifact_path),filename,str(body.recipient_email))
     except ValueError as exc: raise HTTPException(503,str(exc))
     except (OSError,smtplib.SMTPException):
         audit(db,user.id,'email.failed',str(file_id),'failure','Email provider submission failed')
@@ -348,6 +399,7 @@ def admin_user_details(user_id:int,_:User=Depends(require_admin),db:Session=Depe
     enrollment=db.get(TotpEnrollment,user_id)
     last_login=db.scalar(select(func.max(AuditEvent.created_at)).where(AuditEvent.user_id==user_id,AuditEvent.action=='user.login'))
     return {'id':user.id,'email':user.email,'displayName':user.display_name,'role':user.role,
+            'status':user.account_status,'emailVerified':user.email_verified,
             'mfaEnabled':user.totp_enabled,'createdAt':user.created_at,'lastLogin':last_login,
             'fileCount':db.scalar(select(func.count()).select_from(FileRecord).where(FileRecord.owner_id==user_id)) or 0,
             'mfaEnrollmentState':'enabled' if user.totp_enabled else ('pending' if enrollment and enrollment.secret and enrollment.expires_at>datetime.utcnow() else 'not_active')}

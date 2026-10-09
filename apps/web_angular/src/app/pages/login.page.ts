@@ -38,7 +38,7 @@ export class LoginPage {
  async submitCredentials(){if(this.busy()||!this.email||!this.password)return;await this.attempt(false)}
  async verifyCode(){if(this.busy()||!this.validCode())return;await this.attempt(true)}
  back(){this.auth.cancelMfa();this.step.set('credentials');this.totp='';this.password='';this.error.set('')}
- private async attempt(withCode:boolean){this.busy.set(true);this.error.set('');try{const session=withCode?await this.auth.verifyMfa(this.totp):await this.auth.login(this.email,this.password);if(!withCode)this.password='';await this.router.navigateByUrl(session.mfa_enabled?'/dashboard':'/security')}catch(error){
+ private async attempt(withCode:boolean){this.busy.set(true);this.error.set('');try{const session=withCode?await this.auth.verifyMfa(this.totp):await this.auth.login(this.email,this.password);if(!withCode)this.password='';if(session.state==='MFA_REQUIRED'){this.step.set('mfa');this.totp='';return}await this.router.navigateByUrl(session.mfa_enabled?'/dashboard':'/security')}catch(error){
    const response=error as HttpErrorResponse;const detail=typeof response?.error?.detail==='string'?response.error.detail:'';
    if(!withCode&&response?.status===401&&this.auth.hasMfaChallenge()){this.step.set('mfa');this.totp='';this.password=''}
    else if(withCode&&response?.status===401)this.error.set('Invalid verification code. Please try again.');

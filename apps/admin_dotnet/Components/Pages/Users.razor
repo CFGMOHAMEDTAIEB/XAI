@@ -1,17 +1,58 @@
 @page "/users"
 @inherits AdminReadPage<IReadOnlyList<UserSummary>>
+
 <PageTitle>Users | XAICD Admin</PageTitle>
-<div class="page-heading"><div><h1>Users and access</h1><p>Review roles, MFA state and account status.</p></div><button disabled="@Loading" @onclick="LoadAsync">Refresh</button></div>
-<label>Search users<input class="search" @bind="_search" @bind:event="oninput" placeholder="Name or email" /></label>
-<AdminDataState RequiresLogin="RequiresLogin" Loading="Loading" Error="Error">
-@if(Data is not null){<section class="panel">
-<table><thead><tr><th>User</th><th>Role</th><th>Status</th><th>MFA</th><th>Last login</th></tr></thead><tbody>
-@if(!Filtered.Any()){<tr><td colspan="5">No users match this view.</td></tr>}
-@foreach(var user in Filtered){<tr><td><a href="@($"/users/{user.Id}")">@(string.IsNullOrWhiteSpace(user.DisplayName) ? user.Email : user.DisplayName)</a><small>@user.Email</small></td><td>@user.Role</td><td><StatusBadge Value="@user.Status" /></td><td><StatusBadge Value="@(user.MfaEnabled ? "MFA enabled" : "Disabled")" /></td><td>@(user.LastLogin?.LocalDateTime.ToString() ?? "Not recorded")</td></tr>}
-</tbody></table></section>}
+<AdminPageHeader Section="Management" Title="Users" Description="Review identities, access roles, verification, MFA, and account status.">
+    <Actions><button class="button secondary" disabled="@Loading" @onclick="LoadAsync"><XIcon Name="system" /> Refresh</button></Actions>
+</AdminPageHeader>
+
+<section class="card form-card" aria-labelledby="invite-title">
+    <header class="card-header"><div><span class="card-kicker">Account provisioning</span><h2 id="invite-title">Invite a user</h2></div></header>
+    <p class="card-description">Create the account and send a verification invitation. Administrators never see or choose the user's password.</p>
+    <form class="inline-form" @onsubmit="CreateUser" @onsubmit:preventDefault>
+        <label>Full name<input @bind="_newName" maxlength="120" required disabled="@_creating" /></label>
+        <label>Email address<input type="email" @bind="_newEmail" required disabled="@_creating" /></label>
+        <label>Role<select @bind="_newRole" disabled="@_creating"><option value="user">User</option><option value="admin">Administrator</option></select></label>
+        <button class="button primary" type="submit" disabled="@_creating">@(_creating ? "Sending invitation…" : "Create and invite")</button>
+    </form>
+    @if (_createMessage is not null) { <div class="alert success" role="status">@_createMessage</div> }
+    @if (_createError is not null) { <div class="alert error" role="alert">@_createError</div> }
+</section>
+
+<div class="toolbar">
+    <label class="search-control"><span>Search users</span><input @bind="_search" @bind:event="oninput" placeholder="Name or email" /></label>
+    <span class="result-count">@Filtered.Count() users</span>
+</div>
+
+<AdminDataState RequiresLogin="RequiresLogin" Loading="Loading" Error="@Error" OnRetry="LoadAsync">
+    @if (Data is not null)
+    {
+        <section class="card data-card"><div class="table-wrap"><table><thead><tr><th>User</th><th>Role</th><th>Email</th><th>MFA</th><th>Status</th><th>Created</th><th><span class="sr-only">Actions</span></th></tr></thead><tbody>
+            @if (!Filtered.Any()) { <tr><td colspan="7"><AdminEmptyState Icon="users" Title="@(Data.Count == 0 ? "No users are available." : "No users match")" Description="@(Data.Count == 0 ? "Accounts will appear here when available." : "Try another name or email address.")" /></td></tr> }
+            @foreach (var user in Filtered)
+            {
+                <tr><td><div class="identity-cell"><span>@Initial(user)</span><div><strong>@(string.IsNullOrWhiteSpace(user.DisplayName) ? user.Email : user.DisplayName)</strong><small>@user.Email</small></div></div></td><td><StatusBadge Value="@user.Role" /></td><td><StatusBadge Value="@(user.EmailVerified ? "Verified" : "Unverified")" /></td><td><StatusBadge Value="@(user.MfaEnabled ? "Enabled" : "Not enabled")" /></td><td><StatusBadge Value="@user.Status" /></td><td>@user.CreatedAt.LocalDateTime.ToString("d")</td><td><a class="button quiet compact" href="@($"/users/{user.Id}")">View</a></td></tr>
+            }
+        </tbody></table></div></section>
+    }
 </AdminDataState>
+
 @code {
- private string _search="";
- protected override Task<IReadOnlyList<UserSummary>> FetchAsync()=>Api.GetUsersAsync();
- private IEnumerable<UserSummary> Filtered=>(Data??[]).Where(x=>string.IsNullOrWhiteSpace(_search)||x.Email.Contains(_search,StringComparison.OrdinalIgnoreCase)||(x.DisplayName??"").Contains(_search,StringComparison.OrdinalIgnoreCase));
+    private string _search = "", _newName = "", _newEmail = "", _newRole = "user";
+    private bool _creating;
+    private string? _createMessage, _createError;
+    protected override Task<IReadOnlyList<UserSummary>> FetchAsync() => Api.GetUsersAsync();
+    private IEnumerable<UserSummary> Filtered => (Data ?? []).Where(x => string.IsNullOrWhiteSpace(_search) || x.Email.Contains(_search, StringComparison.OrdinalIgnoreCase) || (x.DisplayName ?? "").Contains(_search, StringComparison.OrdinalIgnoreCase));
+    private static string Initial(UserSummary user) { var value = string.IsNullOrWhiteSpace(user.DisplayName) ? user.Email : user.DisplayName; return string.IsNullOrWhiteSpace(value) ? "U" : value[..1].ToUpperInvariant(); }
+    private async Task CreateUser()
+    {
+        if (_creating) return;
+        _creating = true; _createMessage = _createError = null;
+        try { await Api.CreateUserAsync(_newEmail.Trim(), _newName.Trim(), _newRole); _newEmail = _newName = ""; _newRole = "user"; _createMessage = "Invitation sent. The user can verify their email and choose a password."; await LoadAsync(); }
+        catch (AdminApiAuthorizationException ex) { if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized) RedirectToLogin(); else _createError = "You do not have permission to create an account."; }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Conflict) { _createError = "An account with this email already exists."; }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.ServiceUnavailable) { _createError = "The account was created, but email delivery is unavailable. Check the user list before retrying."; await LoadAsync(); }
+        catch (Exception) { _createError = "The account could not be created. Please try again."; }
+        finally { _creating = false; }
+    }
 }

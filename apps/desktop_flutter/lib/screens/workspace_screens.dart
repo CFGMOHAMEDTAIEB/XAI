@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -348,14 +349,15 @@ class _BackendHistoryScreenState extends ReloadingState<BackendHistoryScreen> {
 }
 
 class SharesScreen extends StatefulWidget {
-  const SharesScreen({super.key});
+  const SharesScreen({super.key, this.pickFile});
+  final Future<String?> Function()? pickFile;
   @override
   State<SharesScreen> createState() => _SharesScreenState();
 }
 
 class _SharesScreenState extends ReloadingState<SharesScreen> {
-  List<dynamic> files = [];
-  int? selected;
+  String? selectedPath;
+  String? selectionError;
   int expiry = 60;
   final recipient = TextEditingController();
   final shareCode = TextEditingController();
@@ -371,26 +373,46 @@ class _SharesScreenState extends ReloadingState<SharesScreen> {
   }
 
   @override
-  Future<List<dynamic>> loadRemote() async {
-    final api = context.read<AppState>().api;
-    final result = await Future.wait([api.shares(), api.history()]);
-    files = result[1]
-        .where((row) => row['status'] == 'completed')
-        .toList(growable: false);
-    return result[0];
+  Future<List<dynamic>> loadRemote() => context.read<AppState>().api.shares();
+
+  String get selectedName => selectedPath == null
+      ? 'No file selected'
+      : selectedPath!.replaceAll('\\', '/').split('/').last;
+
+  bool get canSend => !creating &&
+      selectedPath != null &&
+      RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
+          .hasMatch(recipient.text.trim()) &&
+      recipient.text.trim().length <= 254 &&
+      const {15, 60, 1440, 10080}.contains(expiry);
+
+  Future<void> browse() async {
+    final path = widget.pickFile != null
+        ? await widget.pickFile!()
+        : (await FilePicker.platform.pickFiles(
+            dialogTitle: 'Select a compressed XAICD file',
+            type: FileType.custom,
+            allowedExtensions: const ['xaic']))
+            ?.files.single.path;
+    if (path == null || !mounted) return;
+    final valid = path.toLowerCase().endsWith('.xaic');
+    setState(() {
+      selectedPath = valid ? path : null;
+      selectionError = valid ? null : 'Select a file with the .xaic extension.';
+    });
   }
 
   Future<void> create() async {
-    if (selected == null || recipient.text.trim().isEmpty) return;
+    if (!canSend) return;
     setState(() => creating = true);
     try {
       ApiService.validateEmail(recipient.text);
-      final result = await context
-          .read<AppState>()
-          .api
-          .createShare(selected!, recipient.text.trim(), expiry);
+      final api = context.read<AppState>().api;
+      final filename = selectedName;
+      final imported = await api.importArtifact(selectedPath!);
+      final result = await api.createShare(
+          imported['id'] as int, recipient.text.trim(), expiry);
       if (mounted) {
-        final file = files.firstWhere((row) => row['id'] == selected);
         await showDialog<void>(
             context: context,
             barrierDismissible: false,
@@ -402,7 +424,7 @@ class _SharesScreenState extends ReloadingState<SharesScreen> {
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('File: ${file['name']}'),
+                              Text('File: $filename'),
                               Text('Recipient: ${result['recipient_email']}'),
                               const SizedBox(height: 16),
                               const Text('Share code',
@@ -436,7 +458,7 @@ class _SharesScreenState extends ReloadingState<SharesScreen> {
                     ]));
       }
       recipient.clear();
-      selected = null;
+      selectedPath = null;
       await reload();
     } on ApiException catch (e) {
       if (mounted) {
@@ -528,91 +550,116 @@ class _SharesScreenState extends ReloadingState<SharesScreen> {
 
   Widget shareTile(dynamic raw) {
     final row = Map<String, dynamic>.from(raw);
-    return Card(
-        child: ListTile(
-            leading: const Icon(Icons.share_outlined),
-            title: Text('${row['file_name']}'),
-            subtitle: Text(
-                '${row['recipient_email']} • expires ${_date(row['expires_at']) ?? 'unknown'}'),
-            trailing:
-                Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: [
-              Chip(label: Text('${row['status']}')),
-              if (row['status'] == 'active')
-                IconButton(
-                    tooltip: 'Revoke share',
-                    onPressed: () => revoke(row['id'] as int),
-                    icon: const Icon(Icons.link_off))
-            ])));
+    final name = '${row['file_name']}';
+    final detail = '${row['recipient_email']} • expires ${_date(row['expires_at']) ?? 'unknown'}';
+    final labels = Column(crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min, children: [
+      Tooltip(message: name, child: Text(name, maxLines: 1,
+          overflow: TextOverflow.ellipsis)),
+      Text(detail, maxLines: 1, overflow: TextOverflow.ellipsis)
+    ]);
+    final actions = Row(mainAxisSize: MainAxisSize.min, children: [
+      Chip(label: Text('${row['status']}')),
+      if (row['status'] == 'active') IconButton(
+          tooltip: 'Revoke share',
+          onPressed: () => revoke(row['id'] as int),
+          icon: const Icon(Icons.link_off))
+    ]);
+    return Card(child: LayoutBuilder(builder: (context, constraints) =>
+        Padding(padding: const EdgeInsets.all(12), child:
+          constraints.maxWidth < 480
+              ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  labels, const SizedBox(height: 8), actions])
+              : Row(children: [const Icon(Icons.share_outlined),
+                  const SizedBox(width: 12), Expanded(child: labels),
+                  const SizedBox(width: 12), actions]))));
   }
 
   @override
   Widget build(BuildContext c) => WorkspacePage(
           'Shares',
-          Column(children: [
+          ListView(children: [
             Card(
                 child: Padding(
                     padding: const EdgeInsets.all(18),
-                    child: Wrap(
-                        spacing: 12,
-                        runSpacing: 12,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: [
-                          SizedBox(
-                              width: 180,
-                              child: Text('SHARE FILE',
-                                  style: Theme.of(c)
-                                      .textTheme
-                                      .titleMedium
-                                      ?.copyWith(fontWeight: FontWeight.w700))),
-                          SizedBox(
-                              width: 240,
-                              child: DropdownButtonFormField<int>(
-                                  initialValue: selected,
-                                  decoration: const InputDecoration(
-                                      labelText: 'Owned file'),
-                                  items: [
-                                    for (final f in files)
-                                      DropdownMenuItem(
-                                          value: f['id'] as int,
-                                          child: Text('${f['name']}'))
-                                  ],
-                                  onChanged: (v) =>
-                                      setState(() => selected = v))),
-                          SizedBox(
-                              width: 260,
-                              child: TextField(
-                                  controller: recipient,
-                                  enabled: !creating,
-                                  onChanged: (_) => setState(() {}),
-                                  decoration: const InputDecoration(
-                                      labelText: 'Recipient email'))),
-                          SizedBox(
-                              width: 190,
-                              child: DropdownButtonFormField<int>(
-                                  initialValue: expiry,
-                                  decoration: const InputDecoration(
-                                      labelText: 'Expires'),
-                                  items: const [
-                                    DropdownMenuItem(
-                                        value: 15, child: Text('15 minutes')),
-                                    DropdownMenuItem(
-                                        value: 60, child: Text('1 hour')),
-                                    DropdownMenuItem(
-                                        value: 1440, child: Text('1 day')),
-                                    DropdownMenuItem(
-                                        value: 10080, child: Text('7 days'))
-                                  ],
-                                  onChanged: (v) =>
-                                      setState(() => expiry = v ?? 60))),
-                          FilledButton.icon(
-                              onPressed: creating ||
-                                      selected == null ||
-                                      recipient.text.trim().isEmpty
-                                  ? null
-                                  : create,
-                              icon: const Icon(Icons.add_link),
-                              label: Text(creating ? 'Creating…' : 'Create share'))
-                        ]))),
+                    child: LayoutBuilder(builder: (context, constraints) {
+                      final fileField = Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Selected XAIC file'),
+                            const SizedBox(height: 6),
+                            Row(children: [
+                              Expanded(child: Tooltip(
+                                  message: selectedPath ?? selectedName,
+                                  child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 15),
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: Theme.of(context).dividerColor),
+                                          borderRadius: BorderRadius.circular(5)),
+                                      child: Text(selectedName, maxLines: 1,
+                                          overflow: TextOverflow.ellipsis)))),
+                              const SizedBox(width: 8),
+                              OutlinedButton.icon(
+                                  onPressed: creating ? null : browse,
+                                  icon: const Icon(Icons.folder_open),
+                                  label: const Text('Browse'))
+                            ])
+                          ]);
+                      final emailField = TextField(
+                          controller: recipient,
+                          enabled: !creating,
+                          keyboardType: TextInputType.emailAddress,
+                          onChanged: (_) => setState(() {}),
+                          decoration: const InputDecoration(
+                              labelText: 'Recipient email'));
+                      final expiryField = DropdownButtonFormField<int>(
+                          initialValue: expiry,
+                          isExpanded: true,
+                          decoration: const InputDecoration(labelText: 'Expires'),
+                          items: const [
+                            DropdownMenuItem(value: 15, child: Text('15 minutes')),
+                            DropdownMenuItem(value: 60, child: Text('1 hour')),
+                            DropdownMenuItem(value: 1440, child: Text('1 day')),
+                            DropdownMenuItem(value: 10080, child: Text('7 days'))
+                          ],
+                          onChanged: creating ? null : (v) =>
+                              setState(() => expiry = v ?? 60));
+                      final wide = constraints.maxWidth >= 900;
+                      return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('SHARE FILE', style: Theme.of(context)
+                                .textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w700)),
+                            const SizedBox(height: 14),
+                            if (wide)
+                              Row(crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Expanded(flex: 4, child: fileField),
+                                    const SizedBox(width: 12),
+                                    Expanded(flex: 3, child: emailField),
+                                    const SizedBox(width: 12),
+                                    Expanded(flex: 2, child: expiryField)
+                                  ])
+                            else ...[
+                              fileField, const SizedBox(height: 12),
+                              emailField, const SizedBox(height: 12),
+                              expiryField
+                            ],
+                            if (selectionError != null) ...[
+                              const SizedBox(height: 8),
+                              Text(selectionError!, style: TextStyle(
+                                  color: Theme.of(context).colorScheme.error))
+                            ],
+                            const SizedBox(height: 14),
+                            FilledButton.icon(
+                                onPressed: canSend ? create : null,
+                                icon: const Icon(Icons.send_outlined),
+                                label: Text(creating ? 'Sending…' : 'Send file'))
+                          ]);
+                    }))),
             const SizedBox(height: 16),
             Card(
                 child: Padding(
@@ -693,12 +740,10 @@ class _SharesScreenState extends ReloadingState<SharesScreen> {
                           ]
                         ]))),
             const SizedBox(height: 16),
-            Expanded(
-                child: loading || error != null || rows.isEmpty
-                    ? states('No shares created.')
-                    : ListView.builder(
-                        itemCount: rows.length,
-                        itemBuilder: (c, i) => shareTile(rows[i])))
+            if (loading || error != null || rows.isEmpty)
+              SizedBox(height: 180, child: states('No shares created.'))
+            else
+              ...rows.map(shareTile)
           ]),
           actions: [
             IconButton(

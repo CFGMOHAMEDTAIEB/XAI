@@ -118,7 +118,12 @@ services:
     restart: unless-stopped
     networks: [xai-network]
   nextjs:
-    build: ./apps/public_nextjs
+    build:
+      context: ./apps/public_nextjs
+      args:
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:13000}
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:4200}
+        INTERNAL_API_URL: http://backend:8000
     environment:
       INTERNAL_API_URL: http://backend:8000
       NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
@@ -126,7 +131,7 @@ services:
       NEXT_PUBLIC_API_URL: ${PUBLIC_API_URL:-http://localhost:8000}
       XAI_RELEASES_DIR: /releases
     volumes: [./releases:/releases:ro]
-    ports: ["${NEXTJS_PORT:-3000}:3000"]
+    ports: ["${NEXTJS_PORT:-13000}:3000", "3000:3000"]
     depends_on:
       backend: {condition: service_healthy}
     restart: unless-stopped
@@ -134,11 +139,15 @@ services:
 
   admin:
     build: ./apps/admin_dotnet
+    volumes:
+      - admin-data-protection:/root/.aspnet/DataProtection-Keys
     environment:
-      PlatformApi__BaseUrl: http://backend:8000
+      # The shared network can contain another Compose project's "backend" alias.
+      PlatformApi__BaseUrl: ${ADMIN_PLATFORM_API_BASE_URL:-http://xai-backend-1:8000}
       PortalUrl: ${NEXT_PUBLIC_APP_URL:-http://localhost:4200}
       PlatformApi__UseDemoFallback: "false"
       Authentication__OidcEnabled: "false"
+      DataProtection__KeysPath: /root/.aspnet/DataProtection-Keys
       ASPNETCORE_URLS: http://+:8080
     ports: ["${ADMIN_PORT:-5050}:8080"]
     depends_on:
@@ -146,6 +155,7 @@ services:
     restart: unless-stopped
     networks: [xai-network]
 volumes:
+  admin-data-protection:
   clamav-data:
   db-data:
   pgadmin-data:

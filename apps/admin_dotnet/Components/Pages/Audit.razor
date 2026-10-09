@@ -1,11 +1,42 @@
 @page "/audit"
 @inherits AdminReadPage<IReadOnlyList<AuditEvent>>
-<PageTitle>Audit logs | XAICD Admin</PageTitle>
-<div class="page-heading"><div><h1>Audit trail</h1><p>Recorded administrative, authentication, sharing and file events. This is not a complete incident feed.</p></div><button disabled="@Loading" @onclick="LoadAsync">Refresh</button></div>
-<AdminDataState RequiresLogin="RequiresLogin" Loading="Loading" Error="Error">
-@if(Data is not null){<section class="panel"><table><thead><tr><th>Time</th><th>Actor</th><th>Action</th><th>Resource</th><th>Result</th><th>Source</th></tr></thead><tbody>
-@if(Data.Count==0){<tr><td colspan="6">No audit events recorded.</td></tr>}
-@foreach(var item in Data){<tr><td>@item.CreatedAt.LocalDateTime</td><td>@item.Actor</td><td class="mono">@item.Action</td><td>@item.Resource</td><td><StatusBadge Value="@item.Result" /></td><td>@item.IpAddress</td></tr>}
-</tbody></table></section>}
+
+<PageTitle>Audit activity | XAICD Admin</PageTitle>
+<AdminPageHeader Section="Security" Title="Audit activity" Description="Inspect administrative, authentication, sharing, and file events without sensitive payloads.">
+    <Actions><button class="button secondary" disabled="@Loading" @onclick="LoadAsync"><XIcon Name="system" /> Refresh</button></Actions>
+</AdminPageHeader>
+
+<div class="toolbar">
+    <label class="search-control"><span>Search activity</span><input @bind="_search" @bind:event="oninput" placeholder="Event, actor, or resource" /></label>
+    <label class="select-control"><span>Event</span><select @bind="_event"><option value="">All events</option>@foreach (var action in Actions) { <option value="@action">@Friendly(action)</option> }</select></label>
+    <label class="select-control"><span>Actor</span><select @bind="_actor"><option value="">All actors</option>@foreach (var actor in Actors) { <option value="@actor">@actor</option> }</select></label>
+    <label class="select-control"><span>Result</span><select @bind="_result"><option value="">All results</option>@foreach (var result in Results) { <option value="@result">@result</option> }</select></label>
+    <span class="result-count">@Filtered.Count() events</span>
+</div>
+
+<AdminDataState RequiresLogin="RequiresLogin" Loading="Loading" Error="@Error" OnRetry="LoadAsync">
+    @if (Data is not null)
+    {
+        <section class="card data-card"><div class="table-wrap"><table><thead><tr><th>Time</th><th>Event</th><th>Actor</th><th>Resource</th><th>Result</th><th>Source</th></tr></thead><tbody>
+            @if (!Filtered.Any()) { <tr><td colspan="6"><AdminEmptyState Icon="audit" Title="@(Data.Count == 0 ? "No audit events are available." : "No audit events match")" Description="@(Data.Count == 0 ? "Recorded activity will appear here when available." : "No events match the current filters.")" /></td></tr> }
+            @foreach (var item in Filtered)
+            {
+                <tr><td class="nowrap">@item.CreatedAt.LocalDateTime.ToString("g")</td><td><div class="primary-cell"><strong>@Friendly(item.Action)</strong><small class="mono">@item.Action</small></div></td><td>@item.Actor</td><td>@item.Resource</td><td><StatusBadge Value="@item.Result" /></td><td>@(string.IsNullOrWhiteSpace(item.IpAddress) ? "Not recorded" : item.IpAddress)</td></tr>
+            }
+        </tbody></table></div></section>
+    }
 </AdminDataState>
-@code { protected override Task<IReadOnlyList<AuditEvent>> FetchAsync()=>Api.GetAuditAsync(); }
+
+@code {
+    private string _search = "", _result = "", _event = "", _actor = "";
+    protected override Task<IReadOnlyList<AuditEvent>> FetchAsync() => Api.GetAuditAsync();
+    private IEnumerable<string> Results => (Data ?? []).Select(x => x.Result).Distinct(StringComparer.OrdinalIgnoreCase).Order();
+    private IEnumerable<string> Actions => (Data ?? []).Select(x => x.Action).Distinct(StringComparer.OrdinalIgnoreCase).Order();
+    private IEnumerable<string> Actors => (Data ?? []).Select(x => x.Actor).Distinct(StringComparer.OrdinalIgnoreCase).Order();
+    private IEnumerable<AuditEvent> Filtered => (Data ?? []).Where(x =>
+        (string.IsNullOrWhiteSpace(_result) || x.Result.Equals(_result, StringComparison.OrdinalIgnoreCase)) &&
+        (string.IsNullOrWhiteSpace(_event) || x.Action.Equals(_event, StringComparison.OrdinalIgnoreCase)) &&
+        (string.IsNullOrWhiteSpace(_actor) || x.Actor.Equals(_actor, StringComparison.OrdinalIgnoreCase)) &&
+        (string.IsNullOrWhiteSpace(_search) || x.Action.Contains(_search, StringComparison.OrdinalIgnoreCase) || x.Actor.Contains(_search, StringComparison.OrdinalIgnoreCase) || x.Resource.Contains(_search, StringComparison.OrdinalIgnoreCase)));
+    private static string Friendly(string value) => string.Join(" ", value.Replace('.', '_').Split('_', StringSplitOptions.RemoveEmptyEntries).Select(x => char.ToUpperInvariant(x[0]) + x[1..]));
+}
